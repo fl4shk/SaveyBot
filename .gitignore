@@ -17,3 +17,4 @@ copyright_text_thing.txt
 *.txt.ignore
 *.json
 *.html
+small_code_testing_stuff/*
