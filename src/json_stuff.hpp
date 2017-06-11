@@ -24,12 +24,12 @@ bool parse_json_file(Json::CharReaderBuilder& rbuilder,
 	const std::string& input_fname, Json::Value* root, std::string* errs);
 
 
-void print_json(const Json::Value& some_value, 
+void debug_print_json(const Json::Value& some_value, 
 	std::ostream& os=std::cout, size_t tabs_level=0);
-inline void print_json(Json::Value* iter, std::ostream& os=std::cout,
+inline void debug_print_json(Json::Value* iter, std::ostream& os=std::cout,
 	size_t tabs_level=0)
 {
-	print_json(*iter, os, tabs_level);
+	debug_print_json(*iter, os, tabs_level);
 }
 
 

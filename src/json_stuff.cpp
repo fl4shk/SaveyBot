@@ -47,10 +47,9 @@ bool parse_json_file(Json::CharReaderBuilder& rbuilder,
 }
 
 
-void print_json(const Json::Value& some_value, std::ostream& os, 
+void debug_print_json(const Json::Value& some_value, std::ostream& os, 
 	size_t tabs_level)
 {
-
 	auto print_leading_tabs = [&]() -> void
 	{
 		for (size_t i=0; i<tabs_level; ++i)
@@ -67,9 +66,6 @@ void print_json(const Json::Value& some_value, std::ostream& os,
 
 	auto print_arrayValue = [&]() -> void
 	{
-		//print_leading_tabs();
-		//print_json_value_type(some_value, os);
-		//osprintout(os, ",\t\t[\n");
 		osprintout(os, "[\n");
 		
 		for (const auto& inner_iter : some_value)
@@ -80,23 +76,17 @@ void print_json(const Json::Value& some_value, std::ostream& os,
 
 		print_leading_tabs();
 		osprintout(os, "],\n");
-		
 	};
 	
 	auto print_objectValue = [&]() -> void
 	{
 		const auto& member_names = some_value.getMemberNames();
 
-		//print_leading_tabs();
-		//print_json_value_type(some_value, os);
-		//osprintout(os, ",\t\t{\n");
 		osprintout(os, "{\n");
 
 		for (const auto& name_iter : member_names)
 		{
 			print_leading_tabs_2();
-			//print_leading_tabs();
-			//print_leading_tabs_2();
 			osprintout(os, "\"", name_iter, "\" : ");
 			print_json(some_value[name_iter], os, tabs_level + 1);
 		}
