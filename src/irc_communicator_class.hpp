@@ -73,6 +73,8 @@ public:		// functions
 	gen_getter_by_val(should_close_sock_fd);
 
 private:		// functions
+	gen_getter_by_ref(hints);
+	gen_getter_by_ref(res);
 	gen_setter_by_val(should_free_res);
 	gen_setter_by_val(should_close_sock_fd);
 	inline void free_res()

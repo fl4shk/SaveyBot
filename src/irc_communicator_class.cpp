@@ -8,10 +8,11 @@ IRCCommunicator::IRCCommunicator(const std::string& server_name,
 	__hints.ai_family = specific_family();
 	__hints.ai_socktype = specific_socktype();
 
-	if (getaddrinfo(server_name.c_str(), port_str.c_str(), &__hints, 
-		&__res) != 0)
+	if (getaddrinfo(server_name.c_str(), port_str.c_str(), &hints(), 
+		&res()) != 0)
 	{
 		printerr("There was an error getting address information.\n");
+		set_should_close_sock_fd(false);
 		exit(1);
 	}
 }
