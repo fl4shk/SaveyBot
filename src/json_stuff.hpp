@@ -28,6 +28,9 @@ bool parse_json_file(Json::CharReaderBuilder* rbuilder,
 
 
 // A recursive function for printing out the contents of a JSON file.
+// Note that it does NOT print out valid JSON, just something similar.
+// The main difference from real JSON is that every value ends with a
+// comma, even when at the end of a list.
 void debug_print_json(const Json::Value& some_value, 
 	std::ostream& os=std::cout, size_t tabs_level=0);
 inline void debug_print_json(Json::Value* iter, std::ostream& os=std::cout,
