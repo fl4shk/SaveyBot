@@ -43,7 +43,7 @@ void RealMain::convert_original_database
 	Json::Value root;
 	std::string errs;
 
-	if (!parse_json_file(nullptr, input_file_name, &root, &errs))
+	if (!parse_json(nullptr, input_file_name, &root, &errs))
 	{
 		err("Unable to parse file called \"", input_file_name, "\"!");
 	}

@@ -11,6 +11,7 @@ using namespace liborangepower::printout_etc;
 
 #include <string>
 #include <fstream>
+#include <memory>
 #include <cstring>
 
 #include <sys/types.h>
@@ -21,6 +22,7 @@ using namespace liborangepower::printout_etc;
 
 #include <json/value.h>
 #include <json/reader.h>
+#include <json/writer.h>
 
 
 

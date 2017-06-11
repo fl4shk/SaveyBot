@@ -26,27 +26,16 @@ std::string get_json_value_type_as_str(const Json::Value& some_value)
 	}
 }
 
-
-bool parse_json_file(Json::CharReaderBuilder* rbuilder, 
-	const std::string& input_file_name, Json::Value* root, 
-	std::string* errs)
+bool parse_json(Json::CharReaderBuilder* rbuilder, std::istream& is,
+	Json::Value* root, std::string* errs)
 {
-	auto parse = [&input_file_name, &root, &errs]
+	auto parse = [&is, &root, &errs]
 		(Json::CharReaderBuilder& actual_rbuilder) -> bool
 	{
 		actual_rbuilder["collectComments"] = false;
 
-		std::fstream infile(input_file_name, std::ios_base::in);
-
-		if (!infile.is_open())
-		{
-			err("Can't open file called \"", input_file_name, "\"!");
-		}
-
-		const bool ret = Json::parseFromStream(actual_rbuilder, infile, 
-			root, errs);
-
-		infile.close();
+		const bool ret = Json::parseFromStream(actual_rbuilder, is, root, 
+			errs);
 
 		return ret;
 	};
@@ -60,6 +49,77 @@ bool parse_json_file(Json::CharReaderBuilder* rbuilder,
 	return parse(actual_rbuilder);
 }
 
+bool parse_json(Json::CharReaderBuilder* rbuilder, 
+	const std::string& input_file_name, Json::Value* root, 
+	std::string* errs)
+{
+	std::fstream infile(input_file_name, std::ios_base::in);
+
+	if (!infile.is_open())
+	{
+		err("parse_json():  Can't open file called \"", input_file_name, 
+			"\"!");
+	}
+
+	return parse_json(rbuilder, infile, root, errs);
+}
+
+
+void write_json(Json::StreamWriterBuilder* wbuilder,
+	Json::StreamWriter* writer, std::ostream& os, Json::Value* root)
+{
+	auto write = [&os, &root](Json::StreamWriterBuilder& actual_wbuilder,
+		Json::StreamWriter& actual_writer)
+	{
+		actual_wbuilder["commentStyle"] = "None";
+		actual_wbuilder["indentation"] = "\t";
+		actual_writer.write(root, &os);
+		os << std::endl;  // add lf and flush
+	};
+	
+	if (wbuilder != nullptr)
+	{
+		if (writer != nullptr)
+		{
+			write(*wbuilder, *writer);
+		}
+		else // if (writer == nullptr)
+		{
+			std::unique_ptr<Json::StreamWriter> actual_writer
+				(wbuilder->newStreamWriter());
+			write(*wbuilder, *actual_writer.get());
+		}
+	}
+	else // if (wbuilder == nullptr)
+	{
+		Json::StreamWriterBuilder actual_wbuilder;
+		
+		if (writer != nullptr)
+		{
+			write(actual_wbuilder, *writer);
+		}
+		else // if (writer == nullptr)
+		{
+			std::unique_ptr<Json::StreamWriter> actual_writer
+				(actual_wbuilder.newStreamWriter());
+			write(actual_wbuilder, *actual_writer.get());
+		}
+	}
+}
+void write_json(Json::StreamWriterBuilder* wbuilder,
+	Json::StreamWriter* writer, const std::string& output_file_name, 
+	Json::Value* root)
+{
+	std::fstream outfile(output_file_name, std::ios_base::out);
+
+	if (!outfile.is_open())
+	{
+		err("write_json():  Can't open file called \"", output_file_name,
+			"\"!");
+	}
+
+	write_json(wbuilder, writer, outfile, root);
+}
 
 
 

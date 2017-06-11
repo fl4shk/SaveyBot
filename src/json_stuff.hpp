@@ -20,11 +20,16 @@ inline void print_json_value_type(Json::Value* iter,
 	osprintout(os, std::move(get_json_value_type_as_str(iter)));
 }
 
-bool parse_json_file(Json::CharReaderBuilder* rbuilder, 
+bool parse_json(Json::CharReaderBuilder* rbuilder, std::istream& is,
+	Json::Value* root, std::string* errs);
+bool parse_json(Json::CharReaderBuilder* rbuilder, 
 	const std::string& input_file_name, Json::Value* root, 
 	std::string* errs);
 
-//bool write_json_file(Json::StreamWriterBuilder* writer
+void write_json(Json::StreamWriterBuilder* wbuilder,
+	std::ostream& os, Json::Value* root);
+void write_json(Json::StreamWriterBuilder* wbuilder,
+	const std::string& output_file_name, Json::Value* root);
 
 
 // A recursive function for printing out the contents of a JSON file.
