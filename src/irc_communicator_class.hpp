@@ -42,14 +42,19 @@
 class IRCCommunicator
 {
 private:		// variables
-	static constexpr auto specific_family = AF_UNSPEC;
-	static constexpr auto specific_socktype = SOCK_STREAM;
+	static constexpr auto __specific_family = AF_UNSPEC;
+	static constexpr auto __specific_socktype = SOCK_STREAM;
 
-	addrinfo hints, * res = nullptr;
+	// "Whois" stuff
+	addrinfo __hints, * __res = nullptr;
 
-	bool should_free_res = true;
+	// Socket file descriptor
+	int __sock_fd;
+
+	bool __should_free_res = true, __should_close_sock_fd = true;
 
 public:		// functions
+
 	IRCCommunicator(const std::string& some_server_name, 
 		const std::string& some_port_str);
 	inline ~IRCCommunicator()
@@ -57,16 +62,33 @@ public:		// functions
 		clean_up();
 	}
 
-
 	void clean_up();
 
+	gen_getter_by_val(specific_family);
+	gen_getter_by_val(specific_socktype);
+	gen_getter_by_con_ref(hints);
+	gen_getter_by_con_ref(res);
+	gen_getter_by_val(sock_fd);
+	gen_getter_by_val(should_free_res);
+	gen_getter_by_val(should_close_sock_fd);
+
 private:		// functions
+	gen_setter_by_val(should_free_res);
+	gen_setter_by_val(should_close_sock_fd);
 	inline void free_res()
 	{
-		if (should_free_res)
+		if (should_free_res())
 		{
-			should_free_res = false;
-			freeaddrinfo(res);
+			set_should_free_res(false);
+			freeaddrinfo(res());
+		}
+	}
+	inline void close_sock_fd()
+	{
+		if (should_close_sock_fd())
+		{
+			set_should_close_sock_fd(false);
+			close(sock_fd());
 		}
 	}
 };
