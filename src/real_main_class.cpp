@@ -11,7 +11,7 @@ RealMain::RealMain(int argc, char** argv)
 
 	for (int i=0; i<argc; ++i)
 	{
-		args_vec().push_back(std::string(argv[i]));
+		__args_vec.push_back(std::string(argv[i]));
 	}
 }
 
