@@ -48,9 +48,11 @@ void RealMain::convert_original_database
 		err("Unable to parse file called \"", input_file_name, "\"!");
 	}
 
-	debug_print_json(root);
+	//debug_print_json(root);
 
-	//std::fstream temp_out_file(output_file_name, std::ios_base::out);
+	std::fstream temp_out_file(output_file_name, std::ios_base::out);
 
 	//debug_print_json(root, temp_out_file);
+
+	write_json(nullptr, temp_out_file, &root);
 }

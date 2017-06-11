@@ -65,50 +65,31 @@ bool parse_json(Json::CharReaderBuilder* rbuilder,
 }
 
 
-void write_json(Json::StreamWriterBuilder* wbuilder,
-	Json::StreamWriter* writer, std::ostream& os, Json::Value* root)
+void write_json(Json::StreamWriterBuilder* wbuilder, std::ostream& os, 
+	Json::Value* root)
 {
-	auto write = [&os, &root](Json::StreamWriterBuilder& actual_wbuilder,
-		Json::StreamWriter& actual_writer)
+	auto write = [&os, &root](Json::StreamWriterBuilder& some_wbuilder)
 	{
-		actual_wbuilder["commentStyle"] = "None";
-		actual_wbuilder["indentation"] = "\t";
-		actual_writer.write(root, &os);
+		some_wbuilder["commentStyle"] = "None";
+		some_wbuilder["indentation"] = "\t";
+		std::unique_ptr<Json::StreamWriter> writer
+			(some_wbuilder.newStreamWriter());
+		writer->write(*root, &os);
 		os << std::endl;  // add lf and flush
 	};
 	
 	if (wbuilder != nullptr)
 	{
-		if (writer != nullptr)
-		{
-			write(*wbuilder, *writer);
-		}
-		else // if (writer == nullptr)
-		{
-			std::unique_ptr<Json::StreamWriter> actual_writer
-				(wbuilder->newStreamWriter());
-			write(*wbuilder, *actual_writer.get());
-		}
+		write(*wbuilder);
 	}
 	else // if (wbuilder == nullptr)
 	{
 		Json::StreamWriterBuilder actual_wbuilder;
-		
-		if (writer != nullptr)
-		{
-			write(actual_wbuilder, *writer);
-		}
-		else // if (writer == nullptr)
-		{
-			std::unique_ptr<Json::StreamWriter> actual_writer
-				(actual_wbuilder.newStreamWriter());
-			write(actual_wbuilder, *actual_writer.get());
-		}
+		write(actual_wbuilder);
 	}
 }
 void write_json(Json::StreamWriterBuilder* wbuilder,
-	Json::StreamWriter* writer, const std::string& output_file_name, 
-	Json::Value* root)
+	const std::string& output_file_name, Json::Value* root)
 {
 	std::fstream outfile(output_file_name, std::ios_base::out);
 
@@ -118,7 +99,7 @@ void write_json(Json::StreamWriterBuilder* wbuilder,
 			"\"!");
 	}
 
-	write_json(wbuilder, writer, outfile, root);
+	write_json(wbuilder, outfile, root);
 }
 
 
