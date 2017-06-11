@@ -6,10 +6,7 @@
 #include "liborangepower_src/misc_types.hpp"
 #include "liborangepower_src/gen_getter_setter_defines.hpp"
 
-using liborangepower::printout;
-using liborangepower::printerr;
-using liborangepower::osprintout;
-
+using namespace liborangepower::printout_etc;
 
 
 #include <string>
