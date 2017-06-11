@@ -7,5 +7,5 @@
 	remote = https://github.com/fl4shk/liborangepower.git
 	branch = master
 	commit = 486d41c80918030be65c1b98bf8fad75abf3a975
-	parent = 4138ec8c7a78286da9d6f221f3b8fb8099f782b0
+	parent = 7293dd251a640ac8581301230d6772af4ffcee05
 	cmdver = 0.3.1
