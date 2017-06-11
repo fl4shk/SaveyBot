@@ -40,19 +40,27 @@ void RealMain::convert_original_database
 	const std::string& output_file_name)
 {
 	//Json::CharReaderBuilder rbuilder;
-	Json::Value root;
+	Json::Value input_root, output_root;
 	std::string errs;
 
-	if (!parse_json(nullptr, input_file_name, &root, &errs))
+	if (!parse_json(input_file_name, &input_root, &errs))
 	{
 		err("Unable to parse file called \"", input_file_name, "\"!");
 	}
 
-	//debug_print_json(root);
+	
+	{
+		Json::ArrayIndex i = 0;
+		
+		for (auto& in_iter : input_root)
+		{
+			auto& out_iter = output_root[i] = in_iter;
+			out_iter["date"] = "classic";
+			++i;
+		}
+	}
 
 	std::fstream temp_out_file(output_file_name, std::ios_base::out);
-
-	//debug_print_json(root, temp_out_file);
-
-	write_json(nullptr, temp_out_file, &root);
+	write_json(temp_out_file, &output_root);
+	//write_json(cout, &output_root);
 }

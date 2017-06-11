@@ -26,16 +26,39 @@ bool parse_json(Json::CharReaderBuilder* rbuilder,
 	const std::string& input_file_name, Json::Value* root, 
 	std::string* errs);
 
+inline bool parse_json(std::istream& is, Json::Value* root, 
+	std::string* errs)
+{
+	return parse_json(nullptr, is, root, errs);
+}
+inline bool parse_json(const std::string& input_file_name, 
+	Json::Value* root, std::string* errs)
+{
+	return parse_json(nullptr, input_file_name, root, errs);
+}
+
+
 void write_json(Json::StreamWriterBuilder* wbuilder,
 	std::ostream& os, Json::Value* root);
 void write_json(Json::StreamWriterBuilder* wbuilder,
 	const std::string& output_file_name, Json::Value* root);
 
+inline void write_json(std::ostream& os, Json::Value* root)
+{
+	write_json(nullptr, os, root);
+}
+inline void write_json(const std::string& output_file_name, 
+	Json::Value* root)
+{
+	write_json(nullptr, output_file_name, root);
+}
+
+
 
 // A recursive function for printing out the contents of a JSON file.
 // Note that it does NOT print out valid JSON, just something similar.
 // The main difference from real JSON is that every value ends with a
-// comma, even when at the end of a list.
+// comma, even when at the end of an objectValue or arrayValue.
 void debug_print_json(const Json::Value& some_value, 
 	std::ostream& os=std::cout, size_t tabs_level=0);
 inline void debug_print_json(Json::Value* iter, std::ostream& os=std::cout,
