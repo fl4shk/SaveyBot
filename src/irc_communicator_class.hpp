@@ -61,7 +61,9 @@ private:		// variables
 public:		// functions
 
 	IRCCommunicator(const std::string& some_server_name, 
-		const std::string& some_port_str);
+		const std::string& some_port_str, const std::string& nick_command,
+		const std::string& user_command, 
+		const std::vector<std::string>& joins_list);
 	inline ~IRCCommunicator()
 	{
 		clean_up();
@@ -69,25 +71,27 @@ public:		// functions
 
 	gen_getter_by_val(specific_family);
 	gen_getter_by_val(specific_socktype);
+
 	gen_getter_by_con_ref(hints);
 	gen_getter_by_con_ref(res);
 	gen_getter_by_val(sock_fd);
+
 	gen_getter_by_val(did_alloc_res);
 	gen_getter_by_val(did_open_sock_fd);
 
 private:		// functions
 	gen_getter_by_ref(hints);
 	gen_getter_by_ref(res);
-	
 	gen_setter_by_val(sock_fd);
+	
 	gen_setter_by_val(did_alloc_res);
 	gen_setter_by_val(did_open_sock_fd);
 
 	void clean_up();
 
-	void run_getaddrinfo(const std::string& some_server_name, 
+	void do_getaddrinfo(const std::string& some_server_name, 
 		const std::string& some_port_str);
-	void run_socket_and_connect();
+	void do_socket_and_connect();
 
 	inline void free_res()
 	{

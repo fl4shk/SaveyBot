@@ -1,17 +1,16 @@
 #include "irc_communicator_class.hpp"
 
 
-IRCCommunicator::IRCCommunicator(const std::string& some_server_name,
-	const std::string& some_port_str)
+IRCCommunicator::IRCCommunicator(const std::string& some_server_name, 
+	const std::string& some_port_str, const std::string& nick_command,
+	const std::string& user_command, 
+	const std::vector<std::string>& joins_list)
 {
-	run_getaddrinfo(some_server_name, some_port_str);
-	run_socket_and_connect();
+	do_getaddrinfo(some_server_name, some_port_str);
+	do_socket_and_connect();
 
 	// Go ahead and do this now 
 	free_res();
-
-
-
 
 	
 }
@@ -23,7 +22,7 @@ void IRCCommunicator::clean_up()
 }
 
 
-void IRCCommunicator::run_getaddrinfo(const std::string& some_server_name,
+void IRCCommunicator::do_getaddrinfo(const std::string& some_server_name,
 	const std::string& some_port_str)
 {
 	memset(&__hints, 0, sizeof(__hints));
@@ -42,7 +41,7 @@ void IRCCommunicator::run_getaddrinfo(const std::string& some_server_name,
 	set_did_alloc_res(true);
 }
 
-void IRCCommunicator::run_socket_and_connect()
+void IRCCommunicator::do_socket_and_connect()
 {
 	// The last parameter of socket() is set to zero because doing so
 	// causes socket() to use an unspecified default protocol appropriate
