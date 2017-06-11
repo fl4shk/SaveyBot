@@ -1,0 +1,30 @@
+{
+	"servers" : {
+		"ExampleIRC" : {
+			"bot_name" : "NeoSaveyBot",
+			"server_name" : "irc.example.net",
+			"port" : 6667,
+			"password" : "",
+			"autojoins" : [
+				"#example",
+				"#example2",
+				"#example3"
+			],
+			"startup" : [
+				[
+					"NICK",
+					" NeoSaveyBot"
+				],
+				[
+					"USER",
+					" neosaveybot",
+					" NeoSaveyBot",
+					" NeoSaveyBot",
+					" NeoSaveyBot",
+					" NeoSaveyBot",
+					" neosaveybot"
+				]
+			]
+		}
+	}
+}
