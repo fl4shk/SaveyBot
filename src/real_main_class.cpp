@@ -54,8 +54,7 @@ void RealMain::convert_original_database
 		{
 			auto& out_iter = output_root[i] = in_iter;
 			out_iter["datetime"] = "classic";
-			out_iter["index"] = i;
-			++i;
+			out_iter["index"] = i++;
 		}
 	}
 
