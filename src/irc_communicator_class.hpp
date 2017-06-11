@@ -42,16 +42,21 @@
 class IRCCommunicator
 {
 private:		// variables
+	// Allow IPv4 or IPv6
 	static constexpr auto __specific_family = AF_UNSPEC;
+
+	// SOCK_STREAM - Provides sequenced, reliable, bidirectional,
+	// connection- mode byte streams, and may provide a transmission
 	static constexpr auto __specific_socktype = SOCK_STREAM;
 
-	// "Whois" stuff
+	// "Whois" stuff (getaddrinfo())
 	addrinfo __hints, * __res = nullptr;
 
 	// Socket file descriptor
 	int __sock_fd;
 
-	bool __should_free_res = true, __should_close_sock_fd = true;
+	// Stuff for clean_up()
+	bool __did_alloc_res = false, __did_open_sock_fd = false;
 
 public:		// functions
 
@@ -62,34 +67,41 @@ public:		// functions
 		clean_up();
 	}
 
-	void clean_up();
-
 	gen_getter_by_val(specific_family);
 	gen_getter_by_val(specific_socktype);
 	gen_getter_by_con_ref(hints);
 	gen_getter_by_con_ref(res);
 	gen_getter_by_val(sock_fd);
-	gen_getter_by_val(should_free_res);
-	gen_getter_by_val(should_close_sock_fd);
+	gen_getter_by_val(did_alloc_res);
+	gen_getter_by_val(did_open_sock_fd);
 
 private:		// functions
 	gen_getter_by_ref(hints);
 	gen_getter_by_ref(res);
-	gen_setter_by_val(should_free_res);
-	gen_setter_by_val(should_close_sock_fd);
+	
+	gen_setter_by_val(sock_fd);
+	gen_setter_by_val(did_alloc_res);
+	gen_setter_by_val(did_open_sock_fd);
+
+	void clean_up();
+
+	void run_getaddrinfo(const std::string& some_server_name, 
+		const std::string& some_port_str);
+	void run_socket_and_connect();
+
 	inline void free_res()
 	{
-		if (should_free_res())
+		if (did_alloc_res())
 		{
-			set_should_free_res(false);
+			set_did_alloc_res(false);
 			freeaddrinfo(res());
 		}
 	}
 	inline void close_sock_fd()
 	{
-		if (should_close_sock_fd())
+		if (did_open_sock_fd())
 		{
-			set_should_close_sock_fd(false);
+			set_did_open_sock_fd(false);
 			close(sock_fd());
 		}
 	}
