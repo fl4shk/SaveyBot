@@ -31,7 +31,7 @@ CXX_FLAGS:=$(CXX_FLAGS) -std=c++17 -Wall
 LD:=$(CXX)
 
 # Initial linker flags
-LD_FLAGS:=$(LD_FLAGS) -lm
+LD_FLAGS:=$(LD_FLAGS) -lm -ljsoncpp
 
 
 

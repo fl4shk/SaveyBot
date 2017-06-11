@@ -59,13 +59,22 @@ void print_json(const Json::Value& some_value, std::ostream& os,
 		}
 	};
 
-	auto print_arrayValue = [&]() -> void
+	auto print_leading_tabs_2 = [&]() -> void
 	{
 		print_leading_tabs();
+		osprintout(os, "\t");
+	};
+
+	auto print_arrayValue = [&]() -> void
+	{
+		//print_leading_tabs();
+		//print_json_value_type(some_value, os);
+		//osprintout(os, ",\t\t[\n");
 		osprintout(os, "[\n");
 		
 		for (const auto& inner_iter : some_value)
 		{
+			print_leading_tabs_2();
 			print_json(inner_iter, os, tabs_level + 1);
 		}
 
@@ -78,11 +87,17 @@ void print_json(const Json::Value& some_value, std::ostream& os,
 	{
 		const auto& member_names = some_value.getMemberNames();
 
-		print_leading_tabs();
+		//print_leading_tabs();
+		//print_json_value_type(some_value, os);
+		//osprintout(os, ",\t\t{\n");
 		osprintout(os, "{\n");
 
 		for (const auto& name_iter : member_names)
 		{
+			print_leading_tabs_2();
+			//print_leading_tabs();
+			//print_leading_tabs_2();
+			osprintout(os, "\"", name_iter, "\" : ");
 			print_json(some_value[name_iter], os, tabs_level + 1);
 		}
 
@@ -96,10 +111,12 @@ void print_json(const Json::Value& some_value, std::ostream& os,
 		case Json::intValue:
 		case Json::uintValue:
 		case Json::realValue:
-		case Json::stringValue:
 		case Json::booleanValue:
-			print_leading_tabs();
-			osprintout(os, ", ", some_value.asString(), "\n");
+			osprintout(os, some_value.asString(), ",\n");
+			break;
+		
+		case Json::stringValue:
+			osprintout(os, "\"", some_value.asString(), "\",\n");
 			break;
 
 		case Json::arrayValue:
