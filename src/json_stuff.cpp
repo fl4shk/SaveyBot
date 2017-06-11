@@ -71,7 +71,7 @@ void debug_print_json(const Json::Value& some_value, std::ostream& os,
 		for (const auto& inner_iter : some_value)
 		{
 			print_leading_tabs_2();
-			print_json(inner_iter, os, tabs_level + 1);
+			debug_print_json(inner_iter, os, tabs_level + 1);
 		}
 
 		print_leading_tabs();
@@ -88,7 +88,7 @@ void debug_print_json(const Json::Value& some_value, std::ostream& os,
 		{
 			print_leading_tabs_2();
 			osprintout(os, "\"", name_iter, "\" : ");
-			print_json(some_value[name_iter], os, tabs_level + 1);
+			debug_print_json(some_value[name_iter], os, tabs_level + 1);
 		}
 
 		print_leading_tabs();
@@ -118,6 +118,6 @@ void debug_print_json(const Json::Value& some_value, std::ostream& os,
 			break;
 
 		default:
-			err("print_json():  Unknown Json::Value type()!");
+			err("debug_print_json():  Unknown Json::Value type()!");
 	}
 }
