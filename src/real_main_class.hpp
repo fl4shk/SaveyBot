@@ -17,6 +17,13 @@ public:		// functions
 	int operator () ();
 
 	gen_getter_by_con_ref(args_vec);
+
+
+private:		// functions
+	static void convert_original_database
+		(const std::string& input_file_name, 
+		const std::string& output_file_name);
+
 };
 
 

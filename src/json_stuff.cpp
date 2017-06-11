@@ -27,24 +27,40 @@ std::string get_json_value_type_as_str(const Json::Value& some_value)
 }
 
 
-bool parse_json_file(Json::CharReaderBuilder& rbuilder, 
-	const std::string& input_fname, Json::Value* root, std::string* errs)
+bool parse_json_file(Json::CharReaderBuilder* rbuilder, 
+	const std::string& input_file_name, Json::Value* root, 
+	std::string* errs)
 {
-	rbuilder["collectComments"] = false;
-
-	std::fstream infile(input_fname, std::ios_base::in);
-
-	if (!infile.is_open())
+	auto parse = [&input_file_name, &root, &errs]
+		(Json::CharReaderBuilder& actual_rbuilder) -> bool
 	{
-		err("Can't open file called \"", input_fname, "\"!");
+		actual_rbuilder["collectComments"] = false;
+
+		std::fstream infile(input_file_name, std::ios_base::in);
+
+		if (!infile.is_open())
+		{
+			err("Can't open file called \"", input_file_name, "\"!");
+		}
+
+		const bool ret = Json::parseFromStream(actual_rbuilder, infile, 
+			root, errs);
+
+		infile.close();
+
+		return ret;
+	};
+	
+	if (rbuilder != nullptr)
+	{
+		return parse(*rbuilder);
 	}
 
-	const bool ret = Json::parseFromStream(rbuilder, infile, root, errs);
-
-	infile.close();
-
-	return ret;
+	Json::CharReaderBuilder actual_rbuilder;
+	return parse(actual_rbuilder);
 }
+
+
 
 
 void debug_print_json(const Json::Value& some_value, std::ostream& os, 
