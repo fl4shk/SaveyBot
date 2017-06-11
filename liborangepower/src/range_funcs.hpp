@@ -7,9 +7,12 @@
 namespace liborangepower
 {
 
+namespace range
+{
+
 // in_range and vec2_in_range are PRIMARILY intended for use with a range
 // of 0 (inclusive) to size (exclusive)
-template< typename type >
+template<typename type>
 inline bool in_range(type range_start_inclusive, type range_end_exclusive, 
 	type to_check)
 {
@@ -17,7 +20,7 @@ inline bool in_range(type range_start_inclusive, type range_end_exclusive,
 		&& to_check < range_end_exclusive);
 }
 
-template< typename type >
+template<typename type>
 inline bool in_range_inclusive(type range_start_inclusive, 
 	type range_end_inclusive, type to_check)
 {
@@ -25,9 +28,9 @@ inline bool in_range_inclusive(type range_start_inclusive,
 		&& to_check <= range_end_inclusive);
 }
 
-template< typename type >
-inline bool vec2_in_range(Vec2<type> range_start_inclusive, 
-	Vec2<type> range_end_exclusive, Vec2<type> to_check)
+template<typename type>
+inline bool vec2_in_range(containers::Vec2<type> range_start_inclusive, 
+	containers::Vec2<type> range_end_exclusive, containers::Vec2<type> to_check)
 {
 	return (to_check.x >= range_start_inclusive.x 
 		&& to_check.x < range_end_exclusive.x
@@ -36,7 +39,7 @@ inline bool vec2_in_range(Vec2<type> range_start_inclusive,
 }
 
 
-template< typename type >
+template<typename type>
 inline type clamp_to_range(type range_start_inclusive, 
 	type range_end_exclusive, type to_clamp)
 {
@@ -57,6 +60,8 @@ inline type clamp_to_range(type range_start_inclusive,
 	{
 		return to_clamp;
 	}
+}
+
 }
 
 }

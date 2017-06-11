@@ -9,6 +9,9 @@
 namespace liborangepower
 {
 
+namespace time
+{
+
 class Prng
 {
 public:		// typedefs
@@ -55,7 +58,7 @@ public:		// functions
 		return instance();
 	}
 	
-	inline auto operator () (u64 max_val, const bool use_cap=false)
+	inline auto operator () (integer_types::u64 max_val, const bool use_cap=false)
 	{
 		auto ret = (*this)();
 		
@@ -105,6 +108,8 @@ public:		// functions
 	
 	
 } __attribute__((_align4));
+
+}
 
 }
 
