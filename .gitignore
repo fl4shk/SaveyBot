@@ -18,6 +18,7 @@ copyright_text_thing.txt
 *.json
 *.json.ignore
 *.json.bak
+*.json.7z
 *.html
 small_code_testing_things/*
 NeoSaveyBot_debug
