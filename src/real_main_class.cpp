@@ -9,16 +9,17 @@ RealMain::RealMain(int argc, char** argv)
 	//	exit(1);
 	//}
 
-	//// Temporary thing for converting the original database to a new one.
-	//if (argc != 3)
-	//{
-	//	printerr("Usage:  ", argv[0], " input_json_file "
-	//		"output_json_file\n");
-	//	exit(1);
-	//}
+	// Temporary thing for converting the original database to a new one.
+	if (argc != 3)
+	{
+		printerr("Usage:  ", argv[0], " input_json_file "
+			"output_json_file\n");
+		exit(1);
+	}
 
 	gen_args_vec(argc, argv);
-	parse_args_vec();
+	//parse_args_vec();
+	convert_original_database(args_vec().at(1), args_vec().at(2));
 }
 
 RealMain::~RealMain()
@@ -66,10 +67,18 @@ void RealMain::convert_original_database
 		
 		for (auto& in_iter : input_root)
 		{
-			auto& out_iter = output_root[i] = in_iter;
+			//auto& out_iter = output_root[i] = in_iter;
+			std::string temp;
+			std::stringstream ostm;
+			ostm << i;
+			ostm >> temp;
+
+			auto& out_iter = output_root["savestates"][temp] = in_iter;
 			out_iter["datetime"] = "classic";
 			out_iter["index"] = i++;
 		}
+
+		output_root["num_savestates"] = i;
 	}
 
 	std::fstream temp_out_file(output_file_name, std::ios_base::out);
