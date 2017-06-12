@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-	RealMain real_main(argc, argv);
+	neosaveybot::RealMain real_main(argc, argv);
 	return real_main();
 }
 

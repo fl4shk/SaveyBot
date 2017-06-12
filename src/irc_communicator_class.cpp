@@ -1,5 +1,7 @@
 #include "irc_communicator_class.hpp"
 
+namespace neosaveybot
+{
 
 IRCCommunicator::IRCCommunicator(const std::string& some_server_name, 
 	const std::string& some_port_str, const std::string& nick_command,
@@ -55,4 +57,6 @@ void IRCCommunicator::do_socket_and_connect()
 		clean_up();
 		exit(1);
 	}
+}
+
 }

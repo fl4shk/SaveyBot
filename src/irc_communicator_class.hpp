@@ -4,6 +4,9 @@
 
 #include "json_stuff.hpp"
 
+namespace neosaveybot
+{
+
 
 //// Here is the addrinfo struct.
 //struct addrinfo {
@@ -111,5 +114,6 @@ private:		// functions
 	}
 };
 
+}
 
 #endif		// irc_communicator_class_hpp

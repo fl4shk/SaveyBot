@@ -1,5 +1,7 @@
 #include "json_stuff.hpp"
 
+namespace neosaveybot
+{
 
 std::string get_json_value_type_as_str(const Json::Value& some_value)
 {
@@ -177,4 +179,6 @@ void debug_print_json(const Json::Value& some_value, std::ostream& os,
 		default:
 			err("debug_print_json():  Unknown Json::Value type()!");
 	}
+}
+
 }

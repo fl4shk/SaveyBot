@@ -3,6 +3,9 @@
 
 #include "neosaveybot_class.hpp"
 
+namespace neosaveybot
+{
+
 class RealMain
 {
 private:		// variables
@@ -30,6 +33,8 @@ private:		// functions
 		const std::string& output_file_name);
 
 };
+
+}
 
 
 #endif		// real_main_class_hpp

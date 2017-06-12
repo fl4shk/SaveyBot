@@ -4,6 +4,8 @@
 #include "json_stuff.hpp"
 #include "irc_communicator_class.hpp"
 
+namespace neosaveybot
+{
 
 
 class NeoSaveyBot
@@ -37,8 +39,25 @@ public:		// classes
 		
 	};
 
+
+	class Database
+	{
+	public:		// classes
+		class Value
+		{
+		public:		// variables
+			
+		};
+
+	public:		// variables
+		//Json::ArrayIndex num_savestates;
+		std::map<std::string, Value> savestates;
+		
+	};
+
 private:		// variables
 	Configuration __config;
+	Database __database;
 
 public:		// static variables
 	static const std::string config_file_name, database_file_name;
@@ -52,11 +71,15 @@ public:		// functions
 
 private:		// functions
 	gen_getter_by_con_ref(config);
+	gen_getter_by_con_ref(database);
+	gen_getter_by_ref(database);
 	
 };
 
 
 std::ostream& operator << (std::ostream& os, 
 	const NeoSaveyBot::Configuration::Server& to_print);
+
+}
 
 #endif // neosaveybot_class_hpp

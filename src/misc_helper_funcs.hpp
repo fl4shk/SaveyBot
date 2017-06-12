@@ -3,11 +3,16 @@
 
 #include "misc_includes.hpp"
 
+namespace neosaveybot
+{
+
 template<typename... arg_types>
 void err(arg_types&&... args)
 {
 	printerr("Error:  ", args..., "\n");
 	exit(1);
+}
+
 }
 
 

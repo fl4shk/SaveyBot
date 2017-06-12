@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <memory>
+#include <map>
 #include <cstring>
 
 
@@ -28,6 +29,7 @@
 
 using namespace liborangepower::printout_etc;
 using namespace liborangepower::integer_types;
+
 
 
 

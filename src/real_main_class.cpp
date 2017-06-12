@@ -1,5 +1,7 @@
 #include "real_main_class.hpp"
 
+namespace neosaveybot
+{
 
 RealMain::RealMain(int argc, char** argv)
 {
@@ -9,17 +11,18 @@ RealMain::RealMain(int argc, char** argv)
 	//	exit(1);
 	//}
 
-	// Temporary thing for converting the original database to a new one.
-	if (argc != 3)
-	{
-		printerr("Usage:  ", argv[0], " input_json_file "
-			"output_json_file\n");
-		exit(1);
-	}
+	//// Temporary thing for converting the original database to a new one.
+	//if (argc != 3)
+	//{
+	//	printerr("Usage:  ", argv[0], " input_json_file "
+	//		"output_json_file\n");
+	//	exit(1);
+	//}
 
 	gen_args_vec(argc, argv);
-	//parse_args_vec();
-	convert_original_database(args_vec().at(1), args_vec().at(2));
+	parse_args_vec();
+	
+	//convert_original_database(args_vec().at(1), args_vec().at(2));
 }
 
 RealMain::~RealMain()
@@ -57,10 +60,7 @@ void RealMain::convert_original_database
 	Json::Value input_root, output_root;
 	std::string errs;
 
-	if (!parse_json(input_file_name, &input_root, &errs))
-	{
-		err("Unable to parse file called \"", input_file_name, "\"!");
-	}
+	parse_json(input_file_name, &input_root, &errs);
 
 	{
 		Json::ArrayIndex i = 0;
@@ -83,4 +83,6 @@ void RealMain::convert_original_database
 
 	std::fstream temp_out_file(output_file_name, std::ios_base::out);
 	write_json(temp_out_file, &output_root);
+}
+
 }

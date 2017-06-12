@@ -3,6 +3,9 @@
 
 #include "misc_helper_funcs.hpp"
 
+namespace neosaveybot
+{
+
 std::string get_json_value_type_as_str(const Json::Value& some_value);
 inline std::string get_json_value_type_as_str(Json::Value* iter)
 {
@@ -68,5 +71,6 @@ inline void debug_print_json(Json::Value* iter, std::ostream& os=std::cout,
 }
 
 
+}
 
 #endif		// json_stuff_hpp

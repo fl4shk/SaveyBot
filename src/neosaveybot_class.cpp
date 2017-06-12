@@ -1,5 +1,7 @@
 #include "neosaveybot_class.hpp"
 
+namespace neosaveybot
+{
 const std::string NeoSaveyBot::config_file_name("config.json"),
 	NeoSaveyBot::database_file_name("neosaveybot.json");
 
@@ -49,6 +51,7 @@ NeoSaveyBot::Configuration::Configuration()
 	{
 		printout(iter);
 	}
+	printout("\n");
 
 }
 
@@ -107,4 +110,6 @@ std::ostream& operator << (std::ostream& os,
 	}
 
 	return os;
+}
+
 }
