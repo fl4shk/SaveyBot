@@ -1,14 +1,13 @@
 #ifndef real_main_class_hpp
 #define real_main_class_hpp
 
-#include "json_stuff.hpp"
-#include "irc_communicator_class.hpp"
-
+#include "neosaveybot_class.hpp"
 
 class RealMain
 {
 private:		// variables
 	std::vector<std::string> __args_vec;
+	NeoSaveyBot __bot;
 
 public:		// functions
 	RealMain(int argc, char** argv);
@@ -20,6 +19,12 @@ public:		// functions
 
 
 private:		// functions
+	gen_getter_by_ref(bot);
+
+	void gen_args_vec(int argc, char** argv);
+
+	void parse_args_vec();
+
 	static void convert_original_database
 		(const std::string& input_file_name, 
 		const std::string& output_file_name);

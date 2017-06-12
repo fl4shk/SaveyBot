@@ -9,21 +9,16 @@ RealMain::RealMain(int argc, char** argv)
 	//	exit(1);
 	//}
 
-	// Temporary thing for converting the original database to a new one.
-	if (argc != 3)
-	{
-		printerr("Usage:  ", argv[0], " input_json_file "
-			"output_json_file\n");
-		exit(1);
-	}
+	//// Temporary thing for converting the original database to a new one.
+	//if (argc != 3)
+	//{
+	//	printerr("Usage:  ", argv[0], " input_json_file "
+	//		"output_json_file\n");
+	//	exit(1);
+	//}
 
-	for (int i=0; i<argc; ++i)
-	{
-		__args_vec.push_back(std::string(argv[i]));
-	}
-
-	convert_original_database(args_vec().at(1), args_vec().at(2));
-
+	gen_args_vec(argc, argv);
+	parse_args_vec();
 }
 
 RealMain::~RealMain()
@@ -33,6 +28,25 @@ RealMain::~RealMain()
 int RealMain::operator () ()
 {
 	return 0;
+}
+
+
+void RealMain::gen_args_vec(int argc, char** argv)
+{
+	for (int i=0; i<argc; ++i)
+	{
+		__args_vec.push_back(std::string(argv[i]));
+	}
+}
+
+void RealMain::parse_args_vec()
+{
+	if (args_vec().size() == 1)
+	{
+		err("Need at least one argument (besides program name)");
+	}
+
+	bot().parse_command(args_vec(), 1);
 }
 
 void RealMain::convert_original_database
