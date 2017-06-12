@@ -85,10 +85,15 @@ class Profiler
 protected:		// variables
 	std::chrono::high_resolution_clock::time_point start_tp, end_tp;
 	
-protected:		// functions
+public:		// functions
 	static inline auto get_hrc_now()
 	{
 		return std::chrono::high_resolution_clock::now();
+	}
+	static inline auto get_hrc_now_time_t()
+	{
+		return std::chrono::high_resolution_clock::to_time_t
+			(get_hrc_now());
 	}
 	
 public:		// functions
@@ -108,6 +113,19 @@ public:		// functions
 	
 	
 } __attribute__((_align4));
+
+inline std::time_t now_as_time_t()
+{
+	return Profiler::get_hrc_now_time_t();
+}
+
+inline char* now_as_ctime()
+{
+	auto temp = now_as_time_t();
+	auto ret = std::ctime(&temp);
+
+	return ret;
+}
 
 }
 
