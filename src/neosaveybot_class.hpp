@@ -28,6 +28,17 @@ public:		// classes
 			// Might need to use an std::stringstream to get the value for
 			// datetime.
 			std::string datetime, index_str, message, name, slot;
+
+		public:		// functions
+			inline Value(std::string&& s_datetime, 
+				std::string&& s_index_str, std::string&& s_message, 
+				std::string&& s_name, std::string&& s_slot)
+				: datetime(std::move(s_datetime)),
+				index_str(std::move(s_index_str)),
+				message(std::move(s_message)), name(std::move(s_name)), 
+				slot(std::move(s_slot))
+			{
+			}
 		};
 
 	public:		// variables
