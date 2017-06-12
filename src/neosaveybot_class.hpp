@@ -11,6 +11,33 @@ namespace neosaveybot
 class NeoSaveyBot
 {
 public:		// classes
+	class Database
+	{
+	public:		// constants
+		// Constant keys (all keys are constant, actually)
+		static const std::string key_datetime, key_index, key_message,
+			key_name, key_slot, key_num_savestates;
+
+		// Constant values
+		static const std::string value_datetime_classic;
+
+	public:		// classes
+		class Value
+		{
+		public:		// variables
+			// Might need to use an std::stringstream to get the value for
+			// datetime.
+			std::string datetime, index_str, message, name, slot;
+		};
+
+	public:		// variables
+		// Here is where the savestates are stored when in RAM.  They are
+		// indexed by slot number as an std::string.
+		std::map<std::string, Value> savestates;
+		
+	};
+	
+
 	class Configuration
 	{
 	public:		// classes
@@ -40,20 +67,6 @@ public:		// classes
 	};
 
 
-	class Database
-	{
-	public:		// classes
-		class Value
-		{
-		public:		// variables
-			
-		};
-
-	public:		// variables
-		//Json::ArrayIndex num_savestates;
-		std::map<std::string, Value> savestates;
-		
-	};
 
 private:		// variables
 	Configuration __config;
