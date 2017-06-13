@@ -49,7 +49,10 @@ public:		// classes
 		{
 		}
 
-		Value(Json::Value& to_copy);
+		inline Value(const Json::Value& to_copy)
+		{
+			extract_from_json(to_copy);
+		}
 
 		inline Value(const Value& to_copy) = default;
 		inline Value(Value&& to_move) = default;
@@ -57,11 +60,13 @@ public:		// classes
 		inline Value& operator = (const Value& to_copy) = default;
 		inline Value& operator = (Value&& to_move) = default;
 
+		void extract_from_json(const Json::Value& to_copy);
 		void add_to_json(Json::Value& output_root) const;
 	};
 
 
 private:		// variables
+	size_t __lowest_available_slot;
 	std::string __database_file_name;
 
 public:		// variables
@@ -89,13 +94,19 @@ public:		// functions
 		load_from_file();
 	}
 	void write_file() const;
+
+	void save(const std::string& message, const std::string& slot="");
 	
+	gen_getter_by_val(lowest_available_slot);
 	gen_getter_by_con_ref(database_file_name);
 
 private:		// functions
+	gen_setter_by_val(lowest_available_slot);
 	gen_setter_by_con_ref(database_file_name);
 
 	void load_from_file();
+
+	void update_lowest_available_slot();
 	
 };
 
@@ -144,8 +155,8 @@ public:		// functions
 	NeoSaveyBot();
 	~NeoSaveyBot();
 
-	void parse_command(const std::vector<std::string>& command, 
-		size_t start_index=0, size_t end_index=0);
+	void parse_command(const std::vector<std::string>& cmd_vec, 
+		size_t start_index=0);
 
 private:		// functions
 	gen_getter_by_con_ref(config);

@@ -25,6 +25,7 @@
 #include "liborangepower_src/misc_output_classes.hpp"
 #include "liborangepower_src/misc_types.hpp"
 #include "liborangepower_src/gen_getter_setter_defines.hpp"
+#include "liborangepower_src/time_stuff.hpp"
 
 
 using namespace liborangepower::printout_etc;

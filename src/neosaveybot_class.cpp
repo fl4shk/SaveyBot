@@ -14,13 +14,36 @@ const std::string Database::key_datetime("datetime"),
 // Constant values
 const std::string Database::value_datetime_classic("classic");
 
+void Database::Value::extract_from_json(const Json::Value& to_copy)
+{
+	datetime = to_copy[Database::key_datetime].asString();
+	index_str = to_copy[Database::key_index].asString();
+	message = to_copy[Database::key_message].asString();
+	name = to_copy[Database::key_name].asString();
+	slot = to_copy[Database::key_slot].asString();
+}
 void Database::Value::add_to_json(Json::Value& output_root) const
 {
 	output_root[slot][Database::key_datetime] = datetime;
-	output_root[slot][Database::key_index] = index_str;
+
+	std::stringstream sstm;
+	size_t index;
+	sstm << index_str;
+	sstm >> index;
+	output_root[slot][Database::key_index] = index;
+
 	output_root[slot][Database::key_message] = message;
 	output_root[slot][Database::key_name] = name;
 	output_root[slot][Database::key_slot] = slot;
+}
+
+void Database::save(const std::string& message, const std::string& slot)
+{
+	// (Eventually) handle using __lowest_available_slot here.
+	//if (slot.size() == 0)
+	//{
+	//	
+	//}
 }
 
 void Database::write_file() const
@@ -38,9 +61,22 @@ void Database::write_file() const
 }
 void Database::load_from_file()
 {
+	Json::Value input_root;
+	std::string errs;
+	
+	parse_json(database_file_name(), &input_root, &errs);
+
+	for (auto& in_iter : input_root)
+	{
+		Value to_insert(in_iter);
+		savestates[to_insert.slot] = std::move(to_insert);
+	}
+
 }
 
-
+void Database::update_lowest_available_slot()
+{
+}
 
 const std::string NeoSaveyBot::config_file_name("config.json"),
 	NeoSaveyBot::database_file_name("neosaveybot.json");
@@ -106,19 +142,40 @@ NeoSaveyBot::~NeoSaveyBot()
 }
 
 
-void NeoSaveyBot::parse_command(const std::vector<std::string>& command, 
-	size_t start_index, size_t end_index)
+void NeoSaveyBot::parse_command(const std::vector<std::string>& cmd_vec, 
+	size_t start_index)
 {
-	if (end_index == 0)
+	const size_t size = cmd_vec.size() - start_index;
+
+	const std::string& command = cmd_vec.at(start_index);
+
+
+	auto print_found_command = [&command]() -> void
 	{
-		end_index = command.size();
+		printout("Found a \"", command, "\".\n");
+	};
+	auto say_invalid_num_params = [&command]() -> void
+	{
+		printout("Invalid number of parameters for \"", command, "\".\n");
+	};
+
+	if (command == ".road")
+	{
+		print_found_command();
 	}
 
-	const std::string& name = command.at(start_index);
-
-	if (name == ".road")
+	else if (command == ".save")
 	{
-		printout("Found a .road.\n");
+		print_found_command();
+		
+		if (size != 3)
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		__database.save(cmd_vec.at(start_index + 1), "-1");
+
 	}
 
 	else
