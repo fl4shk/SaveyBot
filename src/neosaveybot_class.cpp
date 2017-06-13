@@ -27,7 +27,7 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 	output_root[slot][Database::key_datetime] = datetime;
 
 	std::stringstream sstm;
-	size_t index;
+	int64_t index;
 	sstm << index_str;
 	sstm >> index;
 	output_root[slot][Database::key_index] = index;
@@ -37,13 +37,24 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 	output_root[slot][Database::key_slot] = slot;
 }
 
-void Database::save(const std::string& message, const std::string& slot)
+void Database::save(const std::string& message, const std::string& name, 
+	const std::string& slot)
 {
 	// (Eventually) handle using __lowest_available_slot here.
-	//if (slot.size() == 0)
-	//{
-	//	
-	//}
+	if (slot.size() == 0)
+	{
+		
+	}
+
+	std::string datetime;
+	std::stringstream dt_sstm;
+	dt_sstm << liborangepower::time::put_now_as_localtime();
+	dt_sstm >> datetime;
+
+	savestates[slot] = std::move(Value(datetime, "-1", message, name,
+		slot));
+	
+	write_file();
 }
 
 void Database::write_file() const
@@ -168,13 +179,14 @@ void NeoSaveyBot::parse_command(const std::vector<std::string>& cmd_vec,
 	{
 		print_found_command();
 		
-		if (size != 3)
+		if (size != 2)
 		{
 			say_invalid_num_params();
 			return;
 		}
 
-		__database.save(cmd_vec.at(start_index + 1), "-1");
+		__database.save(cmd_vec.at(start_index + 1), 
+			"--Command Line Test--", "-1");
 
 	}
 

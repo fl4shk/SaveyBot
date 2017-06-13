@@ -36,16 +36,16 @@ public:		// classes
 		inline Value()
 		{
 		}
-		inline Value(std::string&& s_datetime, 
-			std::string&& s_index_str, 
-			std::string&& s_message, 
-			std::string&& s_name, 
-			std::string&& s_slot)
-			: datetime(std::move(s_datetime)),
-			index_str(std::move(s_index_str)),
-			message(std::move(s_message)), 
-			name(std::move(s_name)), 
-			slot(std::move(s_slot))
+		inline Value(const std::string& s_datetime, 
+			const std::string& s_index_str, 
+			const std::string& s_message, 
+			const std::string& s_name, 
+			const std::string& s_slot)
+			: datetime(s_datetime),
+			index_str(s_index_str),
+			message(s_message), 
+			name(s_name), 
+			slot(s_slot)
 		{
 		}
 
@@ -95,7 +95,8 @@ public:		// functions
 	}
 	void write_file() const;
 
-	void save(const std::string& message, const std::string& slot="");
+	void save(const std::string& message, const std::string& name, 
+		const std::string& slot="");
 	
 	gen_getter_by_val(lowest_available_slot);
 	gen_getter_by_con_ref(database_file_name);
