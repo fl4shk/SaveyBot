@@ -2,20 +2,31 @@
 
 namespace neosaveybot
 {
-const std::string NeoSaveyBot::config_file_name("config.json"),
-	NeoSaveyBot::database_file_name("neosaveybot.json");
 
 
 // Constant keys
-const std::string NeoSaveyBot::Database::key_datetime("datetime"),
-	NeoSaveyBot::Database::key_index("index"),
-	NeoSaveyBot::Database::key_message("message"),
-	NeoSaveyBot::Database::key_name("name"),
-	NeoSaveyBot::Database::key_slot("slot"),
-	NeoSaveyBot::Database::key_num_savestates("num_savestates");
+const std::string Database::key_datetime("datetime"),
+	Database::key_index("index"),
+	Database::key_message("message"),
+	Database::key_name("name"),
+	Database::key_slot("slot");
 
 // Constant values
-const std::string NeoSaveyBot::Database::value_datetime_classic("classic");
+const std::string Database::value_datetime_classic("classic");
+
+
+void Database::write_file() const
+{
+}
+void Database::load_from_file()
+{
+}
+
+
+
+const std::string NeoSaveyBot::config_file_name("config.json"),
+	NeoSaveyBot::database_file_name("neosaveybot.json");
+
 
 NeoSaveyBot::Configuration::Configuration()
 {

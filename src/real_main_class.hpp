@@ -28,7 +28,7 @@ private:		// functions
 
 	void parse_args_vec();
 
-	static void convert_original_database
+	static void __convert_original_database
 		(const std::string& input_file_name, 
 		const std::string& output_file_name);
 

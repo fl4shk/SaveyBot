@@ -7,48 +7,98 @@
 namespace neosaveybot
 {
 
+class Database
+{
+public:		// constants
+	// Constant keys (all keys are constant, actually)
+	static const std::string key_datetime, 
+		key_index, 
+		key_message,
+		key_name, 
+		key_slot;
+
+	// Constant values
+	static const std::string value_datetime_classic;
+
+public:		// classes
+	class Value
+	{
+	public:		// variables
+		// Might need to use an std::stringstream to get the value for
+		// datetime.
+		std::string datetime, 
+			index_str, 
+			message, 
+			name, 
+			slot;
+
+	public:		// functions
+		inline Value()
+		{
+		}
+		inline Value(std::string&& s_datetime, 
+			std::string&& s_index_str, 
+			std::string&& s_message, 
+			std::string&& s_name, 
+			std::string&& s_slot)
+			: datetime(std::move(s_datetime)),
+			index_str(std::move(s_index_str)),
+			message(std::move(s_message)), 
+			name(std::move(s_name)), 
+			slot(std::move(s_slot))
+		{
+		}
+
+		inline Value(const Value& to_copy) = default;
+		inline Value(Value&& to_move) = default;
+
+		inline Value& operator = (const Value& to_copy) = default;
+		inline Value& operator = (Value&& to_move) = default;
+	};
+
+
+private:		// variables
+	std::string __database_file_name;
+
+public:		// variables
+	// Here is where the savestates are stored when in RAM.  They are
+	// indexed by slot number as an std::string.
+	std::map<std::string, Value> savestates;
+
+
+public:		// functions
+	inline Database()
+	{
+	}
+	inline Database(const std::string& s_database_file_name)
+	{
+		init(s_database_file_name);
+	}
+	inline ~Database()
+	{
+		write_file();
+	}
+
+	inline void init(const std::string& s_database_file_name)
+	{
+		set_database_file_name(s_database_file_name);
+		load_from_file();
+	}
+	void write_file() const;
+	
+	gen_getter_by_con_ref(database_file_name);
+
+private:		// functions
+	gen_setter_by_con_ref(database_file_name);
+
+	void load_from_file();
+	
+};
 
 class NeoSaveyBot
 {
 public:		// classes
-	class Database
-	{
-	public:		// constants
-		// Constant keys (all keys are constant, actually)
-		static const std::string key_datetime, key_index, key_message,
-			key_name, key_slot, key_num_savestates;
-
-		// Constant values
-		static const std::string value_datetime_classic;
-
-	public:		// classes
-		class Value
-		{
-		public:		// variables
-			// Might need to use an std::stringstream to get the value for
-			// datetime.
-			std::string datetime, index_str, message, name, slot;
-
-		public:		// functions
-			inline Value(std::string&& s_datetime, 
-				std::string&& s_index_str, std::string&& s_message, 
-				std::string&& s_name, std::string&& s_slot)
-				: datetime(std::move(s_datetime)),
-				index_str(std::move(s_index_str)),
-				message(std::move(s_message)), name(std::move(s_name)), 
-				slot(std::move(s_slot))
-			{
-			}
-		};
-
-	public:		// variables
-		// Here is where the savestates are stored when in RAM.  They are
-		// indexed by slot number as an std::string.
-		std::map<std::string, Value> savestates;
-		
-	};
-	
-
+	// This should be moved to some IRC-related thing
 	class Configuration
 	{
 	public:		// classes

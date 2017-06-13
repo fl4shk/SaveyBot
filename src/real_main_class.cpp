@@ -22,7 +22,7 @@ RealMain::RealMain(int argc, char** argv)
 	gen_args_vec(argc, argv);
 	parse_args_vec();
 	
-	//convert_original_database(args_vec().at(1), args_vec().at(2));
+	//__convert_original_database(args_vec().at(1), args_vec().at(2));
 }
 
 RealMain::~RealMain()
@@ -53,7 +53,7 @@ void RealMain::parse_args_vec()
 	bot().parse_command(args_vec(), 1);
 }
 
-void RealMain::convert_original_database
+void RealMain::__convert_original_database
 	(const std::string& input_file_name, 
 	const std::string& output_file_name)
 {
@@ -73,12 +73,13 @@ void RealMain::convert_original_database
 			ostm << i;
 			ostm >> temp;
 
-			auto& out_iter = output_root["savestates"][temp] = in_iter;
+			//auto& out_iter = output_root["savestates"][temp] = in_iter;
+			auto& out_iter = output_root[temp] = in_iter;
 			out_iter["datetime"] = "classic";
 			out_iter["index"] = i++;
 		}
 
-		output_root["num_savestates"] = i;
+		//output_root["num_savestates"] = i;
 	}
 
 	std::fstream temp_out_file(output_file_name, std::ios_base::out);
