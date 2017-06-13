@@ -20,9 +20,9 @@ RealMain::RealMain(int argc, char** argv)
 	//}
 
 	gen_args_vec(argc, argv);
-	parse_args_vec();
+	//parse_args_vec();
 	
-	//__convert_original_database(args_vec().at(1), args_vec().at(2));
+	__convert_original_database(args_vec().at(1), args_vec().at(2));
 }
 
 RealMain::~RealMain()

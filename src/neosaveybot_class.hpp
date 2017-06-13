@@ -21,8 +21,8 @@ public:		// constants
 	static const std::string value_datetime_classic;
 
 
-	// The highest allowed automatic slot
-	static constexpr size_t max_automatic_slot = -2;
+	//// The highest allowed automatic slot
+	//static constexpr size_t max_automatic_slot = -2;
 
 public:		// classes
 	class Value
@@ -70,7 +70,8 @@ public:		// classes
 
 
 private:		// variables
-	size_t __lowest_available_slot;
+	//size_t __lowest_available_slot;
+	mpz_class __lowest_available_slot;
 	std::string __database_file_name;
 
 public:		// variables

@@ -9,15 +9,21 @@
 #include <cstring>
 
 
+// POSIX headers
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 
 
+// jsoncpp headers
 #include <json/value.h>
 #include <json/reader.h>
 #include <json/writer.h>
+
+
+// GMP headers
+#include <gmpxx.h>
 
 
 

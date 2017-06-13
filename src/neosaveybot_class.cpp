@@ -101,14 +101,15 @@ void Database::update_lowest_available_slot()
 		lowest_available_slot(), "\n");
 
 	for ( ; 
-		lowest_available_slot()<max_automatic_slot; 
+		//lowest_available_slot()<max_automatic_slot; 
+		;
 		__lowest_available_slot++)
 	{
-		if (lowest_available_slot() == max_automatic_slot)
-		{
-			err("Can't have automatic slot as high as",
-				lowest_available_slot(), "!");
-		}
+		//if (lowest_available_slot() == max_automatic_slot)
+		//{
+		//	err("Can't have automatic slot as high as",
+		//		lowest_available_slot(), "!");
+		//}
 
 		std::string las_str;
 		std::stringstream las_sstm;
