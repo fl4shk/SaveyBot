@@ -50,7 +50,7 @@ void RealMain::parse_args_vec()
 		err("Need at least one argument (besides program name)");
 	}
 
-	bot().parse_command(args_vec(), 1);
+	bot().parse_command_basic(args_vec());
 }
 
 void RealMain::__convert_original_database
@@ -76,7 +76,7 @@ void RealMain::__convert_original_database
 			//auto& out_iter = output_root["savestates"][temp] = in_iter;
 			auto& out_iter = output_root[temp] = in_iter;
 			out_iter["datetime"] = "classic";
-			out_iter["index"] = i++;
+			out_iter["classic_index"] = i++;
 		}
 
 		//output_root["num_savestates"] = i;

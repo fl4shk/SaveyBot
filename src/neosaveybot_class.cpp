@@ -6,7 +6,7 @@ namespace neosaveybot
 
 // Constant keys
 const std::string Database::key_datetime("datetime"),
-	Database::key_index("index"),
+	Database::key_classic_index("classic_index"),
 	Database::key_message("message"),
 	Database::key_name("name"),
 	Database::key_slot("slot");
@@ -17,7 +17,7 @@ const std::string Database::value_datetime_classic("classic");
 void Database::Value::extract_from_json(const Json::Value& to_copy)
 {
 	datetime = to_copy[Database::key_datetime].asString();
-	index_str = to_copy[Database::key_index].asString();
+	classic_index_str = to_copy[Database::key_classic_index].asString();
 	message = to_copy[Database::key_message].asString();
 	name = to_copy[Database::key_name].asString();
 	slot = to_copy[Database::key_slot].asString();
@@ -26,11 +26,10 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 {
 	output_root[slot][Database::key_datetime] = datetime;
 
-	std::stringstream sstm;
-	int64_t index;
-	sstm << index_str;
-	sstm >> index;
-	output_root[slot][Database::key_index] = index;
+	s64 classic_index;
+	std::stringstream sstm(classic_index_str);
+	sstm >> classic_index;
+	output_root[slot][Database::key_classic_index] = classic_index;
 
 	output_root[slot][Database::key_message] = message;
 	output_root[slot][Database::key_name] = name;
@@ -40,12 +39,10 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 void Database::save(const std::string& message, const std::string& name, 
 	const std::string& slot)
 {
-	// (Eventually) handle using __lowest_available_slot here.
 	if (slot.size() == 0)
 	{
 		std::string another_slot;
 		std::stringstream slot_sstm;
-
 		slot_sstm << lowest_available_slot();
 		slot_sstm >> another_slot;
 
@@ -76,8 +73,9 @@ void Database::write_file() const
 		iter.second.add_to_json(output_root);
 	}
 
-	std::fstream out_file(std::string("temp_") + database_file_name(), 
-		std::ios_base::out);
+	//std::fstream out_file(std::string("temp_") + database_file_name(), 
+	//	std::ios_base::out);
+	std::fstream out_file(database_file_name(), std::ios_base::out);
 	write_json(out_file, &output_root);
 }
 void Database::load_from_file()
@@ -101,21 +99,6 @@ void Database::update_lowest_available_slot()
 {
 	printout("I started with this lowest_available_slot:  ",
 		lowest_available_slot(), "\n");
-
-	//auto convert_las_to_str = [&]() -> void
-	//{
-	//	std::stringstream las_sstm;
-	//	las_sstm << lowest_available_slot();
-	//	las_sstm >> las_str;
-	//};
-	
-	//for (const auto& iter : savestates)
-	//{
-	//	if (lowest_available_slot() == iter.second.slot)
-	//	{
-	//		
-	//	}
-	//}
 
 	for ( ; 
 		lowest_available_slot()<max_automatic_slot; 
@@ -208,12 +191,14 @@ NeoSaveyBot::~NeoSaveyBot()
 }
 
 
-void NeoSaveyBot::parse_command(const std::vector<std::string>& cmd_vec, 
-	size_t start_index)
-{
-	const size_t size = cmd_vec.size() - start_index;
 
-	const std::string& command = cmd_vec.at(start_index);
+void NeoSaveyBot::parse_command_basic
+	(const std::vector<std::string>& args_vec)
+{
+	const size_t start_index = 1;
+	const size_t size = args_vec.size() - start_index;
+
+	const std::string& command = args_vec.at(start_index);
 
 
 	auto print_found_command = [&command]() -> void
@@ -234,13 +219,23 @@ void NeoSaveyBot::parse_command(const std::vector<std::string>& cmd_vec,
 	{
 		print_found_command();
 		
-		if (size != 2)
+		//if (size != 2)
+		//{
+		//	say_invalid_num_params();
+		//	return;
+		//}
+
+		if ((size < 2) || (size > 3))
 		{
 			say_invalid_num_params();
 			return;
 		}
 
-		__database.save(cmd_vec.at(start_index + 1), 
+		//s64 slot
+
+		//else if (convert_str_to_num(
+
+		__database.save(args_vec.at(start_index + 1), 
 			"--Command Line Test--", "");
 
 	}

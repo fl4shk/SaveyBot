@@ -12,7 +12,7 @@ class Database
 public:		// constants
 	// Constant keys (all keys are constant, actually)
 	static const std::string key_datetime, 
-		key_index, 
+		key_classic_index, 
 		key_message,
 		key_name, 
 		key_slot;
@@ -31,7 +31,7 @@ public:		// classes
 		// Might need to use an std::stringstream to get the value for
 		// datetime.
 		std::string datetime, 
-			index_str, 
+			classic_index_str, 
 			message, 
 			name, 
 			slot;
@@ -41,12 +41,12 @@ public:		// classes
 		{
 		}
 		inline Value(const std::string& s_datetime, 
-			const std::string& s_index_str, 
+			const std::string& s_classic_index_str, 
 			const std::string& s_message, 
 			const std::string& s_name, 
 			const std::string& s_slot)
 			: datetime(s_datetime),
-			index_str(s_index_str),
+			classic_index_str(s_classic_index_str),
 			message(s_message), 
 			name(s_name), 
 			slot(s_slot)
@@ -160,14 +160,25 @@ public:		// functions
 	NeoSaveyBot();
 	~NeoSaveyBot();
 
-	void parse_command(const std::vector<std::string>& cmd_vec, 
-		size_t start_index=0);
+	void parse_command_basic(const std::vector<std::string>& args_vec);
 
 private:		// functions
 	gen_getter_by_con_ref(config);
 	gen_getter_by_con_ref(database);
 	gen_getter_by_ref(database);
+
+	//void save(const std::string& message, const std::string& name,
+	//	const std::string&);
 	
+
+	//template<typename type>
+	//bool convert_str_to_num(const std::string& num_str, type& ret)
+	//{
+	//	std::stringstream num_sstm(num_str);
+	//	num_sstm >> ret;
+
+	//	return num_sstm.fail();
+	//}
 };
 
 
