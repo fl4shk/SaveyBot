@@ -43,15 +43,22 @@ void Database::save(const std::string& message, const std::string& name,
 	// (Eventually) handle using __lowest_available_slot here.
 	if (slot.size() == 0)
 	{
-		
-		//return
+		std::string another_slot;
+		std::stringstream slot_sstm;
+
+		slot_sstm << lowest_available_slot();
+		slot_sstm >> another_slot;
+
+		save(message, name, another_slot);
+		update_lowest_available_slot();
+
+		return;
 	}
 
 	std::string datetime;
 	std::stringstream dt_sstm;
 	osprintout(dt_sstm, liborangepower::time::put_now_as_localtime(),
 		"\n");
-	//dt_sstm >> datetime;
 	getline(dt_sstm, datetime);
 
 	savestates[slot] = std::move(Value(datetime, "-1", message, name,
@@ -86,10 +93,55 @@ void Database::load_from_file()
 		savestates[to_insert.slot] = std::move(to_insert);
 	}
 
+	set_lowest_available_slot(0);
+	update_lowest_available_slot();
 }
 
 void Database::update_lowest_available_slot()
 {
+	printout("I started with this lowest_available_slot:  ",
+		lowest_available_slot(), "\n");
+
+	//auto convert_las_to_str = [&]() -> void
+	//{
+	//	std::stringstream las_sstm;
+	//	las_sstm << lowest_available_slot();
+	//	las_sstm >> las_str;
+	//};
+	
+	//for (const auto& iter : savestates)
+	//{
+	//	if (lowest_available_slot() == iter.second.slot)
+	//	{
+	//		
+	//	}
+	//}
+
+	for ( ; 
+		lowest_available_slot()<max_automatic_slot; 
+		__lowest_available_slot++)
+	{
+		if (lowest_available_slot() == max_automatic_slot)
+		{
+			err("Can't have automatic slot as high as",
+				lowest_available_slot(), "!");
+		}
+
+		std::string las_str;
+		std::stringstream las_sstm;
+		las_sstm << lowest_available_slot();
+		las_sstm >> las_str;
+
+		const auto search = savestates.find(las_str);
+
+		if (search == savestates.end())
+		{
+			break;
+		}
+	}
+
+	printout("I ended with this lowest available slot:  ",
+		lowest_available_slot(), "\n\n");
 }
 
 const std::string NeoSaveyBot::config_file_name("config.json"),
@@ -189,7 +241,7 @@ void NeoSaveyBot::parse_command(const std::vector<std::string>& cmd_vec,
 		}
 
 		__database.save(cmd_vec.at(start_index + 1), 
-			"--Command Line Test--", "-1");
+			"--Command Line Test--", "");
 
 	}
 

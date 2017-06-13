@@ -20,6 +20,10 @@ public:		// constants
 	// Constant values
 	static const std::string value_datetime_classic;
 
+
+	// The highest allowed automatic slot
+	static constexpr size_t max_automatic_slot = -2;
+
 public:		// classes
 	class Value
 	{
