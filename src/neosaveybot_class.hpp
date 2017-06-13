@@ -49,11 +49,15 @@ public:		// classes
 		{
 		}
 
+		Value(Json::Value& to_copy);
+
 		inline Value(const Value& to_copy) = default;
 		inline Value(Value&& to_move) = default;
 
 		inline Value& operator = (const Value& to_copy) = default;
 		inline Value& operator = (Value&& to_move) = default;
+
+		void add_to_json(Json::Value& output_root) const;
 	};
 
 

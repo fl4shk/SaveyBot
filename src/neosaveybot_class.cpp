@@ -14,9 +14,27 @@ const std::string Database::key_datetime("datetime"),
 // Constant values
 const std::string Database::value_datetime_classic("classic");
 
+void Database::Value::add_to_json(Json::Value& output_root) const
+{
+	output_root[slot][Database::key_datetime] = datetime;
+	output_root[slot][Database::key_index] = index_str;
+	output_root[slot][Database::key_message] = message;
+	output_root[slot][Database::key_name] = name;
+	output_root[slot][Database::key_slot] = slot;
+}
 
 void Database::write_file() const
 {
+	Json::Value output_root;
+
+	for (const auto& iter : savestates)
+	{
+		iter.second.add_to_json(output_root);
+	}
+
+	std::fstream out_file(std::string("temp_") + database_file_name(), 
+		std::ios_base::out);
+	write_json(out_file, &output_root);
 }
 void Database::load_from_file()
 {
@@ -79,7 +97,7 @@ NeoSaveyBot::Configuration::Configuration()
 }
 
 
-NeoSaveyBot::NeoSaveyBot()
+NeoSaveyBot::NeoSaveyBot() : __database(database_file_name)
 {
 }
 
