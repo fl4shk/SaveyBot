@@ -44,12 +44,15 @@ void Database::save(const std::string& message, const std::string& name,
 	if (slot.size() == 0)
 	{
 		
+		//return
 	}
 
 	std::string datetime;
 	std::stringstream dt_sstm;
-	dt_sstm << liborangepower::time::put_now_as_localtime();
-	dt_sstm >> datetime;
+	osprintout(dt_sstm, liborangepower::time::put_now_as_localtime(),
+		"\n");
+	//dt_sstm >> datetime;
+	getline(dt_sstm, datetime);
 
 	savestates[slot] = std::move(Value(datetime, "-1", message, name,
 		slot));
