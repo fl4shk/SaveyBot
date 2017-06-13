@@ -172,14 +172,13 @@ private:		// functions
 	//	const std::string&);
 	
 
-	//template<typename type>
-	//bool convert_str_to_num(const std::string& num_str, type& ret)
-	//{
-	//	std::stringstream num_sstm(num_str);
-	//	num_sstm >> ret;
+	bool convert_str_to_bignum(const std::string& num_str, mpz_class& ret)
+	{
+		std::stringstream num_sstm(num_str);
+		num_sstm >> ret;
 
-	//	return num_sstm.fail();
-	//}
+		return num_sstm.fail();
+	}
 };
 
 

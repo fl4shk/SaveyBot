@@ -39,6 +39,7 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 void Database::save(const std::string& message, const std::string& name, 
 	const std::string& slot)
 {
+	// Blank slot, so save using __lowest_available_slot
 	if (slot.size() == 0)
 	{
 		std::string another_slot;
@@ -232,12 +233,29 @@ void NeoSaveyBot::parse_command_basic
 			return;
 		}
 
-		//s64 slot
+		else if (size == 2)
+		{
+			__database.save(args_vec.at(start_index + 1), 
+				"--Command Line Test--", "");
+		}
 
-		//else if (convert_str_to_num(
+		else // if (size == 3)
+		{
+			{
+				mpz_class slot;
+				if (convert_str_to_bignum(args_vec.at(start_index + 1), 
+					slot))
+				{
+					printout("Invalid save slot\n");
+					return;
+				}
+			}
 
-		__database.save(args_vec.at(start_index + 1), 
-			"--Command Line Test--", "");
+			__database.save(args_vec.at(start_index + 2), 
+				"--Command Line Test--", args_vec.at(start_index + 1));
+			
+		}
+
 
 	}
 
