@@ -12,7 +12,7 @@ msys2), I think, if you want to run this in Windows.
 
 
 
-Required libraries:  jsoncpp
+Required libraries:  jsoncpp, gmp, gmpxx
 
 Also, liborangepower (my own library) is required, but that's taken care of
 with git subrepo.
