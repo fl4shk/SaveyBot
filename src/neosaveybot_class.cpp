@@ -212,78 +212,119 @@ NeoSaveyBot::~NeoSaveyBot()
 
 
 
-void NeoSaveyBot::parse_command_basic
-	(const std::vector<std::string>& args_vec)
+//void NeoSaveyBot::parse_command_basic
+//	(const std::vector<std::string>& args_vec)
+//{
+//	const size_t start_index = 1;
+//	const size_t size = args_vec.size() - start_index;
+//
+//	const std::string& command = args_vec.at(start_index);
+//
+//
+//	auto print_found_command = [&command]() -> void
+//	{
+//		printout("Found a \"", command, "\".\n");
+//	};
+//	auto say_invalid_num_params = [&command]() -> void
+//	{
+//		printout("Invalid number of parameters for \"", command, "\".\n");
+//	};
+//
+//	if (command == ".road")
+//	{
+//		print_found_command();
+//	}
+//
+//	else if (command == ".save")
+//	{
+//		print_found_command();
+//		
+//		//if (size != 2)
+//		//{
+//		//	say_invalid_num_params();
+//		//	return;
+//		//}
+//
+//		if ((size < 2) || (size > 3))
+//		{
+//			say_invalid_num_params();
+//			return;
+//		}
+//
+//		else if (size == 2)
+//		{
+//			__database.save(args_vec.at(start_index + 1), 
+//				"--Command Line Test--", "");
+//		}
+//
+//		else // if (size == 3)
+//		{
+//			{
+//				mpz_class slot;
+//				if (convert_str_to_bignum(args_vec.at(start_index + 1), 
+//					slot))
+//				{
+//					printout("Invalid save slot\n");
+//					return;
+//				}
+//			}
+//
+//			__database.save(args_vec.at(start_index + 2), 
+//				"--Command Line Test--", args_vec.at(start_index + 1));
+//			
+//		}
+//
+//
+//	}
+//
+//	else
+//	{
+//		printout("Unknown command.\n");
+//	}
+//
+//}
+
+void NeoSaveyBot::parse_command(const std::string& name,
+	const std::string& whole_cmd_str)
 {
-	const size_t start_index = 1;
-	const size_t size = args_vec.size() - start_index;
-
-	const std::string& command = args_vec.at(start_index);
-
-
-	auto print_found_command = [&command]() -> void
-	{
-		printout("Found a \"", command, "\".\n");
-	};
-	auto say_invalid_num_params = [&command]() -> void
-	{
-		printout("Invalid number of parameters for \"", command, "\".\n");
-	};
-
-	if (command == ".road")
-	{
-		print_found_command();
-	}
-
-	else if (command == ".save")
-	{
-		print_found_command();
-		
-		//if (size != 2)
-		//{
-		//	say_invalid_num_params();
-		//	return;
-		//}
-
-		if ((size < 2) || (size > 3))
-		{
-			say_invalid_num_params();
-			return;
-		}
-
-		else if (size == 2)
-		{
-			__database.save(args_vec.at(start_index + 1), 
-				"--Command Line Test--", "");
-		}
-
-		else // if (size == 3)
-		{
-			{
-				mpz_class slot;
-				if (convert_str_to_bignum(args_vec.at(start_index + 1), 
-					slot))
-				{
-					printout("Invalid save slot\n");
-					return;
-				}
-			}
-
-			__database.save(args_vec.at(start_index + 2), 
-				"--Command Line Test--", args_vec.at(start_index + 1));
-			
-		}
-
-
-	}
-
-	else
-	{
-		printout("Unknown command.\n");
-	}
-
+	//std::vector<std::string> split_vec;
+	std::string cmd;
 }
 
+bool NeoSaveyBot::next_non_blank_substr(const std::string& whole_cmd_str, 
+	const size_t test_start_index, std::string& ret)
+{
+	size_t i = test_start_index;
+
+	// Eat leading whitespace
+	while (isspace(whole_cmd_str.at(i)))
+	{
+		++i;
+
+		if (i >= whole_cmd_str.size())
+		{
+			ret = "";
+			return false;
+		}
+	}
+
+	const size_t start_index = i;
+
+	while (!isblank(whole_cmd_str.at(i)))
+	{
+		++i;
+
+		if (i >= whole_cmd_str.size())
+		{
+			break;
+		}
+	}
+
+	const size_t end_index = i;
+
+	ret = whole_cmd_str.substr(start_index, (end_index - start_index));
+	return true;
+}
 
 std::ostream& operator << (std::ostream& os, 
 	const NeoSaveyBot::Configuration::Server& to_print)

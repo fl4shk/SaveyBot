@@ -179,7 +179,9 @@ public:		// functions
 	NeoSaveyBot();
 	~NeoSaveyBot();
 
-	void parse_command_basic(const std::vector<std::string>& args_vec);
+	//void parse_command_basic(const std::vector<std::string>& args_vec);
+	void parse_command(const std::string& name, 
+		const std::string& whole_cmd_str);
 
 private:		// functions
 	gen_getter_by_con_ref(config);
@@ -190,13 +192,18 @@ private:		// functions
 	//	const std::string&);
 	
 
-	bool convert_str_to_bignum(const std::string& num_str, mpz_class& ret)
-	{
-		std::stringstream num_sstm(num_str);
-		num_sstm >> ret;
+	//bool convert_str_to_bignum(const std::string& num_str, mpz_class& ret)
+	//{
+	//	std::stringstream num_sstm(num_str);
+	//	num_sstm >> ret;
 
-		return num_sstm.fail();
-	}
+	//	return num_sstm.fail();
+	//}
+
+
+	bool next_non_blank_substr(const std::string& whole_cmd_str, 
+		const size_t test_start_index, std::string& ret);
+
 };
 
 

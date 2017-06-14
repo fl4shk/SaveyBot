@@ -42,8 +42,7 @@ bool str_is_integer_bignum(const std::string& str, mpz_class& ret)
 		{
 			if (isdigit(str.at(i)))
 			{
-				//ret = (ret * 10) + (str.at(i) - '0');
-				ret = (ret * 10) + convert_single_digit(str, i);
+				ret = (ret * 10) + (str.at(i) - '0');
 			}
 			else // if (!isdigit(str.at(i)))
 			{

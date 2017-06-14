@@ -19,6 +19,8 @@
 #ifndef gmp_stuff_hpp
 #define gmp_stuff_hpp
 
+#include "misc_includes.hpp"
+
 namespace neosaveybot
 {
 

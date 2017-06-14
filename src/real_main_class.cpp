@@ -63,12 +63,18 @@ void RealMain::gen_args_vec(int argc, char** argv)
 
 void RealMain::parse_args_vec()
 {
-	if (args_vec().size() == 1)
-	{
-		err("Need at least one argument (besides program name)");
-	}
+	//if (args_vec().size() == 1)
+	//{
+	//	err("Need at least one argument (besides program name)");
+	//}
 
-	bot().parse_command_basic(args_vec());
+	//bot().parse_command_basic(args_vec());
+
+	if (args_vec().size() <= 2)
+	{
+		err("Need at least two argumnets (besides program name");
+	}
+	bot().parse_command(args_vec().at(1), args_vec().at(2));
 }
 
 void RealMain::__convert_original_database
