@@ -202,7 +202,7 @@ private:		// functions
 
 
 	bool next_non_blank_substr(const std::string& whole_cmd_str, 
-		const size_t test_start_index, std::string& ret);
+		const size_t test_start_index, std::string& ret, size_t& i);
 
 };
 
