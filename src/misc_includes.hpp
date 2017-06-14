@@ -7,6 +7,7 @@
 #include <memory>
 #include <map>
 #include <cstring>
+#include <cctype>
 
 
 // POSIX headers
