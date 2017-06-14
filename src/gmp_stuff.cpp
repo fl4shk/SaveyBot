@@ -16,12 +16,51 @@
 // with NeoSaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef misc_types_hpp
-#define misc_types_hpp
+#include "gmp_stuff.hpp"
 
-#include "liborangepower_src/misc_types.hpp"
+namespace neosaveybot
+{
 
-using namespace liborangepower::integer_types;
+bool str_is_integer_bignum(const std::string& str, mpz_class& ret)
+{
+	size_t i = 0;
 
-#endif		// misc_types_hpp
+	bool negative = false;
 
+	if (str.front() == '-')
+	{
+		negative = true;
+		++i;
+	}
+
+	if (isdigit(str.at(i)))
+	{
+		ret = str.at(i) - '0';
+		++i;
+
+		for (; i<str.size(); ++i)
+		{
+			if (isdigit(str.at(i)))
+			{
+				//ret = (ret * 10) + (str.at(i) - '0');
+				ret = (ret * 10) + convert_single_digit(str, i);
+			}
+			else // if (!isdigit(str.at(i)))
+			{
+				return false;
+			}
+			
+		}
+
+		if (negative)
+		{
+			ret *= -1;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+}

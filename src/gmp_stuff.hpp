@@ -16,12 +16,14 @@
 // with NeoSaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef misc_types_hpp
-#define misc_types_hpp
+#ifndef gmp_stuff_hpp
+#define gmp_stuff_hpp
 
-#include "liborangepower_src/misc_types.hpp"
+namespace neosaveybot
+{
 
-using namespace liborangepower::integer_types;
+bool str_is_integer_bignum(const std::string& str, mpz_class& ret);
 
-#endif		// misc_types_hpp
+}
 
+#endif		// gmp_stuff_hpp
