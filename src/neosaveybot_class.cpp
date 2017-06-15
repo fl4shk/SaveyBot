@@ -17,6 +17,7 @@
 
 
 #include "neosaveybot_class.hpp"
+#include "gmp_stuff.hpp"
 
 namespace neosaveybot
 {
@@ -66,7 +67,7 @@ void Database::save(const std::string& message, const std::string& name,
 		slot_sstm >> another_slot;
 
 		save(message, name, another_slot);
-		update_lowest_available_slot();
+		//update_lowest_available_slot();
 
 		return;
 	}
@@ -79,6 +80,9 @@ void Database::save(const std::string& message, const std::string& name,
 
 	savestates[slot] = std::move(Value(datetime, "-1", message, name,
 		slot));
+	
+	// Just do this after EVERY save()
+	update_lowest_available_slot();
 	
 	write_file();
 }
@@ -288,14 +292,88 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	const std::string& whole_cmd_str)
 {
 	//std::vector<std::string> split_vec;
+	
+	size_t i;
 	std::string cmd;
+
+	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
+	
+	auto print_found_command = [&cmd]() -> void
+	{
+		printout("Found a \"", cmd, "\".\n");
+	};
+	auto say_invalid_num_params = [&cmd]() -> void
+	{
+		printout("Invalid number of parameters for \"", cmd, "\".\n");
+	};
+
+	if (cmd == ".road")
+	{
+		print_found_command();
+	}
+
+	else if (cmd == ".save")
+	{
+		print_found_command();
+
+		mpz_class slot_bignum;
+		std::string slot, message;
+		
+		size_t temp_i;
+		if (!next_non_blank_substr(whole_cmd_str, i, slot, temp_i))
+		{
+			say_invalid_num_params();
+			return;
+		}
+		
+
+		// If we were given a slot
+		if (str_is_integer_bignum(slot, slot_bignum))
+		{
+			//convert_bignum_to_str(slot_bignum, slot);
+			////__database.save(
+			
+			i = temp_i;
+
+			// We need both a slot AND a message
+			if (!find_next_non_blank_index(whole_cmd_str, temp_i, i))
+			{
+				say_invalid_num_params();
+				return;
+			}
+
+			message = whole_cmd_str.substr(i);
+			__database.save(message, name, slot);
+		}
+		else
+		{
+			message = whole_cmd_str.substr(i);
+			//slot = database().lowest_available_slot();
+			convert_bignum_to_str(database().lowest_available_slot(),
+				slot);
+			__database.save(message, name, "");
+		}
+
+		printout("Your savestate was sav'd to slot number ", slot, "!\n");
+	}
+
+	else
+	{
+		printout("Unknown command.\n");
+	}
 }
 
-bool NeoSaveyBot::next_non_blank_substr(const std::string& whole_cmd_str, 
-	const size_t test_start_index, std::string& ret, size_t& i)
+bool NeoSaveyBot::find_next_non_blank_index
+	(const std::string& whole_cmd_str, const size_t test_start_index, 
+	size_t& i)
 {
 	i = test_start_index;
 
+	if (i >= whole_cmd_str.size())
+	{
+		return false;
+	}
+	
 	// Eat leading whitespace
 	while (isspace(whole_cmd_str.at(i)))
 	{
@@ -303,14 +381,38 @@ bool NeoSaveyBot::next_non_blank_substr(const std::string& whole_cmd_str,
 
 		if (i >= whole_cmd_str.size())
 		{
-			ret = "";
 			return false;
 		}
 	}
 
+	return true;
+}
+bool NeoSaveyBot::next_non_blank_substr(const std::string& whole_cmd_str, 
+	const size_t test_start_index, std::string& ret, size_t& i)
+{
+	//i = test_start_index;
+
+	//// Eat leading whitespace
+	//while (isspace(whole_cmd_str.at(i)))
+	//{
+	//	++i;
+
+	//	if (i >= whole_cmd_str.size())
+	//	{
+	//		ret = "";
+	//		return false;
+	//	}
+	//}
+
+	if (!find_next_non_blank_index(whole_cmd_str, test_start_index, i))
+	{
+		ret = "";
+		return false;
+	}
+
 	const size_t start_index = i;
 
-	while (!isblank(whole_cmd_str.at(i)))
+	while (i < whole_cmd_str.size() && !isblank(whole_cmd_str.at(i)))
 	{
 		++i;
 

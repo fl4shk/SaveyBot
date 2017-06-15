@@ -199,8 +199,17 @@ private:		// functions
 
 	//	return num_sstm.fail();
 	//}
+	void convert_bignum_to_str(const mpz_class& in_bignum, 
+		std::string& ret)
+	{
+		std::stringstream sstm;
+		sstm << in_bignum;
+		sstm >> ret;
+	}
 
 
+	bool find_next_non_blank_index(const std::string& whole_cmd_str,
+		const size_t test_start_index, size_t& i);
 	bool next_non_blank_substr(const std::string& whole_cmd_str, 
 		const size_t test_start_index, std::string& ret, size_t& i);
 

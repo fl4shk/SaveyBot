@@ -72,7 +72,7 @@ void RealMain::parse_args_vec()
 
 	if (args_vec().size() <= 2)
 	{
-		err("Need at least two argumnets (besides program name");
+		err("Need at least two argumnets (besides program name).");
 	}
 	bot().parse_command(args_vec().at(1), args_vec().at(2));
 }
