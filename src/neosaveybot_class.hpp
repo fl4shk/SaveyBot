@@ -149,6 +149,32 @@ public:		// functions
 			&& !slot_owned_by(slot_bignum, name));
 	}
 
+
+	inline auto begin()
+	{
+		return __savestates.begin();
+	}
+
+	inline auto end()
+	{
+		return __savestates.end();
+	}
+
+	inline auto cbegin() const
+	{
+		return __savestates.cbegin();
+	}
+
+	inline auto cend() const
+	{
+		return __savestates.cend();
+	}
+
+	inline auto size() const
+	{
+		return __savestates.size();
+	}
+
 	
 	inline Value& at(const BigNum& slot_bignum)
 	{
@@ -236,7 +262,7 @@ private:		// functions
 	gen_getter_by_con_ref(config);
 	gen_getter_by_con_ref(database);
 	gen_getter_by_ref(database);
-	gen_getter_by_ref(prng);
+	//gen_getter_by_ref(prng);
 
 	//void save(const std::string& message, const std::string& name,
 	//	const std::string&);
@@ -255,6 +281,18 @@ private:		// functions
 		const size_t test_start_index, size_t& i);
 	bool next_non_blank_substr(const std::string& whole_cmd_str, 
 		const size_t test_start_index, std::string& ret, size_t& i);
+
+
+	// These are NOT getters
+	inline auto prng()
+	{
+		return __prng();
+	}
+
+	inline auto prng(u64 max_val)
+	{
+		return __prng(max_val);
+	}
 	
 
 };

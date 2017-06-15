@@ -205,11 +205,14 @@ NeoSaveyBot::~NeoSaveyBot()
 }
 
 
+// Note:  this needs a const std::string& channel parameter and a
+// Communicator& parameter.
 void NeoSaveyBot::parse_command(const std::string& name,
 	const std::string& whole_cmd_str)
 {
-	size_t i;
-	std::string cmd;
+	size_t i, temp_i;
+	BigNum slot_bignum;
+	std::string cmd, slot, message;
 
 	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
 	
@@ -222,21 +225,44 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		printout("Invalid number of parameters for \"", cmd, "\".\n");
 	};
 
+	auto inner_next_non_blank_substr = [&]() -> bool
+	{
+		return next_non_blank_substr(whole_cmd_str, i, slot, temp_i);
+	};
+
+	auto show = [&](const Database::Value& to_show) -> void
+	{
+		printout(" ~ ", to_show.message(), "\n");
+	};
+
 	if (cmd == ".road")
 	{
 		print_found_command();
+
+		//if (!inner_next_non_blank_substr())
+		//{
+		//	say_invalid_num_params();
+		//	return;
+		//}
+
+		const auto offset = prng(database().size());
+
+		auto iter = database().begin();
+
+		for (size_t i=0; i<offset; ++i)
+		{
+			++iter;
+		}
+
+		show(iter->second);
+
 	}
 
 	else if (cmd == ".save")
 	{
 		print_found_command();
 
-		BigNum slot_bignum;
-		std::string slot, message;
-		
-		size_t temp_i;
-		
-		if (!next_non_blank_substr(whole_cmd_str, i, slot, temp_i))
+		if (!inner_next_non_blank_substr())
 		{
 			say_invalid_num_params();
 			return;
@@ -272,8 +298,12 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			message = std::move(whole_cmd_str.substr(i));
 			__database.save(message, name, slot, true);
 		}
-
 	}
+
+	//else if (cmd == ".remove")
+	//{
+	//	print_found_command();
+	//}
 
 	else
 	{
