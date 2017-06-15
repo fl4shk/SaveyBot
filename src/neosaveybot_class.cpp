@@ -56,17 +56,20 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 }
 
 void Database::save(const std::string& message, const std::string& name, 
-	const std::string& slot)
+	const std::string& slot, bool use_lowest)
 {
-	// Blank slot, so save using __lowest_available_slot
-	if (slot.size() == 0)
+	//// Blank slot, so save using __lowest_available_slot
+	//if (slot.size() == 0)
+	if (use_lowest)
 	{
+		//std::string another_slot;
+		//std::stringstream slot_sstm;
+		//slot_sstm << lowest_available_slot();
+		//slot_sstm >> another_slot;
 		std::string another_slot;
-		std::stringstream slot_sstm;
-		slot_sstm << lowest_available_slot();
-		slot_sstm >> another_slot;
+		convert_bignum_to_str(lowest_available_slot(), another_slot);
 
-		save(message, name, another_slot);
+		save(message, name, another_slot, false);
 		//update_lowest_available_slot();
 
 		return;
@@ -343,7 +346,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			}
 
 			message = whole_cmd_str.substr(i);
-			__database.save(message, name, slot);
+			__database.save(message, name, slot, false);
 		}
 		else
 		{
@@ -351,7 +354,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			//slot = database().lowest_available_slot();
 			convert_bignum_to_str(database().lowest_available_slot(),
 				slot);
-			__database.save(message, name, "");
+			__database.save(message, name, slot, true);
 		}
 
 		printout("Your savestate was sav'd to slot number ", slot, "!\n");

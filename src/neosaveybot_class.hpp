@@ -119,7 +119,7 @@ public:		// functions
 	void write_file() const;
 
 	void save(const std::string& message, const std::string& name, 
-		const std::string& slot="");
+		const std::string& slot, bool use_lowest);
 	
 	gen_getter_by_val(lowest_available_slot);
 	gen_getter_by_con_ref(database_file_name);
@@ -199,13 +199,6 @@ private:		// functions
 
 	//	return num_sstm.fail();
 	//}
-	void convert_bignum_to_str(const mpz_class& in_bignum, 
-		std::string& ret)
-	{
-		std::stringstream sstm;
-		sstm << in_bignum;
-		sstm >> ret;
-	}
 
 
 	bool find_next_non_blank_index(const std::string& whole_cmd_str,

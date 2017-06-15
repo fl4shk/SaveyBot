@@ -26,6 +26,14 @@ namespace neosaveybot
 
 bool str_is_integer_bignum(const std::string& str, mpz_class& ret);
 
+inline void convert_bignum_to_str(const mpz_class& in_bignum, 
+	std::string& ret)
+{
+	std::stringstream sstm;
+	sstm << in_bignum;
+	sstm >> ret;
+}
+
 }
 
 #endif		// gmp_stuff_hpp
