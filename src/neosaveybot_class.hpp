@@ -130,6 +130,7 @@ public:		// functions
 	}
 	void save(const std::string& message, const std::string& name, 
 		const std::string& slot, bool use_lowest);
+	
 	void write_file() const;
 
 	
@@ -140,6 +141,13 @@ public:		// functions
 	}
 	bool slot_owned_by(const mpz_class& slot_bignum, 
 		const std::string& name);
+	
+	inline bool slot_exists_but_not_owned_by(const mpz_class& slot_bignum,
+		const std::string& name)
+	{
+		return (contains(slot_bignum) 
+			&& !slot_owned_by(slot_bignum, name));
+	}
 
 	
 	inline Value& at(const mpz_class& slot_bignum)

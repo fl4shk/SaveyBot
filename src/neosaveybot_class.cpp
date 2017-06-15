@@ -57,22 +57,12 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 void Database::save(const std::string& message, const std::string& name, 
 	const std::string& slot, bool use_lowest)
 {
-	//// Blank slot, so save using __lowest_available_slot
-	//if (slot.size() == 0)
 	if (use_lowest)
 	{
-		//std::string another_slot;
-		//std::stringstream slot_sstm;
-		//slot_sstm << lowest_available_slot();
-		//slot_sstm >> another_slot;
-		std::string another_slot;
+		std::string&& temp_slot = convert_bignum_to_str
+			(lowest_available_slot());
 		
-
-		save(message, name,
-			std::move(convert_bignum_to_str(lowest_available_slot())), 
-			false);
-		//update_lowest_available_slot();
-
+		save(message, name, temp_slot, false);
 		return;
 	}
 
@@ -82,7 +72,7 @@ void Database::save(const std::string& message, const std::string& name,
 		"\n");
 	getline(dt_sstm, datetime);
 
-	__savestates[slot] = std::move(Value(datetime, "-1", message, name,
+	savestates()[slot] = std::move(Value(datetime, "-1", message, name,
 		slot));
 	
 	// Just do this after EVERY save()
@@ -96,7 +86,7 @@ void Database::write_file() const
 {
 	Json::Value output_root;
 
-	for (const auto& iter : __savestates)
+	for (const auto& iter : savestates())
 	{
 		iter.second.add_to_json(output_root);
 	}
@@ -124,7 +114,7 @@ void Database::load_from_file()
 	for (auto& in_iter : input_root)
 	{
 		Value to_insert(in_iter);
-		__savestates[to_insert.slot()] = std::move(to_insert);
+		savestates()[to_insert.slot()] = std::move(to_insert);
 	}
 
 	set_lowest_available_slot(0);
@@ -139,7 +129,7 @@ void Database::update_lowest_available_slot()
 	for ( ; 
 		//lowest_available_slot()<max_automatic_slot; 
 		;
-		__lowest_available_slot++)
+		++__lowest_available_slot)
 	{
 		//if (lowest_available_slot() == max_automatic_slot)
 		//{
@@ -147,14 +137,16 @@ void Database::update_lowest_available_slot()
 		//		lowest_available_slot(), "!");
 		//}
 
-		std::string las_str;
-		std::stringstream las_sstm;
-		las_sstm << lowest_available_slot();
-		las_sstm >> las_str;
+		//std::string las_str;
+		//std::stringstream las_sstm;
+		//las_sstm << lowest_available_slot();
+		//las_sstm >> las_str;
+		const std::string las_str 
+			= std::move(convert_bignum_to_str(lowest_available_slot()));
 
-		const auto search = __savestates.find(las_str);
+		const auto search = savestates().find(las_str);
 
-		if (search == __savestates.end())
+		if (search == savestates().end())
 		{
 			break;
 		}
@@ -301,6 +293,7 @@ NeoSaveyBot::~NeoSaveyBot()
 //
 //}
 
+
 void NeoSaveyBot::parse_command(const std::string& name,
 	const std::string& whole_cmd_str)
 {
@@ -338,14 +331,10 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			say_invalid_num_params();
 			return;
 		}
-		
 
 		// If we were given a slot
 		if (str_is_integer_bignum(slot, slot_bignum))
 		{
-			//convert_bignum_to_str(slot_bignum, slot);
-			////__database.save(
-			
 			i = temp_i;
 
 			// We need both a slot AND a message
@@ -354,27 +343,23 @@ void NeoSaveyBot::parse_command(const std::string& name,
 				say_invalid_num_params();
 				return;
 			}
-
-			message = whole_cmd_str.substr(i);
-
-			//if (database().slot_owned_by(slot_bignum
-			if (database().contains(slot_bignum)
-				&& !database().slot_owned_by(slot_bignum, name))
+			
+			if (database().slot_exists_but_not_owned_by(slot_bignum, name))
 			{
 				printout("That slot is owned by ", 
 					database().at(slot_bignum).name(), "!\n");
 			}
 			else
 			{
+				message = std::move(whole_cmd_str.substr(i));
 				__database.save(message, name, slot, false);
 			}
 		}
 		else
 		{
-			message = whole_cmd_str.substr(i);
-			//slot = database().lowest_available_slot();
 			slot = std::move(convert_bignum_to_str(database()
 				.lowest_available_slot()));
+			message = std::move(whole_cmd_str.substr(i));
 			__database.save(message, name, slot, true);
 		}
 
