@@ -21,6 +21,7 @@
 
 #include "json_stuff.hpp"
 #include "irc_communicator_class.hpp"
+#include "gmp_stuff.hpp"
 
 namespace neosaveybot
 {
@@ -45,14 +46,14 @@ public:		// constants
 public:		// classes
 	class Value
 	{
-	public:		// variables
+	private:		// variables
 		// Might need to use an std::stringstream to get the value for
 		// datetime.
-		std::string datetime, 
-			classic_index_str, 
-			message, 
-			name, 
-			slot;
+		std::string __datetime, 
+			__classic_index_str, 
+			__message, 
+			__name, 
+			__slot;
 
 	public:		// functions
 		inline Value()
@@ -63,11 +64,11 @@ public:		// classes
 			const std::string& s_message, 
 			const std::string& s_name, 
 			const std::string& s_slot)
-			: datetime(s_datetime),
-			classic_index_str(s_classic_index_str),
-			message(s_message), 
-			name(s_name), 
-			slot(s_slot)
+			: __datetime(s_datetime),
+			__classic_index_str(s_classic_index_str),
+			__message(s_message), 
+			__name(s_name), 
+			__slot(s_slot)
 		{
 		}
 
@@ -84,6 +85,18 @@ public:		// classes
 
 		void extract_from_json(const Json::Value& to_copy);
 		void add_to_json(Json::Value& output_root) const;
+
+		gen_getter_by_ref(datetime);
+		gen_getter_by_ref(classic_index_str);
+		gen_getter_by_ref(message);
+		gen_getter_by_ref(name);
+		gen_getter_by_ref(slot);
+		
+		gen_getter_by_con_ref(datetime);
+		gen_getter_by_con_ref(classic_index_str);
+		gen_getter_by_con_ref(message);
+		gen_getter_by_con_ref(name);
+		gen_getter_by_con_ref(slot);
 	};
 
 
@@ -91,11 +104,10 @@ private:		// variables
 	//size_t __lowest_available_slot;
 	mpz_class __lowest_available_slot;
 	std::string __database_file_name;
-
-public:		// variables
+	
 	// Here is where the savestates are stored when in RAM.  They are
 	// indexed by slot number as an std::string.
-	std::map<std::string, Value> savestates;
+	std::map<std::string, Value> __savestates;
 
 
 public:		// functions
@@ -116,21 +128,49 @@ public:		// functions
 		set_database_file_name(s_database_file_name);
 		load_from_file();
 	}
-	void write_file() const;
-
 	void save(const std::string& message, const std::string& name, 
 		const std::string& slot, bool use_lowest);
+	void write_file() const;
+
+	
+	inline bool contains(const mpz_class& slot_bignum) const
+	{
+		return (savestates().count(convert_bignum_to_str(slot_bignum)) 
+			!= 0);
+	}
+	bool slot_owned_by(const mpz_class& slot_bignum, 
+		const std::string& name);
+
+	
+	inline Value& at(const mpz_class& slot_bignum)
+	{
+		return savestates()[convert_bignum_to_str(slot_bignum)];
+	}
+	inline Value& at(const std::string& slot)
+	{
+		return savestates()[slot];
+	}
 	
 	gen_getter_by_val(lowest_available_slot);
 	gen_getter_by_con_ref(database_file_name);
+	gen_getter_by_con_ref(savestates);
 
 private:		// functions
 	gen_setter_by_val(lowest_available_slot);
 	gen_setter_by_con_ref(database_file_name);
+	gen_getter_by_ref(savestates);
 
 	void load_from_file();
 
 	void update_lowest_available_slot();
+	
+
+	inline bool slot_owned_by(const std::string& slot, 
+		const std::string& name)
+	{
+		//return savestates
+		return (savestates()[slot].name() == name);
+	}
 	
 };
 
@@ -205,6 +245,7 @@ private:		// functions
 		const size_t test_start_index, size_t& i);
 	bool next_non_blank_substr(const std::string& whole_cmd_str, 
 		const size_t test_start_index, std::string& ret, size_t& i);
+	
 
 };
 
