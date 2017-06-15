@@ -97,7 +97,7 @@ void Database::write_file() const
 	write_json(out_file, &output_root);
 }
 
-bool Database::slot_owned_by(const mpz_class& slot_bignum, 
+bool Database::slot_owned_by(const BigNum& slot_bignum, 
 	const std::string& name)
 {
 	return slot_owned_by(std::move(convert_bignum_to_str(slot_bignum)),
@@ -126,21 +126,8 @@ void Database::update_lowest_available_slot()
 	printout("I started with this lowest_available_slot:  ",
 		lowest_available_slot(), "\n");
 
-	for ( ; 
-		//lowest_available_slot()<max_automatic_slot; 
-		;
-		++__lowest_available_slot)
+	for ( ; ; ++__lowest_available_slot)
 	{
-		//if (lowest_available_slot() == max_automatic_slot)
-		//{
-		//	err("Can't have automatic slot as high as",
-		//		lowest_available_slot(), "!");
-		//}
-
-		//std::string las_str;
-		//std::stringstream las_sstm;
-		//las_sstm << lowest_available_slot();
-		//las_sstm >> las_str;
 		const std::string las_str 
 			= std::move(convert_bignum_to_str(lowest_available_slot()));
 
@@ -187,8 +174,6 @@ NeoSaveyBot::Configuration::Configuration()
 
 		for (const auto& command_iter : iter["startup_commands"])
 		{
-			//to_push.startup_commands.push_back(command_iter.asString());
-
 			std::string full_command;
 
 			for (const auto& inner_iter : command_iter)
@@ -220,85 +205,9 @@ NeoSaveyBot::~NeoSaveyBot()
 }
 
 
-
-//void NeoSaveyBot::parse_command_basic
-//	(const std::vector<std::string>& args_vec)
-//{
-//	const size_t start_index = 1;
-//	const size_t size = args_vec.size() - start_index;
-//
-//	const std::string& command = args_vec.at(start_index);
-//
-//
-//	auto print_found_command = [&command]() -> void
-//	{
-//		printout("Found a \"", command, "\".\n");
-//	};
-//	auto say_invalid_num_params = [&command]() -> void
-//	{
-//		printout("Invalid number of parameters for \"", command, "\".\n");
-//	};
-//
-//	if (command == ".road")
-//	{
-//		print_found_command();
-//	}
-//
-//	else if (command == ".save")
-//	{
-//		print_found_command();
-//		
-//		//if (size != 2)
-//		//{
-//		//	say_invalid_num_params();
-//		//	return;
-//		//}
-//
-//		if ((size < 2) || (size > 3))
-//		{
-//			say_invalid_num_params();
-//			return;
-//		}
-//
-//		else if (size == 2)
-//		{
-//			__database.save(args_vec.at(start_index + 1), 
-//				"--Command Line Test--", "");
-//		}
-//
-//		else // if (size == 3)
-//		{
-//			{
-//				mpz_class slot;
-//				if (convert_str_to_bignum(args_vec.at(start_index + 1), 
-//					slot))
-//				{
-//					printout("Invalid save slot\n");
-//					return;
-//				}
-//			}
-//
-//			__database.save(args_vec.at(start_index + 2), 
-//				"--Command Line Test--", args_vec.at(start_index + 1));
-//			
-//		}
-//
-//
-//	}
-//
-//	else
-//	{
-//		printout("Unknown command.\n");
-//	}
-//
-//}
-
-
 void NeoSaveyBot::parse_command(const std::string& name,
 	const std::string& whole_cmd_str)
 {
-	//std::vector<std::string> split_vec;
-	
 	size_t i;
 	std::string cmd;
 
@@ -322,10 +231,11 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	{
 		print_found_command();
 
-		mpz_class slot_bignum;
+		BigNum slot_bignum;
 		std::string slot, message;
 		
 		size_t temp_i;
+		
 		if (!next_non_blank_substr(whole_cmd_str, i, slot, temp_i))
 		{
 			say_invalid_num_params();

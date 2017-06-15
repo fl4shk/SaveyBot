@@ -102,7 +102,7 @@ public:		// classes
 
 private:		// variables
 	//size_t __lowest_available_slot;
-	mpz_class __lowest_available_slot;
+	BigNum __lowest_available_slot;
 	std::string __database_file_name;
 	
 	// Here is where the savestates are stored when in RAM.  They are
@@ -134,15 +134,15 @@ public:		// functions
 	void write_file() const;
 
 	
-	inline bool contains(const mpz_class& slot_bignum) const
+	inline bool contains(const BigNum& slot_bignum) const
 	{
 		return (savestates().count(convert_bignum_to_str(slot_bignum)) 
 			!= 0);
 	}
-	bool slot_owned_by(const mpz_class& slot_bignum, 
+	bool slot_owned_by(const BigNum& slot_bignum, 
 		const std::string& name);
 	
-	inline bool slot_exists_but_not_owned_by(const mpz_class& slot_bignum,
+	inline bool slot_exists_but_not_owned_by(const BigNum& slot_bignum,
 		const std::string& name)
 	{
 		return (contains(slot_bignum) 
@@ -150,7 +150,7 @@ public:		// functions
 	}
 
 	
-	inline Value& at(const mpz_class& slot_bignum)
+	inline Value& at(const BigNum& slot_bignum)
 	{
 		return savestates()[convert_bignum_to_str(slot_bignum)];
 	}
@@ -240,7 +240,7 @@ private:		// functions
 	//	const std::string&);
 	
 
-	//bool convert_str_to_bignum(const std::string& num_str, mpz_class& ret)
+	//bool convert_str_to_bignum(const std::string& num_str, BigNum& ret)
 	//{
 	//	std::stringstream num_sstm(num_str);
 	//	num_sstm >> ret;

@@ -24,9 +24,11 @@
 namespace neosaveybot
 {
 
-bool str_is_integer_bignum(const std::string& str, mpz_class& ret);
+typedef mpz_class BigNum;
 
-inline std::string convert_bignum_to_str(const mpz_class& in_bignum)
+bool str_is_integer_bignum(const std::string& str, BigNum& ret);
+
+inline std::string convert_bignum_to_str(const BigNum& in_bignum)
 {
 	std::string ret;
 	std::stringstream sstm;

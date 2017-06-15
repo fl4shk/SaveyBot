@@ -21,7 +21,7 @@
 namespace neosaveybot
 {
 
-bool str_is_integer_bignum(const std::string& str, mpz_class& ret)
+bool str_is_integer_bignum(const std::string& str, BigNum& ret)
 {
 	size_t i = 0;
 
