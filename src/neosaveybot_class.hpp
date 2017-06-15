@@ -219,7 +219,7 @@ public:		// classes
 private:		// variables
 	Configuration __config;
 	Database __database;
-	Prng __prng;
+	liborangepower::time::Prng __prng;
 
 public:		// static variables
 	static const std::string config_file_name, database_file_name;
