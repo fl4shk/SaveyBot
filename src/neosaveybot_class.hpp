@@ -219,6 +219,7 @@ public:		// classes
 private:		// variables
 	Configuration __config;
 	Database __database;
+	Prng __prng;
 
 public:		// static variables
 	static const std::string config_file_name, database_file_name;
@@ -235,6 +236,7 @@ private:		// functions
 	gen_getter_by_con_ref(config);
 	gen_getter_by_con_ref(database);
 	gen_getter_by_ref(database);
+	gen_getter_by_ref(prng);
 
 	//void save(const std::string& message, const std::string& name,
 	//	const std::string&);
