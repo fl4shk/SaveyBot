@@ -22,7 +22,7 @@ namespace neosaveybot
 
 bool eat_specific_chars(const std::string& some_str,
 	const size_t test_start_index, size_t& i,
-	const CharTesterFunc& is_spec_chars_func)
+	const CharTesterFunc& lead_tester)
 {
 	i = test_start_index;
 
@@ -32,7 +32,7 @@ bool eat_specific_chars(const std::string& some_str,
 	}
 	
 	// Eat leading specific characters
-	while (is_spec_chars_func(some_str.at(i)))
+	while (lead_tester(some_str.at(i)))
 	{
 		++i;
 
@@ -46,8 +46,8 @@ bool eat_specific_chars(const std::string& some_str,
 }
 bool next_non_specific_chars_substr(const std::string& some_str, 
 	const size_t test_start_index, std::string& ret, size_t& i,
-	const CharTesterFunc& is_spec_chars_func_lead,
-	const CharTesterFunc& is_spec_chars_func_trail)
+	const CharTesterFunc& lead_tester,
+	const CharTesterFunc& trail_tester)
 {
 	//i = test_start_index;
 
@@ -63,8 +63,7 @@ bool next_non_specific_chars_substr(const std::string& some_str,
 	//	}
 	//}
 
-	if (!eat_specific_chars(some_str, test_start_index, i,
-		is_spec_chars_func_lead))
+	if (!eat_specific_chars(some_str, test_start_index, i, lead_tester))
 	{
 		ret = "";
 		return false;
@@ -72,8 +71,7 @@ bool next_non_specific_chars_substr(const std::string& some_str,
 
 	const size_t start_index = i;
 
-	while (i < some_str.size() 
-		&& !is_spec_chars_func_trail(some_str.at(i)))
+	while ((i < some_str.size()) && !trail_tester(some_str.at(i)))
 	{
 		++i;
 

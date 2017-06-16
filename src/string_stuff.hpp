@@ -28,12 +28,12 @@ typedef std::function<int(int)> CharTesterFunc;
 
 bool eat_specific_chars(const std::string& some_str,
 	const size_t test_start_index, size_t& i,
-	const CharTesterFunc& is_spec_chars_func);
+	const CharTesterFunc& lead_tester);
 
 bool next_non_specific_chars_substr(const std::string& some_str,
 	const size_t test_start_index, std::string& ret, size_t& i,
-	const CharTesterFunc& is_spec_chars_func_lead,
-	const CharTesterFunc& is_spec_chars_func_trail);
+	const CharTesterFunc& lead_tester,
+	const CharTesterFunc& trail_tester);
 
 inline bool eat_whitespace(const std::string& some_str,
 	const size_t test_start_index, size_t& i)

@@ -125,7 +125,7 @@ void IRCCommunicator::do_full_read()
 
 
 	packet = "";
-	//for (size_t i=0; i!=raw_buf.size(); ++i)
+	
 	for (auto iter : raw_buf)
 	{
 		if (iter == '\0')
@@ -141,6 +141,9 @@ void IRCCommunicator::do_full_read()
 	bool did_complete_line = false;
 
 	buf_str = buf_str.substr(last_index);
+
+	CharTesterFunc lead([](int ignored_thing) -> int { return false; });
+
 	last_index = 0;
 
 	if (did_complete_line)
