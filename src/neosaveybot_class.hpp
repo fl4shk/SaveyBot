@@ -297,6 +297,7 @@ private:		// functions
 	// Fake message senders (they just print to the command line)
 	inline void fake_send_msg() const
 	{
+		printout("\n");
 	}
 
 	template<typename FirstType, typename... ArgTypes>
