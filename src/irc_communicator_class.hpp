@@ -62,6 +62,39 @@ namespace neosaveybot
 
 class IRCCommunicator
 {
+public:		// classes
+	// This should be moved to some IRC-related thing
+	class Configuration
+	{
+	public:		// classes
+		class Server
+		{
+		public:		// variables
+			std::string name, 
+				bot_name,
+				address,
+				port_str,
+				password;
+
+			std::vector<std::string> joins_list,
+				startup_commands;
+
+		public:		// functions
+			
+		};
+		
+
+	public:		// variables
+		std::vector<Server> server_vec;
+
+	public:		// functions
+		Configuration();
+		
+	};
+
+public:		// static variables
+	static const std::string config_file_name;
+
 private:		// variables
 	// Allow IPv4 or IPv6
 	static constexpr auto __specific_family = AF_UNSPEC;
@@ -78,6 +111,8 @@ private:		// variables
 
 	// Stuff for clean_up()
 	bool __did_alloc_res = false, __did_open_sock_fd = false;
+	
+	Configuration __config;
 
 public:		// functions
 
@@ -108,6 +143,8 @@ private:		// functions
 	gen_setter_by_val(did_alloc_res);
 	gen_setter_by_val(did_open_sock_fd);
 
+	gen_getter_by_con_ref(config);
+
 	void clean_up();
 
 	void do_getaddrinfo(const std::string& some_server_name, 
@@ -131,6 +168,10 @@ private:		// functions
 		}
 	}
 };
+
+std::ostream& operator << (std::ostream& os, 
+	const IRCCommunicator::Configuration::Server& to_print);
+
 
 }
 

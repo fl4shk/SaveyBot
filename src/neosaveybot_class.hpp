@@ -209,45 +209,15 @@ private:		// functions
 
 class NeoSaveyBot
 {
-public:		// classes
-	// This should be moved to some IRC-related thing
-	class Configuration
-	{
-	public:		// classes
-		class Server
-		{
-		public:		// variables
-			std::string name, 
-				bot_name,
-				address,
-				port_str,
-				password;
-
-			std::vector<std::string> joins_list,
-				startup_commands;
-
-		public:		// functions
-			
-		};
-		
-
-	public:		// variables
-		std::vector<Server> server_vec;
-
-	public:		// functions
-		Configuration();
-		
-	};
 
 
 
 private:		// variables
-	Configuration __config;
 	Database __database;
 	liborangepower::time::Prng __prng;
 
 public:		// static variables
-	static const std::string config_file_name, database_file_name;
+	static const std::string database_file_name;
 	
 public:		// functions
 	NeoSaveyBot();
@@ -258,7 +228,6 @@ public:		// functions
 		const std::string& whole_cmd_str);
 
 private:		// functions
-	gen_getter_by_con_ref(config);
 	gen_getter_by_con_ref(database);
 	gen_getter_by_ref(database);
 	//gen_getter_by_ref(prng);
@@ -312,8 +281,6 @@ private:		// functions
 };
 
 
-std::ostream& operator << (std::ostream& os, 
-	const NeoSaveyBot::Configuration::Server& to_print);
 
 }
 
