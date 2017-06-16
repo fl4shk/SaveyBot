@@ -24,6 +24,7 @@
 #include <fstream>
 #include <memory>
 #include <map>
+#include <functional>
 #include <cstring>
 #include <cctype>
 

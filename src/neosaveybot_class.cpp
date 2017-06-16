@@ -311,6 +311,59 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 	};
 
+	// ".road"
+	auto exec_only_takes_nothing_or_username_command = [&]
+		(const std::function<void()>& first_clause_stuff,
+		const std::function<void()>& second_clause_stuff) -> void
+	{
+		print_found_command();
+
+		// If we weren't given a user
+		if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
+		{
+			first_clause_stuff();
+		}
+
+		// If we were given a user
+		else
+		{
+			second_clause_stuff();
+		}
+	};
+
+	// ".remove"
+	auto exec_only_takes_slot_command = [&]
+		(const std::function<void()>& last_clause_stuff) -> void
+	{
+		print_found_command();
+
+		if (!inner_next_non_blank_substr())
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		// REQUIRE a slot to delete
+		if (!str_is_integer_bignum(slot, slot_bignum))
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		if (!database().contains(slot_bignum))
+		{
+			say_slot_doesnt_exit();
+		}
+		else if (!database().slot_owned_by(slot_bignum, name))
+		{
+			say_owned_by();
+		}
+		else
+		{
+			last_clause_stuff();
+		}
+	};
+
 
 	if (cmd == ".save")
 	{
@@ -363,21 +416,6 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	{
 		print_found_command();
 
-		if (database().size() == 0)
-		{
-			say_database_empty();
-			return;
-		}
-
-		//else if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
-		//{
-		//	i = temp_i;
-
-		//	const std::string& some_name 
-		//		= std::move(whole_cmd_str.substr(i));
-
-		//	
-		//}
 		if (!inner_next_non_blank_substr())
 		{
 			say_need_slot_number_or_username();
@@ -411,84 +449,73 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".remove")
 	{
-		print_found_command();
-
-		if (!inner_next_non_blank_substr())
-		{
-			say_invalid_num_params();
-			return;
-		}
-
-		// REQUIRE a slot to delete
-		if (!str_is_integer_bignum(slot, slot_bignum))
-		{
-			say_invalid_num_params();
-			return;
-		}
-
-		if (!database().contains(slot_bignum))
-		{
-			say_slot_doesnt_exit();
-		}
-		else if (!database().slot_owned_by(slot_bignum, name))
-		{
-			say_owned_by();
-		}
-		else
-		{
-			__database.remove(slot);
-			say_rip();
-		}
+		exec_only_takes_slot_command([&]() -> void
+			{
+				__database.remove(slot);
+				say_rip();
+			});
 	}
 
 	else if (cmd == ".road")
 	{
-		print_found_command();
-
-		if (database().size() == 0)
-		{
-			say_database_empty();
-			return;
-		}
-		// If we weren't given a user
-		else if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
-		{
-			const auto offset = prng(database().size());
-			
-			auto iter = database().begin();
-
-			for (size_t j=0; j<offset; ++j)
+		exec_only_takes_nothing_or_username_command([&]() -> void
+			// If we weren't given a user
 			{
-				++iter;
-			}
+				if (database().size() == 0)
+				{
+					say_database_empty();
+					return;
+				}
+				
+				const auto offset = prng(database().size());
+				
+				auto iter = database().begin();
 
-			show(iter->second);
-		}
-		else
-		{
-			i = temp_i;
+				for (size_t j=0; j<offset; ++j)
+				{
+					++iter;
+				}
 
-			const std::string& some_name 
-				= std::move(whole_cmd_str.substr(i));
+				show(iter->second);
+			},
 
-			fill_temp_slot_vec(some_name);
-
-			if (temp_slot_vec.size() == 0)
+		// If we were given a user
+			[&]() -> void
 			{
-				say_cant_find_owned_by(some_name);
-			}
-			else // if (temp_slot_vec.size() > 0)
-			{
-				// Almost duplicate code
-				const auto offset = prng(temp_slot_vec.size());
-				auto iter = temp_slot_vec.begin();
+				i = temp_i;
 
-				iter += offset;
+				const std::string& some_name 
+					= std::move(whole_cmd_str.substr(i));
 
-				show(database().at(*iter));
-			}
-		}
+				fill_temp_slot_vec(some_name);
+
+				if (temp_slot_vec.size() == 0)
+				{
+					say_cant_find_owned_by(some_name);
+				}
+				else // if (temp_slot_vec.size() > 0)
+				{
+					// Almost duplicate code
+					const auto offset = prng(temp_slot_vec.size());
+					auto iter = temp_slot_vec.begin();
+
+					iter += offset;
+
+					show(database().at(*iter));
+				}
+			});
 	}
+
+	//else if (cmd == ".date")
+	//{
+	//	print_found_command();
+
+	//	if (!inner_next_non_blank_substr())
+	//	{
+	//		
+	//	}
+
+	//}
 
 	else
 	{
