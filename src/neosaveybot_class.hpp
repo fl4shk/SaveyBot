@@ -291,6 +291,20 @@ private:		// functions
 	{
 		return __prng(max_val);
 	}
+
+
+	// Fake message senders (they just print to the command line)
+	inline void fake_send_msg() const
+	{
+	}
+
+	template<typename FirstType, typename... ArgTypes>
+	void fake_send_msg(const FirstType& first_val, ArgTypes&&... rem_args)
+		const
+	{
+		printout(first_val);
+		fake_send_msg(rem_args...);
+	}
 	
 
 };

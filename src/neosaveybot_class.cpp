@@ -79,7 +79,6 @@ void Database::save(const std::string& message, const std::string& name,
 	update_lowest_available_slot();
 	
 	write_file();
-	printout("Your savestate was sav'd to slot number ", slot, "!\n");
 }
 
 void Database::write_file() const
@@ -216,13 +215,13 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
 	
-	auto print_found_command = [&cmd]() -> void
+	auto print_found_command = [this, &cmd]() -> void
 	{
-		printout("Found a \"", cmd, "\".\n");
+		fake_send_msg("Found a \"", cmd, "\".\n");
 	};
-	auto say_invalid_num_params = [&cmd]() -> void
+	auto say_invalid_num_params = [this, &cmd]() -> void
 	{
-		printout("Invalid number of parameters for \"", cmd, "\".\n");
+		fake_send_msg("Invalid number of parameters for \"", cmd, "\".\n");
 	};
 
 	auto inner_next_non_blank_substr = [&]() -> bool
@@ -232,13 +231,27 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	auto show = [&](const Database::Value& to_show) -> void
 	{
-		printout(" ~ ", to_show.name(), "[", to_show.slot(), "]:  ", 
+		fake_send_msg(" ~ ", to_show.name(), "[", to_show.slot(), "]:  ", 
 			to_show.message(), "\n");
 	};
 
-	auto say_cant_find = [](const std::string& some_name) -> void
+	auto say_cant_find = [this](const std::string& some_name) -> void
 	{
-		printout("Can't find any savestates owned by ", some_name, "!\n");
+		fake_send_msg("Can't find any savestates owned by ", some_name, 
+			"!\n");
+	};
+	
+
+	auto say_message_saved = [this, &slot]() -> void
+	{
+		fake_send_msg("Your savestate was sav'd to slot number ", slot, 
+			"!\n");
+	};
+
+	auto say_owned_by = [this, &slot_bignum]() -> void
+	{
+		fake_send_msg("That slot is owned by ", 
+			database().at(slot_bignum).name(), "!\n");
 	};
 
 
@@ -320,13 +333,13 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			
 			if (database().slot_exists_but_not_owned_by(slot_bignum, name))
 			{
-				printout("That slot is owned by ", 
-					database().at(slot_bignum).name(), "!\n");
+				say_owned_by();
 			}
 			else
 			{
 				message = std::move(whole_cmd_str.substr(i));
 				__database.save(message, name, slot, false);
+				say_message_saved();
 			}
 		}
 		else
@@ -335,6 +348,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 				.lowest_available_slot()));
 			message = std::move(whole_cmd_str.substr(i));
 			__database.save(message, name, slot, true);
+			say_message_saved();
 		}
 	}
 
@@ -345,7 +359,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else
 	{
-		printout("Unknown command.\n");
+		fake_send_msg("Unknown command.\n");
 	}
 }
 
