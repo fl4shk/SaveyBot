@@ -185,7 +185,7 @@ private:		// variables
 	// The array of characters read() sends its data to
 	std::array<char, raw_buf_size> raw_buf;
 
-	std::string packet, buf_str;
+	std::string __line, packet, buf_str;
 
 	size_t last_index = 0;
 
@@ -224,6 +224,8 @@ public:		// functions
 		return *__config_server_ptr;
 	}
 
+	gen_getter_by_con_ref(line);
+
 	void do_full_read();
 
 
@@ -245,8 +247,6 @@ private:		// functions
 		return *__bot_ptr;
 	}
 
-
-	void append_packet();
 
 	void inner_send_raw_msg(std::string&& full_msg) const;
 

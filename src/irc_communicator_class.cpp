@@ -123,31 +123,32 @@ void IRCCommunicator::do_full_read()
 	const auto num_read = read(sock_fd(), raw_buf.data(), 
 		(raw_buf.size() - 2));
 
-	packet = "";
 
-	for (size_t i=0; i!=raw_buf.size(); ++i)
+	packet = "";
+	//for (size_t i=0; i!=raw_buf.size(); ++i)
+	for (auto iter : raw_buf)
 	{
-		if (raw_buf.at(i) == '\0')
+		if (iter == '\0')
 		{
 			break;
 		}
 		
-		packet += raw_buf.at(i);
+		packet += iter;
+		buf_str += iter;
 	}
-	
 
-	//buf_str = "";
+
+	bool did_complete_line = false;
+
 	buf_str = buf_str.substr(last_index);
-	append_packet();
-	printout(buf_str);
+	last_index = 0;
+
+	if (did_complete_line)
+	{
+		printout(line());
+	}
 }
 
-
-void IRCCommunicator::append_packet()
-{
-	//buf_str = packet;
-	
-}
 
 void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
 	const std::string& some_port_str)
