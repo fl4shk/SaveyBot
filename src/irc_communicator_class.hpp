@@ -26,6 +26,39 @@
 namespace neosaveybot
 {
 
+// This should be moved to some IRC-related thing
+class IRCConfiguration
+{
+public:		// classes
+	class Server
+	{
+	public:		// variables
+		std::string name, 
+			bot_name,
+			address,
+			port_str,
+			password;
+
+		std::vector<std::string> joins_list,
+			startup_commands;
+
+	public:		// functions
+		
+	};
+	
+
+public:		// variables
+	std::vector<Server> server_vec;
+
+public:		// functions
+	IRCConfiguration();
+	
+};
+
+
+std::ostream& operator << (std::ostream& os, 
+	const IRCConfiguration::Server& to_print);
+
 
 //// Here is the addrinfo struct.
 //struct addrinfo {
@@ -63,36 +96,6 @@ namespace neosaveybot
 
 class IRCCommunicator : public Communicator
 {
-public:		// classes
-	// This should be moved to some IRC-related thing
-	class Configuration
-	{
-	public:		// classes
-		class Server
-		{
-		public:		// variables
-			std::string name, 
-				bot_name,
-				address,
-				port_str,
-				password;
-
-			std::vector<std::string> joins_list,
-				startup_commands;
-
-		public:		// functions
-			
-		};
-		
-
-	public:		// variables
-		std::vector<Server> server_vec;
-
-	public:		// functions
-		Configuration();
-		
-	};
-
 public:		// static variables
 	static const std::string config_file_name;
 
@@ -113,20 +116,22 @@ private:		// variables
 	// Stuff for clean_up()
 	bool __did_alloc_res = false, __did_open_sock_fd = false;
 	
-	Configuration __config;
-
-protected:		// functions
-	virtual void inner_send_msg(std::string&& full_msg);
 
 public:		// functions
 	IRCCommunicator(const std::string& some_server_name, 
 		const std::string& some_port_str, const std::string& nick_command,
 		const std::string& user_command, 
 		const std::vector<std::string>& joins_list);
+	IRCCommunicator(const IRCCommunicator& to_copy) = default;
+	IRCCommunicator(IRCCommunicator&& to_move) = default;
+	
 	inline ~IRCCommunicator()
 	{
 		clean_up();
 	}
+
+	IRCCommunicator& operator = (const IRCCommunicator& to_copy) = default;
+	IRCCommunicator& operator = (IRCCommunicator&& to_move) = default;
 
 	gen_getter_by_val(specific_family);
 	gen_getter_by_val(specific_socktype);
@@ -138,6 +143,11 @@ public:		// functions
 	gen_getter_by_val(did_alloc_res);
 	gen_getter_by_val(did_open_sock_fd);
 
+protected:		// functions
+	virtual void inner_send_msg(const std::string& channel, 
+		std::string&& full_msg);
+
+
 private:		// functions
 	gen_getter_by_ref(hints);
 	gen_getter_by_ref(res);
@@ -145,8 +155,6 @@ private:		// functions
 	
 	gen_setter_by_val(did_alloc_res);
 	gen_setter_by_val(did_open_sock_fd);
-
-	gen_getter_by_con_ref(config);
 
 	void clean_up();
 
@@ -172,8 +180,6 @@ private:		// functions
 	}
 };
 
-std::ostream& operator << (std::ostream& os, 
-	const IRCCommunicator::Configuration::Server& to_print);
 
 
 }

@@ -21,12 +21,12 @@
 namespace neosaveybot
 {
 
-IRCCommunicator::Configuration::Configuration()
+IRCConfiguration::IRCConfiguration()
 {
 	Json::Value config_root;
 	std::string errs;
 
-	parse_json(config_file_name, &config_root, &errs);
+	parse_json(IRCCommunicator::config_file_name, &config_root, &errs);
 
 	const auto& member_names = config_root.getMemberNames();
 
@@ -61,12 +61,36 @@ IRCCommunicator::Configuration::Configuration()
 		server_vec.push_back(to_push);
 	}
 
-	//for (const auto& iter : server_vec)
-	//{
-	//	printout(iter);
-	//}
-	//printout("\n");
+	for (const auto& iter : server_vec)
+	{
+		printout(iter);
+	}
+	printout("\n");
 
+}
+
+std::ostream& operator << (std::ostream& os, 
+	const IRCConfiguration::Server& to_print)
+{
+	osprintout(os, "name:  ", to_print.name, "\n");
+	osprintout(os, "\tbot_name:  ", to_print.bot_name, "\n");
+	osprintout(os, "\taddress:  ", to_print.address, "\n");
+	osprintout(os, "\tport_str:  ", to_print.port_str, "\n");
+	osprintout(os, "\tpassword:  ", to_print.password, "\n");
+
+	osprintout(os, "\tjoins_list:  \n");
+	for (const auto& iter : to_print.joins_list)
+	{
+		osprintout(os, "\t\t", iter, "\n");
+	}
+
+	osprintout(os, "\tstartup_commands:  \n");
+	for (const auto& iter : to_print.startup_commands)
+	{
+		osprintout(os, "\t\t", iter, "\n");
+	}
+
+	return os;
 }
 
 const std::string IRCCommunicator::config_file_name("config.json");
@@ -128,28 +152,11 @@ void IRCCommunicator::do_socket_and_connect()
 	}
 }
 
-std::ostream& operator << (std::ostream& os, 
-	const IRCCommunicator::Configuration::Server& to_print)
+void IRCCommunicator::inner_send_msg(const std::string& channel, 
+	std::string&& full_msg)
 {
-	osprintout(os, "name:  ", to_print.name, "\n");
-	osprintout(os, "\tbot_name:  ", to_print.bot_name, "\n");
-	osprintout(os, "\taddress:  ", to_print.address, "\n");
-	osprintout(os, "\tport_str:  ", to_print.port_str, "\n");
-	osprintout(os, "\tpassword:  ", to_print.password, "\n");
-
-	osprintout(os, "\tjoins_list:  \n");
-	for (const auto& iter : to_print.joins_list)
-	{
-		osprintout(os, "\t\t", iter, "\n");
-	}
-
-	osprintout(os, "\tstartup_commands:  \n");
-	for (const auto& iter : to_print.startup_commands)
-	{
-		osprintout(os, "\t\t", iter, "\n");
-	}
-
-	return os;
+	
 }
+
 
 }

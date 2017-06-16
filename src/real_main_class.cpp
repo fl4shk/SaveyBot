@@ -38,7 +38,7 @@ RealMain::RealMain(int argc, char** argv)
 	//}
 
 	gen_args_vec(argc, argv);
-	parse_args_vec();
+	//parse_args_vec();
 	
 	//__convert_original_database(args_vec().at(1), args_vec().at(2));
 }
@@ -61,21 +61,21 @@ void RealMain::gen_args_vec(int argc, char** argv)
 	}
 }
 
-void RealMain::parse_args_vec()
-{
-	//if (args_vec().size() == 1)
-	//{
-	//	err("Need at least one argument (besides program name)");
-	//}
-
-	//bot().parse_command_basic(args_vec());
-
-	if (args_vec().size() <= 2)
-	{
-		err("Need at least two arguments (besides program name).");
-	}
-	bot().parse_command(args_vec().at(1), args_vec().at(2));
-}
+//void RealMain::parse_args_vec()
+//{
+//	//if (args_vec().size() == 1)
+//	//{
+//	//	err("Need at least one argument (besides program name)");
+//	//}
+//
+//	//bot().parse_command_basic(args_vec());
+//
+//	if (args_vec().size() <= 2)
+//	{
+//		err("Need at least two arguments (besides program name).");
+//	}
+//	bot().parse_command(args_vec().at(1), args_vec().at(2));
+//}
 
 void RealMain::__convert_original_database
 	(const std::string& input_file_name, 

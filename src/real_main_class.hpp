@@ -30,6 +30,9 @@ private:		// variables
 	std::vector<std::string> __args_vec;
 	NeoSaveyBot __bot;
 
+	std::vector<IRCCommunicator> __irc_comm_vec;
+	IRCConfiguration __irc_config;
+
 public:		// functions
 	RealMain(int argc, char** argv);
 	~RealMain();
@@ -37,10 +40,12 @@ public:		// functions
 	int operator () ();
 
 	gen_getter_by_con_ref(args_vec);
+	gen_getter_by_con_ref(irc_config);
 
 
 private:		// functions
 	gen_getter_by_ref(bot);
+	gen_getter_by_ref(irc_comm_vec);
 
 	void gen_args_vec(int argc, char** argv);
 

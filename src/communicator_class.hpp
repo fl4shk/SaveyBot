@@ -32,7 +32,8 @@ protected:		// variables
 	
 
 protected:		// functions
-	virtual void inner_send_msg(std::string&& full_msg) = 0;
+	virtual void inner_send_msg(const std::string& channel, 
+		std::string&& full_msg) = 0;
 
 	//inline void concat_msg(std::string& full_msg)
 	//{
@@ -50,9 +51,11 @@ protected:		// functions
 
 public:		// functions
 	template<typename FirstType, typename... ArgTypes>
-	void send_msg(const FirstType& first_val, ArgTypes&&... rem_args)
+	void send_msg(const std::string& channel, const FirstType& first_val, 
+		ArgTypes&&... rem_args)
 	{
-		inner_send_msg(std::move(sconcat(first_val, rem_args...)));
+		inner_send_msg(channel, std::move(sconcat(first_val, 
+			rem_args...)));
 	}
 	
 };

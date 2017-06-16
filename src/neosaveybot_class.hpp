@@ -224,8 +224,8 @@ public:		// functions
 	~NeoSaveyBot();
 
 	//void parse_command_basic(const std::vector<std::string>& args_vec);
-	void parse_command(const std::string& name, 
-		const std::string& whole_cmd_str);
+	void parse_command(Communicator& comm, const std::string& channel, 
+		const std::string& name, const std::string& whole_cmd_str);
 
 private:		// functions
 	gen_getter_by_con_ref(database);
