@@ -32,26 +32,79 @@ class IRCConfiguration
 public:		// classes
 	class Server
 	{
-	public:		// variables
-		std::string name, 
-			bot_name,
-			address,
-			port_str,
-			password;
+	private:		// variables
+		std::string __name,
+			__bot_name,
+			__address,
+			__port_str,
+			__password;
 
-		std::vector<std::string> joins_list,
-			startup_commands;
+		std::vector<std::string> __joins_list,
+			__startup_commands;
 
 	public:		// functions
+		inline Server()
+		{
+		}
+
+		Server(const Server& to_copy) = default;
+		Server(Server&& to_move) = default;
+
+		inline ~Server()
+		{
+		}
+		
+		Server& operator = (const Server& to_copy) = default;
+		Server& operator = (Server&& to_move) = default;
+		
+		
+		gen_getter_by_con_ref(name);
+		gen_getter_by_con_ref(bot_name);
+		gen_getter_by_con_ref(address);
+		gen_getter_by_con_ref(port_str);
+		gen_getter_by_con_ref(password);
+		gen_getter_by_con_ref(joins_list);
+		gen_getter_by_con_ref(startup_commands);
+
+		gen_getter_by_ref(joins_list);
+		gen_getter_by_ref(startup_commands);
+		
+
+		gen_setter_by_con_ref(name);
+		gen_setter_by_con_ref(bot_name);
+		gen_setter_by_con_ref(address);
+		gen_setter_by_con_ref(port_str);
+		gen_setter_by_con_ref(password);
+		gen_setter_by_con_ref(joins_list);
+		gen_setter_by_con_ref(startup_commands);
+		
+		gen_setter_by_rval_ref(name);
+		gen_setter_by_rval_ref(bot_name);
+		gen_setter_by_rval_ref(address);
+		gen_setter_by_rval_ref(port_str);
+		gen_setter_by_rval_ref(password);
+		gen_setter_by_rval_ref(joins_list);
+		gen_setter_by_rval_ref(startup_commands);
+		
 		
 	};
 	
 
-public:		// variables
-	std::vector<Server> server_vec;
+private:		// variables
+	std::vector<Server> __server_vec;
 
 public:		// functions
 	IRCConfiguration();
+
+	IRCConfiguration(const IRCConfiguration& to_copy) = default;
+	IRCConfiguration(IRCConfiguration&& to_move) = default;
+
+
+	IRCConfiguration& operator = (const IRCConfiguration& to_copy) 
+		= default;
+	IRCConfiguration& operator = (IRCConfiguration&& to_move) = default;
+
+	gen_getter_by_con_ref(server_vec);
 	
 };
 
@@ -116,12 +169,16 @@ private:		// variables
 	// Stuff for clean_up()
 	bool __did_alloc_res = false, __did_open_sock_fd = false;
 	
+	// This is a pointer to a constant IRCConfiguration::Server.
+	const IRCConfiguration::Server* __config_server_ptr;
 
 public:		// functions
-	IRCCommunicator(const std::string& some_server_name, 
-		const std::string& some_port_str, const std::string& nick_command,
-		const std::string& user_command, 
-		const std::vector<std::string>& joins_list);
+	//IRCCommunicator(const std::string& some_server_name, 
+	//	const std::string& some_port_str, const std::string& nick_command,
+	//	const std::string& user_command, 
+	//	const std::vector<std::string>& joins_list);
+	IRCCommunicator(const IRCConfiguration::Server* s_config_server_ptr);
+	
 	IRCCommunicator(const IRCCommunicator& to_copy) = default;
 	IRCCommunicator(IRCCommunicator&& to_move) = default;
 	
@@ -142,6 +199,11 @@ public:		// functions
 
 	gen_getter_by_val(did_alloc_res);
 	gen_getter_by_val(did_open_sock_fd);
+
+	inline const IRCConfiguration::Server& config_server() const
+	{
+		return *__config_server_ptr;
+	}
 
 protected:		// functions
 	virtual void inner_send_msg(const std::string& channel, 

@@ -34,16 +34,16 @@ IRCConfiguration::IRCConfiguration()
 	{
 		Server to_push;
 
-		to_push.name = name_iter;
+		to_push.set_name(name_iter);
 		const auto& iter = config_root[name_iter];
-		to_push.bot_name = iter["bot_name"].asString();
-		to_push.address = iter["address"].asString();
-		to_push.port_str = iter["port"].asString();
-		to_push.password = iter["password"].asString();
+		to_push.set_bot_name(iter["bot_name"].asString());
+		to_push.set_address(iter["address"].asString());
+		to_push.set_port_str(iter["port"].asString());
+		to_push.set_password(iter["password"].asString());
 
 		for (const auto& join_iter : iter["joins_list"])
 		{
-			to_push.joins_list.push_back(join_iter.asString());
+			to_push.joins_list().push_back(join_iter.asString());
 		}
 
 		for (const auto& command_iter : iter["startup_commands"])
@@ -55,13 +55,13 @@ IRCConfiguration::IRCConfiguration()
 				full_command += inner_iter.asString();
 			}
 
-			to_push.startup_commands.push_back(std::move(full_command));
+			to_push.startup_commands().push_back(std::move(full_command));
 		}
 
-		server_vec.push_back(to_push);
+		__server_vec.push_back(to_push);
 	}
 
-	for (const auto& iter : server_vec)
+	for (const auto& iter : __server_vec)
 	{
 		printout(iter);
 	}
@@ -72,20 +72,20 @@ IRCConfiguration::IRCConfiguration()
 std::ostream& operator << (std::ostream& os, 
 	const IRCConfiguration::Server& to_print)
 {
-	osprintout(os, "name:  ", to_print.name, "\n");
-	osprintout(os, "\tbot_name:  ", to_print.bot_name, "\n");
-	osprintout(os, "\taddress:  ", to_print.address, "\n");
-	osprintout(os, "\tport_str:  ", to_print.port_str, "\n");
-	osprintout(os, "\tpassword:  ", to_print.password, "\n");
+	osprintout(os, "name:  ", to_print.name(), "\n");
+	osprintout(os, "\tbot_name:  ", to_print.bot_name(), "\n");
+	osprintout(os, "\taddress:  ", to_print.address(), "\n");
+	osprintout(os, "\tport_str:  ", to_print.port_str(), "\n");
+	osprintout(os, "\tpassword:  ", to_print.password(), "\n");
 
 	osprintout(os, "\tjoins_list:  \n");
-	for (const auto& iter : to_print.joins_list)
+	for (const auto& iter : to_print.joins_list())
 	{
 		osprintout(os, "\t\t", iter, "\n");
 	}
 
 	osprintout(os, "\tstartup_commands:  \n");
-	for (const auto& iter : to_print.startup_commands)
+	for (const auto& iter : to_print.startup_commands())
 	{
 		osprintout(os, "\t\t", iter, "\n");
 	}
@@ -96,12 +96,15 @@ std::ostream& operator << (std::ostream& os,
 const std::string IRCCommunicator::config_file_name("config.json");
 
 
-IRCCommunicator::IRCCommunicator(const std::string& some_server_name, 
-	const std::string& some_port_str, const std::string& nick_command,
-	const std::string& user_command, 
-	const std::vector<std::string>& joins_list)
+//IRCCommunicator::IRCCommunicator(const std::string& some_server_name, 
+//	const std::string& some_port_str, const std::string& nick_command,
+//	const std::string& user_command, 
+//	const std::vector<std::string>& joins_list)
+IRCCommunicator::IRCCommunicator
+	(const IRCConfiguration::Server* s_config_server_ptr)
+	: __config_server_ptr(s_config_server_ptr)
 {
-	do_getaddrinfo(some_server_name, some_port_str);
+	do_getaddrinfo(config_server().address(), config_server().port_str());
 	do_socket_and_connect();
 
 	// Go ahead and do this now 
@@ -117,16 +120,23 @@ void IRCCommunicator::clean_up()
 }
 
 
-void IRCCommunicator::do_getaddrinfo(const std::string& some_server_name,
+void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
 	const std::string& some_port_str)
 {
+	printout(some_address, " ", some_port_str, "\n");
+	
 	memset(&__hints, 0, sizeof(__hints));
 	__hints.ai_family = specific_family();
 	__hints.ai_socktype = specific_socktype();
 
-	if (getaddrinfo(some_server_name.c_str(), some_port_str.c_str(), 
-		&hints(), &res()) != 0)
+	const int gai_result = getaddrinfo(some_address.c_str(), 
+		some_port_str.c_str(), &__hints, &__res);
+
+	if (gai_result != 0)
 	{
+		printerr(gai_result, ":  ");
+		printerr(gai_strerror(gai_result), ":  ");
+
 		printerr("There was an error getting address information.\n");
 		set_did_open_sock_fd(false);
 		clean_up();
