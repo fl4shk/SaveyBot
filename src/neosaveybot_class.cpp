@@ -232,6 +232,8 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	std::vector<std::string> temp_slot_vec;
 
 	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
+
+	static const std::string happy_suffix("!!! :D/"), sad_suffix(" )));");
 	
 	auto print_found_command = [this, &cmd]() -> void
 	{
@@ -247,10 +249,24 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		return next_non_blank_substr(whole_cmd_str, i, slot, temp_i);
 	};
 
-	auto show = [&](const Database::Value& to_show) -> void
+	auto show_msg = [&](const Database::Value& to_show) -> void
 	{
 		fake_send_msg(" ~ ", to_show.name(), "[", to_show.slot(), "]:  ", 
 			to_show.message());
+	};
+
+	auto show_datetime = [&](const Database::Value& to_show) -> void
+	{
+		if (to_show.datetime() == "classic")
+		{
+			fake_send_msg(" ~ That savestate was sav'd using original",
+				"SaveyBot, so datetime unknown", happy_suffix);
+		}
+		else
+		{
+			fake_send_msg(" ~ That savestate was sav'd on ",
+				to_show.datetime(), happy_suffix);
+		}
 	};
 
 	auto say_cant_find_owned_by = [this](const std::string& some_name) 
@@ -260,7 +276,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			"!");
 	};
 	
-	auto say_slot_doesnt_exit = [this]() -> void
+	auto say_slot_doesnt_exist = [this]() -> void
 	{
 		fake_send_msg("That slot doesn't exist!");
 	};
@@ -279,12 +295,12 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	auto say_rip = [this]() -> void
 	{
-		fake_send_msg(" ~ rip ur msg )));\n");
+		fake_send_msg(" ~ rip ur msg", sad_suffix);
 	};
 
 	auto say_database_empty = [this]() -> void
 	{
-		fake_send_msg(" ~ The database is empty! )));");
+		fake_send_msg(" ~ The database is empty!", sad_suffix);
 	};
 	auto say_need_slot_number_or_username = [this]() -> void
 	{
@@ -294,8 +310,8 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	auto say_number_of_slots_owned_by = [this]
 		(const std::string& some_name, const size_t amount) -> void
 	{
-		fake_send_msg(" ~ ", some_name, " owns ", amount, 
-			" savestates!!! :D/");
+		fake_send_msg(" ~ ", some_name, " owns ", amount, " savestates", 
+			happy_suffix);
 	};
 
 	auto fill_temp_slot_vec = [this, &temp_slot_vec]
@@ -396,7 +412,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 	};
 
-	// ".remove"
+	// ".remove", ".date"
 	auto exec_only_takes_slot_command = [&]
 		(const CommandClauseFunc& given_slot_clause) -> void
 	{
@@ -422,8 +438,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	if (cmd == ".save")
 	{
-		exec_takes_slot_and_message_or_just_message_command
-			([&]() -> void
+		exec_takes_slot_and_message_or_just_message_command([&]() -> void
 			{
 				// If we were given a slot, then we need both a slot AND a
 				// message
@@ -458,23 +473,22 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".load")
 	{
-		exec_only_takes_slot_or_username_command(
-		// If we were given a slot
-			[&]() -> void
+		exec_only_takes_slot_or_username_command([&]() -> void
 			{
+				// If we were given a slot
 				if (database().contains(slot_bignum))
 				{
-					show(database().at(slot_bignum));
+					show_msg(database().at(slot_bignum));
 				}
 				else
 				{
-					say_slot_doesnt_exit();
+					say_slot_doesnt_exist();
 				}
 			},
 
-		// If we were given a username
 			[&]() -> void
 			{
+				// If we were given a username
 				const std::string& some_name = slot;
 
 				fill_temp_slot_vec(some_name);
@@ -492,7 +506,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			{
 				if (!database().contains(slot_bignum))
 				{
-					say_slot_doesnt_exit();
+					say_slot_doesnt_exist();
 				}
 				else if (!database().slot_owned_by(slot_bignum, name))
 				{
@@ -509,8 +523,8 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	else if (cmd == ".road")
 	{
 		exec_only_takes_nothing_or_username_command([&]() -> void
-			// If we weren't given a user
 			{
+				// If we weren't given a user
 				if (database().size() == 0)
 				{
 					say_database_empty();
@@ -526,12 +540,12 @@ void NeoSaveyBot::parse_command(const std::string& name,
 					++iter;
 				}
 
-				show(iter->second);
+				show_msg(iter->second);
 			},
 
-		// If we were given a user
 			[&]() -> void
 			{
+				// If we were given a user
 				i = temp_i;
 
 				const std::string& some_name 
@@ -551,21 +565,25 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 					iter += offset;
 
-					show(database().at(*iter));
+					show_msg(database().at(*iter));
 				}
 			});
 	}
 
-	//else if (cmd == ".date")
-	//{
-	//	print_found_command();
-
-	//	if (!inner_next_non_blank_substr())
-	//	{
-	//		
-	//	}
-
-	//}
+	else if ((cmd == ".date") || (cmd == ".datetime"))
+	{
+		exec_only_takes_slot_command([&]() -> void
+			{
+				if (!database().contains(slot_bignum))
+				{
+					say_slot_doesnt_exist();
+				}
+				else
+				{
+					show_datetime(database().at(slot_bignum));
+				}
+			});
+	}
 
 	else
 	{
