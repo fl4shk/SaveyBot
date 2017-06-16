@@ -140,14 +140,15 @@ void IRCCommunicator::do_full_read()
 
 	bool did_complete_line = false;
 
-	buf_str = buf_str.substr(last_index);
 
-	CharTesterFunc lead([](int ignored_thing) -> int { return false; });
-
-	last_index = 0;
+	//size_t temp_last_index = last_index;
+	//eat_whitespace(
 
 	if (did_complete_line)
 	{
+		__line = "";
+		buf_str = buf_str.substr(last_index);
+		last_index = 0;
 		printout(line());
 	}
 }
