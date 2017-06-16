@@ -24,12 +24,15 @@ bool eat_specific_chars(const std::string& some_str,
 	const size_t test_start_index, size_t& i,
 	const CharTesterFunc& lead_tester)
 {
+	//printout("test_start_index, i:  ", test_start_index, " ", i, "\n");
 	i = test_start_index;
 
 	if (i >= some_str.size())
 	{
 		return false;
 	}
+
+	//printout(some_str.at(i), "\t");
 	
 	// Eat leading specific characters
 	while (lead_tester(some_str.at(i)))
@@ -41,6 +44,7 @@ bool eat_specific_chars(const std::string& some_str,
 			return false;
 		}
 	}
+	//printout("i:  ", i, "\n");
 
 	return true;
 }
@@ -73,6 +77,7 @@ bool next_non_specific_chars_substr(const std::string& some_str,
 
 	while ((i < some_str.size()) && !trail_tester(some_str.at(i)))
 	{
+		//printout("i:  ", i, "\n");
 		++i;
 
 		if (i >= some_str.size())

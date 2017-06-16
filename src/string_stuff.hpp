@@ -44,6 +44,8 @@ inline bool eat_whitespace(const std::string& some_str,
 inline bool next_non_blank_substr(const std::string& some_str, 
 	const size_t test_start_index, std::string& ret, size_t& i)
 {
+	//return next_non_specific_chars_substr(some_str, test_start_index, ret, 
+	//	i, CharTesterFunc(isspace), CharTesterFunc(isblank));
 	return next_non_specific_chars_substr(some_str, test_start_index, ret, 
 		i, CharTesterFunc(isspace), CharTesterFunc(isblank));
 }
