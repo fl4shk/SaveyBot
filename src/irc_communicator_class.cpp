@@ -17,6 +17,7 @@
 
 
 #include "irc_communicator_class.hpp"
+#include "neosaveybot_class.hpp"
 
 namespace neosaveybot
 {
@@ -61,11 +62,11 @@ IRCConfiguration::IRCConfiguration()
 		__server_vec.push_back(to_push);
 	}
 
-	for (const auto& iter : __server_vec)
-	{
-		printout(iter);
-	}
-	printout("\n");
+	//for (const auto& iter : __server_vec)
+	//{
+	//	printout(iter);
+	//}
+	//printout("\n");
 
 }
 
@@ -93,16 +94,17 @@ std::ostream& operator << (std::ostream& os,
 	return os;
 }
 
-const std::string IRCCommunicator::config_file_name("config.json");
+const std::string IRCCommunicator::config_file_name("config.json"),
+	IRCCommunicator::msg_suffix("\r\n");
 
 
 //IRCCommunicator::IRCCommunicator(const std::string& some_server_name, 
 //	const std::string& some_port_str, const std::string& nick_command,
 //	const std::string& user_command, 
 //	const std::vector<std::string>& joins_list)
-IRCCommunicator::IRCCommunicator
-	(const IRCConfiguration::Server* s_config_server_ptr)
-	: __config_server_ptr(s_config_server_ptr)
+IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr, 
+	const IRCConfiguration::Server* s_config_server_ptr)
+	: __bot_ptr(s_bot_ptr), __config_server_ptr(s_config_server_ptr)
 {
 	do_getaddrinfo(config_server().address(), config_server().port_str());
 	do_socket_and_connect();
@@ -171,7 +173,7 @@ void IRCCommunicator::inner_send_privmsg(const std::string& channel,
 void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
 {
 	std::string temp = std::move(full_msg);
-	temp += "\r\n";
+	temp += msg_suffix;
 
 	write(sock_fd(), temp.c_str(), temp.size());
 }

@@ -51,7 +51,8 @@ int RealMain::operator () ()
 {
 	for (auto& iter : irc_config().server_vec())
 	{
-		irc_comm_vec().push_back(std::move(IRCCommunicator(&iter)));
+		irc_comm_vec().push_back(std::move(IRCCommunicator(&__bot, 
+			&iter)));
 	}
 
 	return 0;

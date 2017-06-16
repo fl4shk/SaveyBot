@@ -23,8 +23,11 @@
 #include "json_stuff.hpp"
 #include "communicator_class.hpp"
 
+
 namespace neosaveybot
 {
+
+class NeoSaveyBot;
 
 // This should be moved to some IRC-related thing
 class IRCConfiguration
@@ -150,7 +153,8 @@ std::ostream& operator << (std::ostream& os,
 class IRCCommunicator : public Communicator
 {
 public:		// static variables
-	static const std::string config_file_name;
+	static const std::string config_file_name,
+		msg_suffix;
 
 private:		// variables
 	// Allow IPv4 or IPv6
@@ -169,15 +173,22 @@ private:		// variables
 	// Stuff for clean_up()
 	bool __did_alloc_res = false, __did_open_sock_fd = false;
 	
+	NeoSaveyBot* __bot_ptr;
+	
 	// This is a pointer to a constant IRCConfiguration::Server.
 	const IRCConfiguration::Server* __config_server_ptr;
+
+
+
+
 
 public:		// functions
 	//IRCCommunicator(const std::string& some_server_name, 
 	//	const std::string& some_port_str, const std::string& nick_command,
 	//	const std::string& user_command, 
 	//	const std::vector<std::string>& joins_list);
-	IRCCommunicator(const IRCConfiguration::Server* s_config_server_ptr);
+	IRCCommunicator(NeoSaveyBot* s_bot_ptr, 
+		const IRCConfiguration::Server* s_config_server_ptr);
 	
 	IRCCommunicator(const IRCCommunicator& to_copy) = default;
 	IRCCommunicator(IRCCommunicator&& to_move) = default;
@@ -229,6 +240,11 @@ private:		// functions
 	gen_setter_by_val(did_alloc_res);
 	gen_setter_by_val(did_open_sock_fd);
 
+	inline NeoSaveyBot& bot() const
+	{
+		return *__bot_ptr;
+	}
+
 	void clean_up();
 
 	void do_getaddrinfo(const std::string& some_server_name, 
@@ -256,5 +272,6 @@ private:		// functions
 
 
 }
+
 
 #endif		// irc_communicator_class_hpp

@@ -20,7 +20,8 @@
 #define neosaveybot_class_hpp
 
 #include "json_stuff.hpp"
-#include "irc_communicator_class.hpp"
+//#include "irc_communicator_class.hpp"
+#include "communicator_class.hpp"
 #include "gmp_stuff.hpp"
 #include "string_stuff.hpp"
 
@@ -210,8 +211,6 @@ private:		// functions
 
 class NeoSaveyBot
 {
-
-
 
 private:		// variables
 	Database __database;

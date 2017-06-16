@@ -19,6 +19,7 @@
 #ifndef real_main_class_hpp
 #define real_main_class_hpp
 
+#include "irc_communicator_class.hpp"
 #include "neosaveybot_class.hpp"
 
 namespace neosaveybot
