@@ -28,35 +28,24 @@ namespace neosaveybot
 
 class Communicator
 {
-protected:		// variables
-	
+private:		// variables
+	// This is controlled by a NeoSaveyBot instance
+	std::string __channel;
 
 protected:		// functions
-	virtual void inner_send_privmsg(const std::string& channel, 
-		std::string&& full_msg) = 0;
-
-	//inline void concat_msg(std::string& full_msg)
-	//{
-	//}
-
-	//template<typename FirstType, typename... ArgTypes>
-	//void concat_msg(std::string& full_msg, const FirstType& first_val,
-	//	ArgTypes&&... rem_args)
-	//{
-	//	std::stringstream sstm;
-	//	sstm << first_val;
-	//	sstm >> full_msg;
-	//	concat_msg(full_msg, rem_args...);
-	//}
+	virtual void inner_send_privmsg(std::string&& full_msg) = 0;
 
 public:		// functions
 	template<typename FirstType, typename... RemArgTypes>
-	void send_privmsg(const std::string& channel, 
-		const FirstType& first_val, RemArgTypes&&... rem_args)
+	void send_privmsg(const FirstType& first_val, 
+		const RemArgTypes&... rem_args)
 	{
-		inner_send_privmsg(channel, std::move(sconcat(first_val, 
-			rem_args...)));
+		inner_send_privmsg(std::move(sconcat(first_val, rem_args...)));
 	}
+
+	gen_setter_by_con_ref(channel);
+	gen_setter_by_rval_ref(channel);
+	gen_getter_by_con_ref(channel);
 	
 };
 

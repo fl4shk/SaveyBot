@@ -171,13 +171,18 @@ NeoSaveyBot::~NeoSaveyBot()
 }
 
 
-// Note:  this needs a const std::string& channel parameter and a
-// Communicator& parameter.
 void NeoSaveyBot::parse_command(Communicator& comm, 
 	const std::string& channel, const std::string& name,
 	const std::string& whole_cmd_str)
 {
 	typedef std::function<void()> CommandClauseFunc;
+
+
+	// First things first
+	comm.set_channel(channel);
+
+
+
 
 	size_t i, temp_i;
 	BigNum slot_bignum;
@@ -188,13 +193,13 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 
 	static const std::string happy_suffix("!!! :D/"), sad_suffix(" )));");
 	
-	auto print_found_command = [this, &cmd]() -> void
+	auto print_found_command = [&]() -> void
 	{
 		printout("Found a \"", cmd, "\".\n");
 	};
-	auto say_invalid_num_params = [this, &cmd]() -> void
+	auto say_invalid_num_params = [&]() -> void
 	{
-		fake_send_msg("Invalid number of parameters for \"", cmd, "\".");
+		comm.send_privmsg("Invalid number of parameters for \"", cmd, "\".");
 	};
 
 	auto inner_next_non_blank_substr = [&]() -> bool
@@ -204,74 +209,74 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 
 	auto show_msg = [&](const Database::Value& to_show) -> void
 	{
-		fake_send_msg(" ~ ", to_show.name(), "[", to_show.slot(), "]:  ", 
-			to_show.message());
+		comm.send_privmsg(" ~ ", to_show.name(), "[", to_show.slot(), 
+			"]:  ", to_show.message());
 	};
 
 	auto show_datetime = [&](const Database::Value& to_show) -> void
 	{
 		if (to_show.datetime() == "classic")
 		{
-			fake_send_msg(" ~ That savestate was sav'd using original",
+			comm.send_privmsg(" ~ That savestate was sav'd using original",
 				"SaveyBot, so datetime unknown", happy_suffix);
 		}
 		else
 		{
-			fake_send_msg(" ~ That savestate was sav'd on ",
+			comm.send_privmsg(" ~ That savestate was sav'd on ",
 				to_show.datetime(), happy_suffix);
 		}
 	};
 
-	auto say_cant_find_owned_by = [this](const std::string& some_name) 
+	auto say_cant_find_owned_by = [&](const std::string& some_name) 
 		-> void
 	{
-		fake_send_msg("Can't find any savestates owned by ", some_name, 
+		comm.send_privmsg("Can't find any savestates owned by ", some_name, 
 			"!");
 	};
 	
-	auto say_slot_doesnt_exist = [this]() -> void
+	auto say_slot_doesnt_exist = [&]() -> void
 	{
-		fake_send_msg("That slot doesn't exist!");
+		comm.send_privmsg("That slot doesn't exist!");
 	};
 
-	auto say_message_saved = [this, &slot]() -> void
+	auto say_message_saved = [&]() -> void
 	{
-		fake_send_msg("Your savestate was sav'd to slot number ", slot, 
+		comm.send_privmsg("Your savestate was sav'd to slot number ", slot, 
 			"!");
 	};
 
-	auto say_owned_by = [this, &slot_bignum]() -> void
+	auto say_owned_by = [&]() -> void
 	{
-		fake_send_msg("That slot is owned by ", 
+		comm.send_privmsg("That slot is owned by ", 
 			database().at(slot_bignum).name(), "!");
 	};
 
-	auto say_rip = [this]() -> void
+	auto say_rip = [&]() -> void
 	{
-		fake_send_msg(" ~ rip ur msg", sad_suffix);
+		comm.send_privmsg(" ~ rip ur msg", sad_suffix);
 	};
 
-	auto say_database_empty = [this]() -> void
+	auto say_database_empty = [&]() -> void
 	{
-		fake_send_msg(" ~ The database is empty!", sad_suffix);
+		comm.send_privmsg(" ~ The database is empty!", sad_suffix);
 	};
-	auto say_need_slot_number = [this]() -> void
+	auto say_need_slot_number = [&]() -> void
 	{
-		fake_send_msg(" ~ Need a slot number for that!");
+		comm.send_privmsg(" ~ Need a slot number for that!");
 	};
-	auto say_need_slot_number_or_username = [this]() -> void
+	auto say_need_slot_number_or_username = [&]() -> void
 	{
-		fake_send_msg(" ~ Need a slot number (or username) for that!");
+		comm.send_privmsg(" ~ Need a slot number (or username) for that!");
 	};
 
-	auto say_number_of_slots_owned_by = [this]
+	auto say_number_of_slots_owned_by = [&]
 		(const std::string& some_name, const size_t amount) -> void
 	{
-		fake_send_msg(" ~ ", some_name, " owns ", amount, " savestates", 
-			happy_suffix);
+		comm.send_privmsg(" ~ ", some_name, " owns ", amount, 
+			" savestates", happy_suffix);
 	};
 
-	auto fill_temp_slot_vec = [this, &temp_slot_vec]
+	auto fill_temp_slot_vec = [&]
 		(const std::string& some_name) -> void
 	{
 		temp_slot_vec.clear();
@@ -558,10 +563,10 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 			});
 	}
 
-	else
-	{
-		fake_send_msg("Unknown command.\n");
-	}
+	//else
+	//{
+	//	//comm.send_privmsg("Unknown command.");
+	//}
 }
 
 

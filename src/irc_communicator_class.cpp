@@ -164,15 +164,16 @@ void IRCCommunicator::do_socket_and_connect()
 	}
 }
 
-void IRCCommunicator::inner_send_privmsg(const std::string& channel, 
-	std::string&& full_msg)
+void IRCCommunicator::inner_send_privmsg(std::string&& full_msg)
 {
-	send_raw_msg("PRIVMSG ", channel, full_msg);
+	send_raw_msg("PRIVMSG ", channel(), std::move(full_msg));
 }
 
 void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
 {
 	std::string temp = std::move(full_msg);
+
+	// The "\r\n" IRC message suffix
 	temp += msg_suffix;
 
 	write(sock_fd(), temp.c_str(), temp.size());

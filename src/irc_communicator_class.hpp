@@ -217,8 +217,7 @@ public:		// functions
 	}
 
 protected:		// functions
-	virtual void inner_send_privmsg(const std::string& channel, 
-		std::string&& full_msg);
+	virtual void inner_send_privmsg(std::string&& full_msg);
 	
 
 

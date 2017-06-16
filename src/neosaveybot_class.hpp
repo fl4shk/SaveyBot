@@ -236,40 +236,32 @@ private:		// functions
 	//	const std::string&);
 	
 
-	//bool convert_str_to_bignum(const std::string& num_str, BigNum& ret)
-	//{
-	//	std::stringstream num_sstm(num_str);
-	//	num_sstm >> ret;
-
-	//	return num_sstm.fail();
-	//}
-
-
-	// These are NOT getters
+	// This is NOT a getter
 	inline auto prng()
 	{
 		return __prng();
 	}
 
+	// This is NOT a getter
 	inline auto prng(u64 max_val)
 	{
 		return __prng(max_val);
 	}
 
 
-	// Fake message senders (they just print to the command line)
-	inline void fake_send_msg() const
-	{
-		printout("\n");
-	}
+	//// Fake message senders (they just print to the command line)
+	//inline void fake_send_msg() const
+	//{
+	//	printout("\n");
+	//}
 
-	template<typename FirstType, typename... ArgTypes>
-	void fake_send_msg(const FirstType& first_val, ArgTypes&&... rem_args)
-		const
-	{
-		printout(first_val);
-		fake_send_msg(rem_args...);
-	}
+	//template<typename FirstType, typename... ArgTypes>
+	//void fake_send_msg(const FirstType& first_val, ArgTypes&&... rem_args)
+	//	const
+	//{
+	//	printout(first_val);
+	//	fake_send_msg(rem_args...);
+	//}
 	
 
 };
