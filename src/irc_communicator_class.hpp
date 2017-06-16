@@ -21,6 +21,7 @@
 
 
 #include "json_stuff.hpp"
+#include "communicator_class.hpp"
 
 namespace neosaveybot
 {
@@ -60,7 +61,7 @@ namespace neosaveybot
 //};
 
 
-class IRCCommunicator
+class IRCCommunicator : public Communicator
 {
 public:		// classes
 	// This should be moved to some IRC-related thing
@@ -114,8 +115,10 @@ private:		// variables
 	
 	Configuration __config;
 
-public:		// functions
+protected:		// functions
+	virtual void inner_send_msg(std::string&& full_msg);
 
+public:		// functions
 	IRCCommunicator(const std::string& some_server_name, 
 		const std::string& some_port_str, const std::string& nick_command,
 		const std::string& user_command, 

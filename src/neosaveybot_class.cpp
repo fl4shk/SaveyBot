@@ -173,8 +173,9 @@ NeoSaveyBot::~NeoSaveyBot()
 
 // Note:  this needs a const std::string& channel parameter and a
 // Communicator& parameter.
-void NeoSaveyBot::parse_command(const std::string& name,
-	const std::string& whole_cmd_str)
+void NeoSaveyBot::parse_command(Communicator& comm, 
+	const std::string& channel, const std::string& name,
+	const std::string& whole_cmd_str, )
 {
 	typedef std::function<void()> CommandClauseFunc;
 
