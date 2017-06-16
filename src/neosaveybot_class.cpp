@@ -236,27 +236,64 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			to_show.message(), "\n");
 	};
 
+	auto say_cant_find = [](const std::string& some_name) -> void
+	{
+		printout("Can't find any savestates owned by ", some_name, "!\n");
+	};
+
+
 	if (cmd == ".road")
 	{
 		print_found_command();
 
-		//if (!inner_next_non_blank_substr())
-		//{
-		//	say_invalid_num_params();
-		//	return;
-		//}
-
-		const auto offset = prng(database().size());
-
-		auto iter = database().begin();
-
-		for (size_t i=0; i<offset; ++i)
+		if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
 		{
-			++iter;
+			const auto offset = prng(database().size());
+			
+			auto iter = database().begin();
+
+			for (size_t j=0; j<offset; ++j)
+			{
+				++iter;
+			}
+
+			show(iter->second);
 		}
+		else
+		{
+			i = temp_i;
 
-		show(iter->second);
+			const std::string& some_name 
+				= std::move(whole_cmd_str.substr(i));
 
+			std::vector<std::string> msg_vec;
+
+			for (auto iter : database())
+			{
+				if (iter.second.name() == some_name)
+				{
+					msg_vec.push_back(iter.second.slot());
+				}
+			}
+
+			if (msg_vec.size() == 0)
+			{
+				say_cant_find(some_name);
+			}
+			else // if (msg_vec.size() > 0)
+			{
+				// Almost duplicate code
+				const auto offset = prng(msg_vec.size());
+				auto iter = msg_vec.begin();
+
+				for (size_t j=0; j<offset; ++j)
+				{
+					++iter;
+				}
+
+				show(database().at(*iter));
+			}
+		}
 	}
 
 	else if (cmd == ".save")
