@@ -379,7 +379,10 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 		else
 		{
+			// Don't need to check return value of this because earlier if
+			// statement already checked if anything came after the ".save"
 			find_next_non_blank_index(whole_cmd_str, i, i);
+
 			slot = std::move(convert_bignum_to_str(database()
 				.lowest_available_slot()));
 			message = std::move(whole_cmd_str.substr(i));
