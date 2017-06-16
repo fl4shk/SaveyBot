@@ -325,7 +325,7 @@ void IRCCommunicator::update_line()
 
 void IRCCommunicator::inner_send_regular_msg(std::string&& full_msg)
 {
-	send_raw_msg("PRIVMSG ", channel(), " :", std::move(full_msg));
+	send_raw_msg("PRIVMSG ", channel(), " :", full_msg);
 }
 
 void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
