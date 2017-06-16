@@ -259,7 +259,7 @@ private:		// functions
 		RemArgTypes&&...  rem_args)
 	{
 		std::string temp = std::move(sconcat(first_val, rem_args...));
-		printout("Sending to server \"", config_server().name(), "\":  ",
+		printerr("Sending to server \"", config_server().name(), "\":  ",
 			temp, "\n");
 
 		inner_send_raw_msg(std::move(temp));

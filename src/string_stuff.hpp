@@ -50,8 +50,14 @@ inline bool next_non_blank_substr(const std::string& some_str,
 		i, CharTesterFunc(isspace), CharTesterFunc(isblank));
 }
 
-std::string substr_trimmed(const std::string& some_str, const size_t i);
+std::string substr_trimmed(const std::string& some_str, const size_t i,
+	const CharTesterFunc& trail_tester);
 
+inline std::string&& substr_trimmed(const std::string& some_str, 
+	const size_t i)
+{
+	return std::move(substr_trimmed(some_str, i, CharTesterFunc(isblank)));
+}
 
 
 }

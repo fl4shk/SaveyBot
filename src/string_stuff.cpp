@@ -93,7 +93,8 @@ bool next_non_specific_chars_substr(const std::string& some_str,
 	return true;
 }
 
-std::string substr_trimmed(const std::string& some_str, const size_t i)
+std::string substr_trimmed(const std::string& some_str, const size_t i,
+	const CharTesterFunc& trail_tester)
 {
 	std::string temp = std::move(some_str.substr(i));
 
@@ -101,7 +102,7 @@ std::string substr_trimmed(const std::string& some_str, const size_t i)
 
 	for (; last>=0; --last)
 	{
-		if (!isblank(temp.at(last)))
+		if (!trail_tester(temp.at(last)))
 		{
 			break;
 		}

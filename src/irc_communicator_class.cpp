@@ -177,7 +177,7 @@ IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr,
 			}
 
 			// Messages start with ":"
-			user_nick = first_substr.substr(1, exclam_index);
+			user_nick = first_substr.substr(1, (exclam_index - 1));
 
 			next_non_blank_substr(line(), i, second_substr, i);
 
