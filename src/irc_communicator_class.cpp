@@ -124,8 +124,6 @@ void IRCCommunicator::do_full_read()
 		(raw_buf.size() - 2));
 
 
-	packet = "";
-	
 	for (auto iter : raw_buf)
 	{
 		if (iter == '\0')
@@ -133,25 +131,22 @@ void IRCCommunicator::do_full_read()
 			break;
 		}
 		
-		packet += iter;
 		buf_str += iter;
 	}
-
-
-	bool did_complete_line = false;
 
 
 	//size_t temp_last_index = last_index;
 	//eat_whitespace(
 
-	
+	const auto suffix_index = buf_str.find(msg_suffix);
 
-	if (did_complete_line)
+	if (suffix_index != std::string::npos)
 	{
-		__line = "";
-		buf_str = std::move(buf_str.substr(last_index));
-		last_index = 0;
-		printout(line());
+		//printout(line());
+		printout(buf_str.substr(0, suffix_index), "\n");
+		
+		buf_str = std::move(buf_str.substr(suffix_index 
+			+ msg_suffix.size()));
 	}
 }
 
