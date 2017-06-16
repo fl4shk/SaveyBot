@@ -55,16 +55,16 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 }
 
 void Database::save(const std::string& message, const std::string& name, 
-	const std::string& slot, bool use_lowest)
+	const std::string& slot)
 {
-	if (use_lowest)
-	{
-		std::string&& temp_slot = convert_bignum_to_str
-			(lowest_available_slot());
-		
-		save(message, name, temp_slot, false);
-		return;
-	}
+	//if (use_lowest)
+	//{
+	//	std::string&& temp_slot = convert_bignum_to_str
+	//		(lowest_available_slot());
+	//	
+	//	save(message, name, temp_slot, false);
+	//	return;
+	//}
 
 	std::string datetime;
 	std::stringstream dt_sstm;
@@ -315,78 +315,9 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 
 	// ".save"
-
-
-	// ".load"
-	auto exec_only_takes_slot_or_username_command = [&]
-		(const CommandClauseFunc& first_clause_stuff,
-		const CommandClauseFunc& second_clause_stuff) -> void
-	{
-		print_found_command();
-
-		if (!inner_next_non_blank_substr())
-		{
-			say_need_slot_number_or_username();
-			return;
-		}
-		
-		// If we were given a slot
-		else if (str_is_integer_bignum(slot, slot_bignum))
-		{
-			first_clause_stuff();
-		}
-		// If we were given a username
-		else
-		{
-			second_clause_stuff();
-		}
-	};
-
-	// ".road"
-	auto exec_only_takes_nothing_or_username_command = [&]
-		(const CommandClauseFunc& first_clause_stuff,
-		const CommandClauseFunc& second_clause_stuff) -> void
-	{
-		print_found_command();
-
-		// If we weren't given a user
-		if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
-		{
-			first_clause_stuff();
-		}
-
-		// If we were given a user
-		else
-		{
-			second_clause_stuff();
-		}
-	};
-
-	// ".remove"
-	auto exec_only_takes_slot_command = [&]
-		(const CommandClauseFunc& last_clause_stuff) -> void
-	{
-		print_found_command();
-
-		if (!inner_next_non_blank_substr())
-		{
-			say_invalid_num_params();
-			return;
-		}
-
-		// REQUIRE a slot to delete
-		if (!str_is_integer_bignum(slot, slot_bignum))
-		{
-			say_invalid_num_params();
-			return;
-		}
-
-		last_clause_stuff();
-
-	};
-
-
-	if (cmd == ".save")
+	auto exec_takes_slot_and_message_or_just_message_command = [&]
+		(const CommandClauseFunc& given_slot_and_message_clause,
+		const CommandClauseFunc& given_message_clause) -> void
 	{
 		print_found_command();
 
@@ -408,29 +339,121 @@ void NeoSaveyBot::parse_command(const std::string& name,
 				return;
 			}
 			
-			if (database().slot_exists_but_not_owned_by(slot_bignum, name))
-			{
-				say_owned_by();
-			}
-			else
-			{
-				message = std::move(whole_cmd_str.substr(i));
-				__database.save(message, name, slot, false);
-				say_message_saved();
-			}
+			given_slot_and_message_clause();
 		}
 		else
 		{
 			// Don't need to check return value of this because earlier if
-			// statement already checked if anything came after the ".save"
-			find_next_non_blank_index(whole_cmd_str, i, i);
-
-			slot = std::move(convert_bignum_to_str(database()
-				.lowest_available_slot()));
-			message = std::move(whole_cmd_str.substr(i));
-			__database.save(message, name, slot, true);
-			say_message_saved();
+			// statement already checked if anything came after the command
+			// name
+			given_message_clause();
 		}
+	};
+
+
+	// ".load"
+	auto exec_only_takes_slot_or_username_command = [&]
+		(const CommandClauseFunc& given_slot_clause,
+		const CommandClauseFunc& given_username_clause) -> void
+	{
+		print_found_command();
+
+		if (!inner_next_non_blank_substr())
+		{
+			say_need_slot_number_or_username();
+			return;
+		}
+		
+		// If we were given a slot
+		else if (str_is_integer_bignum(slot, slot_bignum))
+		{
+			given_slot_clause();
+		}
+		// If we were given a username
+		else
+		{
+			given_username_clause();
+		}
+	};
+
+	// ".road"
+	auto exec_only_takes_nothing_or_username_command = [&]
+		(const CommandClauseFunc& given_nothing_clause,
+		const CommandClauseFunc& given_username_clause) -> void
+	{
+		print_found_command();
+
+		// If we weren't given a user
+		if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
+		{
+			given_nothing_clause();
+		}
+
+		// If we were given a user
+		else
+		{
+			given_username_clause();
+		}
+	};
+
+	// ".remove"
+	auto exec_only_takes_slot_command = [&]
+		(const CommandClauseFunc& given_slot_clause) -> void
+	{
+		print_found_command();
+
+		if (!inner_next_non_blank_substr())
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		// REQUIRE a slot to delete
+		if (!str_is_integer_bignum(slot, slot_bignum))
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		given_slot_clause();
+
+	};
+
+
+	if (cmd == ".save")
+	{
+		exec_takes_slot_and_message_or_just_message_command
+			([&]() -> void
+			{
+				// If we were given a slot, then we need both a slot AND a
+				// message
+				if (database().slot_exists_but_not_owned_by(slot_bignum,
+					name))
+				{
+					say_owned_by();
+				}
+				else
+				{
+					message = std::move(whole_cmd_str.substr(i));
+					__database.save(message, name, slot);
+					say_message_saved();
+				}
+			},
+		
+			[&]() -> void
+			{
+				// Don't need to check return value of this because earlier
+				// if statement already checked if anything came after the
+				// ".save"
+				find_next_non_blank_index(whole_cmd_str, i, i);
+
+				
+				slot = std::move(convert_bignum_to_str(database()
+					.lowest_available_slot()));
+				message = std::move(whole_cmd_str.substr(i));
+				__database.save(message, name, slot);
+				say_message_saved();
+			});
 	}
 
 	else if (cmd == ".load")

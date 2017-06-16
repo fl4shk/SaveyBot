@@ -129,7 +129,7 @@ public:		// functions
 		load_from_file();
 	}
 	void save(const std::string& message, const std::string& name, 
-		const std::string& slot, bool use_lowest);
+		const std::string& slot);
 	void remove(const std::string& slot);
 	
 	void write_file() const;
