@@ -154,7 +154,6 @@ public:		// functions
 	{
 		return __savestates.begin();
 	}
-
 	inline auto end()
 	{
 		return __savestates.end();
@@ -164,7 +163,6 @@ public:		// functions
 	{
 		return __savestates.cbegin();
 	}
-
 	inline auto cend() const
 	{
 		return __savestates.cend();

@@ -187,11 +187,11 @@ NeoSaveyBot::Configuration::Configuration()
 		server_vec.push_back(to_push);
 	}
 
-	for (const auto& iter : server_vec)
-	{
-		printout(iter);
-	}
-	printout("\n");
+	//for (const auto& iter : server_vec)
+	//{
+	//	printout(iter);
+	//}
+	//printout("\n");
 
 }
 
@@ -232,7 +232,8 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	auto show = [&](const Database::Value& to_show) -> void
 	{
-		printout(" ~ ", to_show.message(), "\n");
+		printout(" ~ ", to_show.name(), "[", to_show.slot(), "]:  ", 
+			to_show.message(), "\n");
 	};
 
 	if (cmd == ".road")
