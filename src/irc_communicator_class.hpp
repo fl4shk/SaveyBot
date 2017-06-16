@@ -183,10 +183,9 @@ private:		// variables
 	const IRCConfiguration::Server* __config_server_ptr;
 
 	// The array of characters read() sends its data to
-	std::array<char, raw_buf_size> raw_buf, packet;
+	std::array<char, raw_buf_size> raw_buf;
 
-	////std::array<char, raw_buf_size> str;
-	//std::string packet, buf_str;
+	std::string packet, buf_str;
 
 	size_t last_index = 0;
 

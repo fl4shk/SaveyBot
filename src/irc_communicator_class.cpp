@@ -121,20 +121,25 @@ void IRCCommunicator::do_full_read()
 	// Null terminate
 	raw_buf.fill('\0');
 	const auto num_read = read(sock_fd(), raw_buf.data(), 
-		(raw_buf.size() - 1));
+		(raw_buf.size() - 2));
 
-	//str = raw_buf;
+	packet = "";
 
-	//packet.data() = raw_buf.data();
-	//packet.fill('\0');
-	//arr_memcpy(packet, raw_buf);
-
-	// Avoid an expensive copying operation
-	packet.swap(raw_buf);
+	for (size_t i=0; i!=raw_buf.size(); ++i)
+	{
+		if (raw_buf.at(i) == '\0')
+		{
+			break;
+		}
+		
+		packet += raw_buf.at(i);
+	}
 	
 
+	//buf_str = "";
+	buf_str = buf_str.substr(last_index);
 	append_packet();
-	//printout(buf_str);
+	printout(buf_str);
 }
 
 
