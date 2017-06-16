@@ -190,6 +190,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	std::vector<std::string> temp_slot_vec;
 
 	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
+	// Strip leading ":"
 	cmd = cmd.substr(1);
 
 
@@ -418,7 +419,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				}
 				else
 				{
-					message = std::move(whole_cmd_str.substr(i));
+					message = std::move(substr_trimmed(whole_cmd_str, i));
 					__database.save(message, name, slot);
 					say_message_saved();
 				}
@@ -434,7 +435,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				
 				slot = std::move(convert_bignum_to_str(database()
 					.lowest_available_slot()));
-				message = std::move(whole_cmd_str.substr(i));
+				message = std::move(substr_trimmed(whole_cmd_str, i));
 				__database.save(message, name, slot);
 				say_message_saved();
 			});
@@ -518,7 +519,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				i = temp_i;
 
 				const std::string& some_name 
-					= std::move(whole_cmd_str.substr(i));
+					= std::move(substr_trimmed(whole_cmd_str, i));
 
 				fill_temp_slot_vec(some_name);
 

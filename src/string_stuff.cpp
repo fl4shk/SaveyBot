@@ -93,4 +93,22 @@ bool next_non_specific_chars_substr(const std::string& some_str,
 	return true;
 }
 
+std::string substr_trimmed(const std::string& some_str, const size_t i)
+{
+	std::string temp = std::move(some_str.substr(i));
+
+	s64 last = temp.size() - 1;
+
+	for (; last>=0; --last)
+	{
+		if (!isblank(temp.at(last)))
+		{
+			break;
+		}
+	}
+
+	return temp.substr(0, last + 1);
+
+}
+
 }
