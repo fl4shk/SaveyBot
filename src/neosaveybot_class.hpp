@@ -22,6 +22,7 @@
 #include "json_stuff.hpp"
 #include "irc_communicator_class.hpp"
 #include "gmp_stuff.hpp"
+#include "string_stuff.hpp"
 
 namespace neosaveybot
 {
@@ -243,12 +244,6 @@ private:		// functions
 
 	//	return num_sstm.fail();
 	//}
-
-
-	bool find_next_non_blank_index(const std::string& whole_cmd_str,
-		const size_t test_start_index, size_t& i);
-	bool next_non_blank_substr(const std::string& whole_cmd_str, 
-		const size_t test_start_index, std::string& ret, size_t& i);
 
 
 	// These are NOT getters

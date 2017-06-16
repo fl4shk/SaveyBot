@@ -206,11 +206,22 @@ public:		// functions
 	}
 
 protected:		// functions
-	virtual void inner_send_msg(const std::string& channel, 
+	virtual void inner_send_privmsg(const std::string& channel, 
 		std::string&& full_msg);
+	
 
 
 private:		// functions
+	void inner_send_raw_msg(std::string&& full_msg) const;
+
+	template<typename FirstType, typename... RemArgTypes>
+	inline void send_raw_msg(const FirstType& first_val, 
+		RemArgTypes&&...  rem_args)
+	{
+		inner_send_raw_msg(std::move(sconcat(first_val, rem_args...)));
+	}
+
+
 	gen_getter_by_ref(hints);
 	gen_getter_by_ref(res);
 	gen_setter_by_val(sock_fd);

@@ -130,7 +130,7 @@ void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
 	__hints.ai_socktype = specific_socktype();
 
 	const int gai_result = getaddrinfo(some_address.c_str(), 
-		some_port_str.c_str(), &__hints, &__res);
+		some_port_str.c_str(), &hints(), &res());
 
 	if (gai_result != 0)
 	{
@@ -152,7 +152,7 @@ void IRCCommunicator::do_socket_and_connect()
 	// causes socket() to use an unspecified default protocol appropriate
 	// for the requested socket type (SOCK_STREAM).
 	set_sock_fd(socket(res()->ai_family, specific_socktype(), 0));
-	
+
 	if (connect(sock_fd(), res()->ai_addr, res()->ai_addrlen) != 0)
 	{
 		printerr("There was an error connecting to the server.\n");
@@ -162,11 +162,18 @@ void IRCCommunicator::do_socket_and_connect()
 	}
 }
 
-void IRCCommunicator::inner_send_msg(const std::string& channel, 
+void IRCCommunicator::inner_send_privmsg(const std::string& channel, 
 	std::string&& full_msg)
 {
-	
+	send_raw_msg("PRIVMSG ", channel, full_msg);
 }
 
+void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
+{
+	std::string temp = std::move(full_msg);
+	temp += "\r\n";
+
+	write(sock_fd(), temp.c_str(), temp.size());
+}
 
 }
