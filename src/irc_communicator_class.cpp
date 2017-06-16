@@ -115,11 +115,6 @@ IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr,
 	
 }
 
-void IRCCommunicator::clean_up()
-{
-	free_res();
-	close_sock_fd();
-}
 
 
 void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
@@ -164,7 +159,7 @@ void IRCCommunicator::do_socket_and_connect()
 	}
 }
 
-void IRCCommunicator::inner_send_privmsg(std::string&& full_msg)
+void IRCCommunicator::inner_send_regular_msg(std::string&& full_msg)
 {
 	send_raw_msg("PRIVMSG ", channel(), std::move(full_msg));
 }
@@ -178,5 +173,13 @@ void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
 
 	write(sock_fd(), temp.c_str(), temp.size());
 }
+
+
+void IRCCommunicator::clean_up()
+{
+	free_res();
+	close_sock_fd();
+}
+
 
 }

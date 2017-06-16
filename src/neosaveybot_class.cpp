@@ -199,7 +199,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	};
 	auto say_invalid_num_params = [&]() -> void
 	{
-		comm.send_privmsg("Invalid number of parameters for \"", cmd, "\".");
+		comm.send_regular_msg("Invalid number of parameters for \"", cmd, "\".");
 	};
 
 	auto inner_next_non_blank_substr = [&]() -> bool
@@ -209,7 +209,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 
 	auto show_msg = [&](const Database::Value& to_show) -> void
 	{
-		comm.send_privmsg(" ~ ", to_show.name(), "[", to_show.slot(), 
+		comm.send_regular_msg(" ~ ", to_show.name(), "[", to_show.slot(), 
 			"]:  ", to_show.message());
 	};
 
@@ -217,12 +217,12 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	{
 		if (to_show.datetime() == "classic")
 		{
-			comm.send_privmsg(" ~ That savestate was sav'd using original",
+			comm.send_regular_msg(" ~ That savestate was sav'd using original",
 				"SaveyBot, so datetime unknown", happy_suffix);
 		}
 		else
 		{
-			comm.send_privmsg(" ~ That savestate was sav'd on ",
+			comm.send_regular_msg(" ~ That savestate was sav'd on ",
 				to_show.datetime(), happy_suffix);
 		}
 	};
@@ -230,49 +230,49 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	auto say_cant_find_owned_by = [&](const std::string& some_name) 
 		-> void
 	{
-		comm.send_privmsg("Can't find any savestates owned by ", some_name, 
+		comm.send_regular_msg("Can't find any savestates owned by ", some_name, 
 			"!");
 	};
 	
 	auto say_slot_doesnt_exist = [&]() -> void
 	{
-		comm.send_privmsg("That slot doesn't exist!");
+		comm.send_regular_msg("That slot doesn't exist!");
 	};
 
 	auto say_message_saved = [&]() -> void
 	{
-		comm.send_privmsg("Your savestate was sav'd to slot number ", slot, 
+		comm.send_regular_msg("Your savestate was sav'd to slot number ", slot, 
 			"!");
 	};
 
 	auto say_owned_by = [&]() -> void
 	{
-		comm.send_privmsg("That slot is owned by ", 
+		comm.send_regular_msg("That slot is owned by ", 
 			database().at(slot_bignum).name(), "!");
 	};
 
 	auto say_rip = [&]() -> void
 	{
-		comm.send_privmsg(" ~ rip ur msg", sad_suffix);
+		comm.send_regular_msg(" ~ rip ur msg", sad_suffix);
 	};
 
 	auto say_database_empty = [&]() -> void
 	{
-		comm.send_privmsg(" ~ The database is empty!", sad_suffix);
+		comm.send_regular_msg(" ~ The database is empty!", sad_suffix);
 	};
 	auto say_need_slot_number = [&]() -> void
 	{
-		comm.send_privmsg(" ~ Need a slot number for that!");
+		comm.send_regular_msg(" ~ Need a slot number for that!");
 	};
 	auto say_need_slot_number_or_username = [&]() -> void
 	{
-		comm.send_privmsg(" ~ Need a slot number (or username) for that!");
+		comm.send_regular_msg(" ~ Need a slot number (or username) for that!");
 	};
 
 	auto say_number_of_slots_owned_by = [&]
 		(const std::string& some_name, const size_t amount) -> void
 	{
-		comm.send_privmsg(" ~ ", some_name, " owns ", amount, 
+		comm.send_regular_msg(" ~ ", some_name, " owns ", amount, 
 			" savestates", happy_suffix);
 	};
 
@@ -565,7 +565,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 
 	//else
 	//{
-	//	//comm.send_privmsg("Unknown command.");
+	//	//comm.send_regular_msg("Unknown command.");
 	//}
 }
 

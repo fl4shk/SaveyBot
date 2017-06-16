@@ -26,6 +26,8 @@
 namespace neosaveybot
 {
 
+// Here is the base class for the various protocols, including outputting
+// to the command line.
 class Communicator
 {
 private:		// variables
@@ -33,14 +35,15 @@ private:		// variables
 	std::string __channel;
 
 protected:		// functions
-	virtual void inner_send_privmsg(std::string&& full_msg) = 0;
+	// In IRC's case, send a PRIVMSG 
+	virtual void inner_send_regular_msg(std::string&& full_msg) = 0;
 
 public:		// functions
 	template<typename FirstType, typename... RemArgTypes>
-	void send_privmsg(const FirstType& first_val, 
+	void send_regular_msg(const FirstType& first_val, 
 		const RemArgTypes&... rem_args)
 	{
-		inner_send_privmsg(std::move(sconcat(first_val, rem_args...)));
+		inner_send_regular_msg(std::move(sconcat(first_val, rem_args...)));
 	}
 
 	gen_setter_by_con_ref(channel);

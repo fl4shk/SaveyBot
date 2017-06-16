@@ -55,6 +55,8 @@ int RealMain::operator () ()
 			&iter)));
 	}
 
+	
+
 	return 0;
 }
 
@@ -67,7 +69,7 @@ void RealMain::gen_args_vec(int argc, char** argv)
 	}
 }
 
-//void RealMain::parse_args_vec()
+//void RealMain::__parse_args_vec_old()
 //{
 //	//if (args_vec().size() == 1)
 //	//{
@@ -83,37 +85,37 @@ void RealMain::gen_args_vec(int argc, char** argv)
 //	bot().parse_command(args_vec().at(1), args_vec().at(2));
 //}
 
-void RealMain::__convert_original_database
-	(const std::string& input_file_name, 
-	const std::string& output_file_name)
-{
-	Json::Value input_root, output_root;
-	std::string errs;
-
-	parse_json(input_file_name, &input_root, &errs);
-
-	{
-		Json::ArrayIndex i = 0;
-		
-		for (auto& in_iter : input_root)
-		{
-			//auto& out_iter = output_root[i] = in_iter;
-			std::string temp;
-			std::stringstream ostm;
-			ostm << i;
-			ostm >> temp;
-
-			//auto& out_iter = output_root["savestates"][temp] = in_iter;
-			auto& out_iter = output_root[temp] = in_iter;
-			out_iter["datetime"] = "classic";
-			out_iter["classic_index"] = i++;
-		}
-
-		//output_root["num_savestates"] = i;
-	}
-
-	std::fstream temp_out_file(output_file_name, std::ios_base::out);
-	write_json(temp_out_file, &output_root);
-}
+//void RealMain::__convert_original_database
+//	(const std::string& input_file_name, 
+//	const std::string& output_file_name)
+//{
+//	Json::Value input_root, output_root;
+//	std::string errs;
+//
+//	parse_json(input_file_name, &input_root, &errs);
+//
+//	{
+//		Json::ArrayIndex i = 0;
+//		
+//		for (auto& in_iter : input_root)
+//		{
+//			//auto& out_iter = output_root[i] = in_iter;
+//			std::string temp;
+//			std::stringstream ostm;
+//			ostm << i;
+//			ostm >> temp;
+//
+//			//auto& out_iter = output_root["savestates"][temp] = in_iter;
+//			auto& out_iter = output_root[temp] = in_iter;
+//			out_iter["datetime"] = "classic";
+//			out_iter["classic_index"] = i++;
+//		}
+//
+//		//output_root["num_savestates"] = i;
+//	}
+//
+//	std::fstream temp_out_file(output_file_name, std::ios_base::out);
+//	write_json(temp_out_file, &output_root);
+//}
 
 }

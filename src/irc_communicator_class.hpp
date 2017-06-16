@@ -216,22 +216,13 @@ public:		// functions
 		return *__config_server_ptr;
 	}
 
+
 protected:		// functions
-	virtual void inner_send_privmsg(std::string&& full_msg);
+	virtual void inner_send_regular_msg(std::string&& full_msg);
 	
 
 
 private:		// functions
-	void inner_send_raw_msg(std::string&& full_msg) const;
-
-	template<typename FirstType, typename... RemArgTypes>
-	inline void send_raw_msg(const FirstType& first_val, 
-		RemArgTypes&&...  rem_args)
-	{
-		inner_send_raw_msg(std::move(sconcat(first_val, rem_args...)));
-	}
-
-
 	gen_getter_by_ref(hints);
 	gen_getter_by_ref(res);
 	gen_setter_by_val(sock_fd);
@@ -244,11 +235,24 @@ private:		// functions
 		return *__bot_ptr;
 	}
 
-	void clean_up();
+
+
+	void inner_send_raw_msg(std::string&& full_msg) const;
+
+	template<typename FirstType, typename... RemArgTypes>
+	inline void send_raw_msg(const FirstType& first_val, 
+		RemArgTypes&&...  rem_args)
+	{
+		inner_send_raw_msg(std::move(sconcat(first_val, rem_args...)));
+	}
+
 
 	void do_getaddrinfo(const std::string& some_server_name, 
 		const std::string& some_port_str);
 	void do_socket_and_connect();
+
+
+	void clean_up();
 
 	inline void free_res()
 	{
