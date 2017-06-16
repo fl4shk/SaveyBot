@@ -287,7 +287,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 
 	// ".save"
-	auto exec_takes_slot_and_message_or_just_message_command = [&]
+	auto exec_save_like_command = [&]
 		(const CommandClauseFunc& given_slot_and_message_clause,
 		const CommandClauseFunc& given_message_clause) -> void
 	{
@@ -324,7 +324,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 
 	// ".load"
-	auto exec_only_takes_slot_or_username_command = [&]
+	auto exec_takes_slot_or_username_command = [&]
 		(const CommandClauseFunc& given_slot_clause,
 		const CommandClauseFunc& given_username_clause) -> void
 	{
@@ -349,7 +349,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	};
 
 	// ".road"
-	auto exec_only_takes_nothing_or_username_command = [&]
+	auto exec_takes_nothing_or_username_command = [&]
 		(const CommandClauseFunc& given_nothing_clause,
 		const CommandClauseFunc& given_username_clause) -> void
 	{
@@ -369,7 +369,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	};
 
 	// ".remove", ".date", ".datetime", ".whois"
-	auto exec_only_takes_slot_command = [&]
+	auto exec_takes_slot_command = [&]
 		(const CommandClauseFunc& given_slot_clause) -> void
 	{
 		print_found_command();
@@ -395,7 +395,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	if (cmd == ".save")
 	{
-		exec_takes_slot_and_message_or_just_message_command([&]() -> void
+		exec_save_like_command([&]() -> void
 			{
 				// If we were given a slot, then we need both a slot AND a
 				// message
@@ -430,7 +430,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".load")
 	{
-		exec_only_takes_slot_or_username_command([&]() -> void
+		exec_takes_slot_or_username_command([&]() -> void
 			{
 				// If we were given a slot
 				if (database().contains(slot_bignum))
@@ -459,7 +459,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".remove")
 	{
-		exec_only_takes_slot_command([&]() -> void
+		exec_takes_slot_command([&]() -> void
 			{
 				if (!database().contains(slot_bignum))
 				{
@@ -479,7 +479,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".road")
 	{
-		exec_only_takes_nothing_or_username_command([&]() -> void
+		exec_takes_nothing_or_username_command([&]() -> void
 			{
 				// If we weren't given a user
 				if (database().size() == 0)
@@ -529,7 +529,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if ((cmd == ".date") || (cmd == ".datetime"))
 	{
-		exec_only_takes_slot_command([&]() -> void
+		exec_takes_slot_command([&]() -> void
 			{
 				if (!database().contains(slot_bignum))
 				{
@@ -544,7 +544,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".whois")
 	{
-		exec_only_takes_slot_command([&]() -> void
+		exec_takes_slot_command([&]() -> void
 			{
 				if (!database().contains(slot_bignum))
 				{
