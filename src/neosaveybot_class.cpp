@@ -81,6 +81,21 @@ void Database::save(const std::string& message, const std::string& name,
 	write_file();
 }
 
+void Database::remove(const std::string& slot)
+{
+	BigNum slot_bignum;
+	str_is_integer_bignum(slot, slot_bignum);
+
+	if ((slot_bignum >= 0) && (slot_bignum < lowest_available_slot()))
+	{
+		set_lowest_available_slot(slot_bignum);
+	}
+
+	savestates().erase(slot); 
+
+	write_file();
+}
+
 void Database::write_file() const
 {
 	Json::Value output_root;
@@ -217,7 +232,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	
 	auto print_found_command = [this, &cmd]() -> void
 	{
-		fake_send_msg("Found a \"", cmd, "\".\n");
+		printout("Found a \"", cmd, "\".\n");
 	};
 	auto say_invalid_num_params = [this, &cmd]() -> void
 	{
@@ -235,12 +250,17 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			to_show.message(), "\n");
 	};
 
-	auto say_cant_find = [this](const std::string& some_name) -> void
+	auto say_cant_find_owned_by = [this](const std::string& some_name) 
+		-> void
 	{
 		fake_send_msg("Can't find any savestates owned by ", some_name, 
 			"!\n");
 	};
 	
+	auto say_slot_doesnt_exit = [this]() -> void
+	{
+		fake_send_msg("That slot doesn't exist!\n");
+	};
 
 	auto say_message_saved = [this, &slot]() -> void
 	{
@@ -254,12 +274,26 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			database().at(slot_bignum).name(), "!\n");
 	};
 
+	auto say_rip = [this]() -> void
+	{
+		fake_send_msg(" ~ rip ur msg )));\n");
+	};
+
+	auto say_database_empty = [this]() -> void
+	{
+		fake_send_msg(" ~ The database is empty! )));\n");
+	};
 
 	if (cmd == ".road")
 	{
 		print_found_command();
 
-		if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
+		if (database().size() == 0)
+		{
+			say_database_empty();
+			return;
+		}
+		else if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
 		{
 			const auto offset = prng(database().size());
 			
@@ -291,7 +325,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 			if (msg_vec.size() == 0)
 			{
-				say_cant_find(some_name);
+				say_cant_find_owned_by(some_name);
 			}
 			else // if (msg_vec.size() > 0)
 			{
@@ -299,10 +333,11 @@ void NeoSaveyBot::parse_command(const std::string& name,
 				const auto offset = prng(msg_vec.size());
 				auto iter = msg_vec.begin();
 
-				for (size_t j=0; j<offset; ++j)
-				{
-					++iter;
-				}
+				//for (size_t j=0; j<offset; ++j)
+				//{
+				//	++iter;
+				//}
+				iter += offset;
 
 				show(database().at(*iter));
 			}
@@ -344,6 +379,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 		else
 		{
+			find_next_non_blank_index(whole_cmd_str, i, i);
 			slot = std::move(convert_bignum_to_str(database()
 				.lowest_available_slot()));
 			message = std::move(whole_cmd_str.substr(i));
@@ -352,10 +388,37 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 	}
 
-	//else if (cmd == ".remove")
-	//{
-	//	print_found_command();
-	//}
+	else if (cmd == ".remove")
+	{
+		print_found_command();
+
+		if (!inner_next_non_blank_substr())
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		// REQUIRE a slot to delete
+		if (!str_is_integer_bignum(slot, slot_bignum))
+		{
+			say_invalid_num_params();
+			return;
+		}
+
+		if (!database().contains(slot_bignum))
+		{
+			say_slot_doesnt_exit();
+		}
+		else if (!database().slot_owned_by(slot_bignum, name))
+		{
+			say_owned_by();
+		}
+		else
+		{
+			__database.remove(slot);
+			say_rip();
+		}
+	}
 
 	else
 	{
@@ -424,7 +487,8 @@ bool NeoSaveyBot::next_non_blank_substr(const std::string& whole_cmd_str,
 
 	const size_t end_index = i;
 
-	ret = whole_cmd_str.substr(start_index, (end_index - start_index));
+	ret = std::move(whole_cmd_str.substr(start_index, (end_index 
+		- start_index)));
 	return true;
 }
 

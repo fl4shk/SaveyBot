@@ -130,6 +130,7 @@ public:		// functions
 	}
 	void save(const std::string& message, const std::string& name, 
 		const std::string& slot, bool use_lowest);
+	void remove(const std::string& slot);
 	
 	void write_file() const;
 
