@@ -314,6 +314,9 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	};
 
 
+	// ".save"
+
+
 	// ".load"
 	auto exec_only_takes_slot_or_username_command = [&]
 		(const CommandClauseFunc& first_clause_stuff,
@@ -378,18 +381,8 @@ void NeoSaveyBot::parse_command(const std::string& name,
 			return;
 		}
 
-		if (!database().contains(slot_bignum))
-		{
-			say_slot_doesnt_exit();
-		}
-		else if (!database().slot_owned_by(slot_bignum, name))
-		{
-			say_owned_by();
-		}
-		else
-		{
-			last_clause_stuff();
-		}
+		last_clause_stuff();
+
 	};
 
 
@@ -474,8 +467,19 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	{
 		exec_only_takes_slot_command([&]() -> void
 			{
-				__database.remove(slot);
-				say_rip();
+				if (!database().contains(slot_bignum))
+				{
+					say_slot_doesnt_exit();
+				}
+				else if (!database().slot_owned_by(slot_bignum, name))
+				{
+					say_owned_by();
+				}
+				else
+				{
+					__database.remove(slot);
+					say_rip();
+				}
 			});
 	}
 
