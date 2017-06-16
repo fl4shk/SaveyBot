@@ -224,6 +224,8 @@ NeoSaveyBot::~NeoSaveyBot()
 void NeoSaveyBot::parse_command(const std::string& name,
 	const std::string& whole_cmd_str)
 {
+	typedef std::function<void()> CommandClauseFunc;
+
 	size_t i, temp_i;
 	BigNum slot_bignum;
 	std::string cmd, slot, message;
@@ -311,10 +313,36 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 	};
 
+
+	// ".load"
+	auto exec_only_takes_slot_or_username_command = [&]
+		(const CommandClauseFunc& first_clause_stuff,
+		const CommandClauseFunc& second_clause_stuff) -> void
+	{
+		print_found_command();
+
+		if (!inner_next_non_blank_substr())
+		{
+			say_need_slot_number_or_username();
+			return;
+		}
+		
+		// If we were given a slot
+		else if (str_is_integer_bignum(slot, slot_bignum))
+		{
+			first_clause_stuff();
+		}
+		// If we were given a username
+		else
+		{
+			second_clause_stuff();
+		}
+	};
+
 	// ".road"
 	auto exec_only_takes_nothing_or_username_command = [&]
-		(const std::function<void()>& first_clause_stuff,
-		const std::function<void()>& second_clause_stuff) -> void
+		(const CommandClauseFunc& first_clause_stuff,
+		const CommandClauseFunc& second_clause_stuff) -> void
 	{
 		print_found_command();
 
@@ -333,7 +361,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	// ".remove"
 	auto exec_only_takes_slot_command = [&]
-		(const std::function<void()>& last_clause_stuff) -> void
+		(const CommandClauseFunc& last_clause_stuff) -> void
 	{
 		print_found_command();
 
@@ -414,37 +442,32 @@ void NeoSaveyBot::parse_command(const std::string& name,
 
 	else if (cmd == ".load")
 	{
-		print_found_command();
-
-		if (!inner_next_non_blank_substr())
-		{
-			say_need_slot_number_or_username();
-			return;
-		}
-		
+		exec_only_takes_slot_or_username_command(
 		// If we were given a slot
-		else if (str_is_integer_bignum(slot, slot_bignum))
-		{
-			if (database().contains(slot_bignum))
+			[&]() -> void
 			{
-				show(database().at(slot_bignum));
-			}
-			else
-			{
-				say_slot_doesnt_exit();
-			}
-		}
+				if (database().contains(slot_bignum))
+				{
+					show(database().at(slot_bignum));
+				}
+				else
+				{
+					say_slot_doesnt_exit();
+				}
+			},
+
 		// If we were given a username
-		else
-		{
-			const std::string& some_name = slot;
+			[&]() -> void
+			{
+				const std::string& some_name = slot;
 
-			fill_temp_slot_vec(some_name);
+				fill_temp_slot_vec(some_name);
 
-			say_number_of_slots_owned_by(some_name, temp_slot_vec.size());
+				say_number_of_slots_owned_by(some_name, 
+					temp_slot_vec.size());
 
-			return;
-		}
+				return;
+			});
 	}
 
 	else if (cmd == ".remove")
