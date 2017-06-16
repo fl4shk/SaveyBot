@@ -142,8 +142,9 @@ void IRCCommunicator::do_full_read()
 
 	if (suffix_index != std::string::npos)
 	{
-		//printout(line());
-		printout(buf_str.substr(0, suffix_index), "\n");
+		__line = buf_str.substr(0, suffix_index);
+		printout(line(), "\n");
+
 		
 		buf_str = std::move(buf_str.substr(suffix_index 
 			+ msg_suffix.size()));
