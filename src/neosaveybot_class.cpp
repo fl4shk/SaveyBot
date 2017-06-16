@@ -302,6 +302,10 @@ void NeoSaveyBot::parse_command(const std::string& name,
 	{
 		fake_send_msg(" ~ The database is empty!", sad_suffix);
 	};
+	auto say_need_slot_number = [this]() -> void
+	{
+		fake_send_msg(" ~ Need a slot number for that!");
+	};
 	auto say_need_slot_number_or_username = [this]() -> void
 	{
 		fake_send_msg(" ~ Need a slot number (or username) for that!");
@@ -412,7 +416,7 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		}
 	};
 
-	// ".remove", ".date"
+	// ".remove", ".date", ".datetime", ".whois"
 	auto exec_only_takes_slot_command = [&]
 		(const CommandClauseFunc& given_slot_clause) -> void
 	{
@@ -427,7 +431,8 @@ void NeoSaveyBot::parse_command(const std::string& name,
 		// REQUIRE a slot to delete
 		if (!str_is_integer_bignum(slot, slot_bignum))
 		{
-			say_invalid_num_params();
+			//say_invalid_num_params();
+			say_need_slot_number();
 			return;
 		}
 
@@ -581,6 +586,21 @@ void NeoSaveyBot::parse_command(const std::string& name,
 				else
 				{
 					show_datetime(database().at(slot_bignum));
+				}
+			});
+	}
+
+	else if (cmd == ".whois")
+	{
+		exec_only_takes_slot_command([&]() -> void
+			{
+				if (!database().contains(slot_bignum))
+				{
+					say_slot_doesnt_exist();
+				}
+				else
+				{
+					say_owned_by();
 				}
 			});
 	}
