@@ -116,6 +116,33 @@ IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr,
 }
 
 
+void IRCCommunicator::do_full_read()
+{
+	// Null terminate
+	raw_buf.fill('\0');
+	const auto num_read = read(sock_fd(), raw_buf.data(), 
+		(raw_buf.size() - 1));
+
+	//str = raw_buf;
+
+	//packet.data() = raw_buf.data();
+	//packet.fill('\0');
+	//arr_memcpy(packet, raw_buf);
+
+	// Avoid an expensive copying operation
+	packet.swap(raw_buf);
+	
+
+	append_packet();
+	//printout(buf_str);
+}
+
+
+void IRCCommunicator::append_packet()
+{
+	//buf_str = packet;
+	
+}
 
 void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
 	const std::string& some_port_str)

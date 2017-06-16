@@ -24,10 +24,30 @@
 namespace neosaveybot
 {
 
-bool find_next_non_blank_index(const std::string& whole_cmd_str,
-	const size_t test_start_index, size_t& i);
-bool next_non_blank_substr(const std::string& whole_cmd_str, 
-	const size_t test_start_index, std::string& ret, size_t& i);
+typedef std::function<int(int)> CharTesterFunc;
+
+bool eat_specific_chars(const std::string& some_str,
+	const size_t test_start_index, size_t& i,
+	const CharTesterFunc& is_spec_chars_func);
+
+bool next_non_specific_chars_substr(const std::string& some_str,
+	const size_t test_start_index, std::string& ret, size_t& i,
+	const CharTesterFunc& is_spec_chars_func_lead,
+	const CharTesterFunc& is_spec_chars_func_trail);
+
+inline bool eat_whitespace(const std::string& some_str,
+	const size_t test_start_index, size_t& i)
+{
+	return eat_specific_chars(some_str, test_start_index, i,
+		CharTesterFunc(isspace));
+}
+inline bool next_non_blank_substr(const std::string& some_str, 
+	const size_t test_start_index, std::string& ret, size_t& i)
+{
+	return next_non_specific_chars_substr(some_str, test_start_index, ret, 
+		i, CharTesterFunc(isspace), CharTesterFunc(isblank));
+}
+
 
 }
 

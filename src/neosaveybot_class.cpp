@@ -309,7 +309,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 			i = temp_i;
 
 			// We need both a slot AND a message
-			if (!find_next_non_blank_index(whole_cmd_str, temp_i, i))
+			if (!eat_whitespace(whole_cmd_str, temp_i, i))
 			{
 				say_invalid_num_params();
 				return;
@@ -360,7 +360,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 		print_found_command();
 
 		// If we weren't given a user
-		if (!find_next_non_blank_index(whole_cmd_str, i, temp_i))
+		if (!eat_whitespace(whole_cmd_str, i, temp_i))
 		{
 			given_nothing_clause();
 		}
@@ -421,7 +421,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				// Don't need to check return value of this because earlier
 				// if statement already checked if anything came after the
 				// ".save"
-				find_next_non_blank_index(whole_cmd_str, i, i);
+				eat_whitespace(whole_cmd_str, i, i);
 
 				
 				slot = std::move(convert_bignum_to_str(database()

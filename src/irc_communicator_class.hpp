@@ -164,6 +164,8 @@ private:		// variables
 	// connection- mode byte streams, and may provide a transmission
 	static constexpr auto __specific_socktype = SOCK_STREAM;
 
+	static constexpr size_t raw_buf_size = 9001;
+
 	// "Whois" stuff (getaddrinfo())
 	addrinfo __hints, * __res = nullptr;
 
@@ -172,14 +174,21 @@ private:		// variables
 
 	// Stuff for clean_up()
 	bool __did_alloc_res = false, __did_open_sock_fd = false;
+
+
 	
 	NeoSaveyBot* __bot_ptr;
 	
 	// This is a pointer to a constant IRCConfiguration::Server.
 	const IRCConfiguration::Server* __config_server_ptr;
 
+	// The array of characters read() sends its data to
+	std::array<char, raw_buf_size> raw_buf, packet;
 
+	////std::array<char, raw_buf_size> str;
+	//std::string packet, buf_str;
 
+	size_t last_index = 0;
 
 
 public:		// functions
@@ -216,6 +225,8 @@ public:		// functions
 		return *__config_server_ptr;
 	}
 
+	void do_full_read();
+
 
 protected:		// functions
 	virtual void inner_send_regular_msg(std::string&& full_msg);
@@ -236,6 +247,7 @@ private:		// functions
 	}
 
 
+	void append_packet();
 
 	void inner_send_raw_msg(std::string&& full_msg) const;
 
