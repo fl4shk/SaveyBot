@@ -185,7 +185,7 @@ private:		// variables
 	// The array of characters read() sends its data to
 	std::array<char, raw_buf_size> raw_buf;
 
-	std::string __line, packet, buf_str;
+	std::string __line = "", packet, buf_str = "";
 
 	size_t last_index = 0;
 

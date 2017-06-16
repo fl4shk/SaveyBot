@@ -144,10 +144,12 @@ void IRCCommunicator::do_full_read()
 	//size_t temp_last_index = last_index;
 	//eat_whitespace(
 
+	
+
 	if (did_complete_line)
 	{
 		__line = "";
-		buf_str = buf_str.substr(last_index);
+		buf_str = std::move(buf_str.substr(last_index));
 		last_index = 0;
 		printout(line());
 	}
