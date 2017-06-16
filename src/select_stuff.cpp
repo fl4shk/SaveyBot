@@ -22,9 +22,35 @@ namespace neosaveybot
 {
 
 void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec, 
-	fd_set& read_fs)
+	fd_set* readfds)
 {
+	int nfds = 0;
+
+	int rv;
 	
+	timeval tv;
+	tv.tv_sec = 0;
+	tv.tv_usec = 10000;
+
+	// Clear the set ahead of time
+	FD_ZERO(readfds);
+
+	// Find highest
+	for (auto& iter : comm_vec)
+	{
+		FD_SET(iter.sock_fd(), readfds);
+		if (nfds < iter.sock_fd())
+		{
+			nfds = iter.sock_fd();
+		}
+	}
+
+	rv = select(nfds, readfds, NULL, NULL, &tv);
+
+	if (rv == -1)
+	{
+		err("There was an error in select()!\n");
+	}
 }
 
 }

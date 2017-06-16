@@ -182,8 +182,6 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	comm.set_channel(channel);
 
 
-
-
 	size_t i, temp_i;
 	BigNum slot_bignum;
 	std::string cmd, slot, message;

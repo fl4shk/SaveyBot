@@ -25,14 +25,21 @@ namespace neosaveybot
 {
 
 void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec, 
-	fd_set& read_fs);
+	fd_set* readfds);
 
-inline void do_select_for_read(const IRCCommunicator& comm, fd_set& read_fs)
+inline void do_select_for_read(const IRCCommunicator& comm, 
+	fd_set* readfds)
 {
 	std::vector<IRCCommunicator> temp_vec;
 	temp_vec.push_back(comm);
 
-	do_select_for_read(temp_vec, read_fs);
+	do_select_for_read(temp_vec, readfds);
+}
+
+inline auto check_select_result(const IRCCommunicator& comm,
+	fd_set* readfds)
+{
+	return FD_ISSET(comm.sock_fd(), readfds);
 }
 
 }
