@@ -18,6 +18,7 @@
 
 #include "irc_communicator_class.hpp"
 #include "neosaveybot_class.hpp"
+#include "select_stuff.hpp"
 
 namespace neosaveybot
 {
@@ -112,6 +113,48 @@ IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr,
 	// Go ahead and do this now 
 	free_res();
 
+	sleep(1);
+
+	for (auto iter : config_server().startup_commands())
+	{
+		send_raw_msg(iter);
+	}
+
+	do_select_and_also_full_read();
+
+	for (;;)
+	{
+		do_select_and_also_full_read();
+		update_line();
+
+		if (line().size() == 0)
+		{
+			printout("Debug:  AAAA\n");
+			continue;
+		}
+
+		//printout("Here is line():  ", line(), "\n");
+
+		std::string first_substr, second_substr;
+		size_t i;
+		next_non_blank_substr(line(), 0, first_substr, i);
+
+		printout("substr Debug:  ", line(), "\t\t", first_substr, " ", 
+			first_substr.size(), "\n");
+
+		// Handle PING
+		if (first_substr == "PING")
+		{
+			next_non_blank_substr(line(), i, second_substr, i);
+			printout("PING Debug:  ", second_substr, "\n");
+			send_raw_msg("PONG ", second_substr);
+		}
+		//else
+		//{
+		//	printout("Debug:  EGGS\n");
+		//}
+	}
+
 	
 }
 
@@ -123,6 +166,8 @@ void IRCCommunicator::do_full_read()
 	const auto num_read = read(sock_fd(), raw_buf.data(), 
 		(raw_buf.size() - 2));
 
+	std::string packet;
+
 
 	for (auto iter : raw_buf)
 	{
@@ -131,24 +176,10 @@ void IRCCommunicator::do_full_read()
 			break;
 		}
 		
+		packet += iter;
 		buf_str += iter;
 	}
 
-
-	//size_t temp_last_index = last_index;
-	//eat_whitespace(
-
-	const auto suffix_index = buf_str.find(msg_suffix);
-
-	if (suffix_index != std::string::npos)
-	{
-		__line = buf_str.substr(0, suffix_index);
-		printout(line(), "\n");
-
-		
-		buf_str = std::move(buf_str.substr(suffix_index 
-			+ msg_suffix.size()));
-	}
 }
 
 
@@ -191,6 +222,56 @@ void IRCCommunicator::do_socket_and_connect()
 		set_did_open_sock_fd(false);
 		clean_up();
 		exit(1);
+	}
+}
+
+bool IRCCommunicator::do_select_and_also_full_read()
+{
+	fd_set temp_readfds;
+	do_select_for_read(*this, &temp_readfds);
+
+	if (check_select_result(*this, &temp_readfds))
+	{
+		//printout("FD_ISSET():  ");
+		//err("Something wrong with the connection?");
+		do_full_read();
+		return true;
+	}
+	//printout("!FD_ISSET():  ");
+
+	__line = "";
+
+	return false;
+
+}
+
+void IRCCommunicator::update_line()
+{
+	const auto suffix_index = buf_str.find(msg_suffix);
+	__line = buf_str.substr(0, suffix_index);
+	
+	printout(suffix_index, "\t");
+
+	if (suffix_index != std::string::npos)
+	{
+		if ((suffix_index + msg_suffix.size()) > buf_str.size())
+		{
+			printout("Nice\t\t");
+			buf_str.clear();
+		}
+		else
+		{
+			printout("Meme\t\t");
+			buf_str = buf_str.substr(suffix_index + msg_suffix.size());
+		}
+		
+
+		printout("buf_str Debug:  ", line(), "\n", buf_str, "\n\n\n");
+	}
+	else
+	{
+		//printout("EGGS\n");
+		__line = "";
 	}
 }
 

@@ -23,6 +23,7 @@
 #include "json_stuff.hpp"
 #include "communicator_class.hpp"
 
+//#include "select_stuff.hpp"
 
 namespace neosaveybot
 {
@@ -248,13 +249,20 @@ private:		// functions
 	}
 
 
+	bool do_select_and_also_full_read();
+	void update_line();
+
 	void inner_send_raw_msg(std::string&& full_msg) const;
 
 	template<typename FirstType, typename... RemArgTypes>
 	inline void send_raw_msg(const FirstType& first_val, 
 		RemArgTypes&&...  rem_args)
 	{
-		inner_send_raw_msg(std::move(sconcat(first_val, rem_args...)));
+		std::string temp = std::move(sconcat(first_val, rem_args...));
+		printout("Sending to server \"", config_server().name(), "\":  ",
+			temp, "\n");
+
+		inner_send_raw_msg(std::move(temp));
 	}
 
 

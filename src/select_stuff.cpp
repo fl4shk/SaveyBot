@@ -17,6 +17,7 @@
 
 
 #include "select_stuff.hpp"
+#include "irc_communicator_class.hpp"
 
 namespace neosaveybot
 {
@@ -31,8 +32,10 @@ void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec,
 	timeval tv;
 	tv.tv_sec = 0;
 
-	// Stop waiting after 10 milliseconds
-	tv.tv_usec = 10000;
+	//// Stop waiting after 10 milliseconds
+	//tv.tv_usec = 10000;
+
+	tv.tv_usec = 20000;
 
 	// Clear the set ahead of time
 	FD_ZERO(readfds);
@@ -44,8 +47,10 @@ void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec,
 		if (nfds < iter.sock_fd())
 		{
 			nfds = iter.sock_fd();
+			//printout("sock_fd():  ", nfds, "\n");
 		}
 	}
+	++nfds;
 
 	rv = select(nfds, readfds, NULL, NULL, &tv);
 
@@ -53,6 +58,11 @@ void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec,
 	{
 		err("There was an error in select()!\n");
 	}
+
+	//for (auto& iter : comm_vec)
+	//{
+	//	printout(iter.sock_fd(), "\n");
+	//}
 }
 
 }
