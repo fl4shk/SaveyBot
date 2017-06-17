@@ -114,8 +114,7 @@ void Database::write_file() const
 bool Database::slot_owned_by(const BigNum& slot_bignum, 
 	const std::string& name)
 {
-	return slot_owned_by(std::move(convert_bignum_to_str(slot_bignum)),
-		name);
+	return slot_owned_by(convert_bignum_to_str(slot_bignum), name);
 }
 
 void Database::load_from_file()
@@ -143,7 +142,7 @@ void Database::update_lowest_available_slot()
 	for ( ; ; ++__lowest_available_slot)
 	{
 		const std::string las_str 
-			= std::move(convert_bignum_to_str(lowest_available_slot()));
+			= convert_bignum_to_str(lowest_available_slot());
 
 		const auto search = savestates().find(las_str);
 
@@ -419,7 +418,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				}
 				else
 				{
-					message = std::move(substr_trimmed(whole_cmd_str, i));
+					message = substr_trimmed(whole_cmd_str, i);
 					__database.save(message, name, slot);
 					say_message_saved();
 				}
@@ -433,9 +432,9 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				eat_whitespace(whole_cmd_str, i, i);
 
 				
-				slot = std::move(convert_bignum_to_str(database()
-					.lowest_available_slot()));
-				message = std::move(substr_trimmed(whole_cmd_str, i));
+				slot = convert_bignum_to_str(database()
+					.lowest_available_slot());
+				message = substr_trimmed(whole_cmd_str, i);
 				__database.save(message, name, slot);
 				say_message_saved();
 			});
@@ -519,7 +518,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 				i = temp_i;
 
 				const std::string& some_name 
-					= std::move(substr_trimmed(whole_cmd_str, i));
+					= substr_trimmed(whole_cmd_str, i);
 
 				fill_temp_slot_vec(some_name);
 
