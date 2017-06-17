@@ -32,6 +32,8 @@ void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec,
 	timeval tv;
 	tv.tv_sec = 0;
 
+	//tv.tv_usec = 5000;
+
 	//// Stop waiting after 10 milliseconds
 	//tv.tv_usec = 10000;
 

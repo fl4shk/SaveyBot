@@ -17,6 +17,7 @@
 
 
 #include "real_main_class.hpp"
+#include "select_stuff.hpp"
 
 namespace neosaveybot
 {
@@ -53,6 +54,17 @@ int RealMain::operator () ()
 	{
 		irc_comm_vec().push_back(std::move(IRCCommunicator(&__bot, 
 			&iter)));
+	}
+
+	fd_set readfds;
+
+	for (;;)
+	{
+		do_select_for_read(irc_comm_vec(), readfds);
+		for (auto& iter : irc_comm_vec())
+		{
+			iter.iterate(&readfds);
+		}
 	}
 
 	

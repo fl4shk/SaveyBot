@@ -124,90 +124,89 @@ IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr,
 
 	sleep(1);
 
-	bool did_joins = false;
-
-	for (;;)
-	{
-		do_select_and_also_full_read();
-		update_line();
-
-		if (line().size() == 0)
-		{
-			//printout("Debug:  AAAA\n");
-			continue;
-		}
-
-		//printout("Here is line():  ", line(), "\n");
-
-		std::string first_substr, second_substr, third_substr,
-			other_substr;
-		size_t i, temp_i;
-		next_non_blank_substr(line(), 0, first_substr, i);
-
-		//printout("substr Debug:  ", line(), "\t\t", first_substr, " ", 
-		//	first_substr.size(), "\n");
-
-		// Handle PING
-		if (first_substr == "PING")
-		{
-			next_non_blank_substr(line(), i, second_substr, i);
-			//printout("PING Debug:  ", second_substr, "\n");
-			send_raw_msg("PONG ", second_substr);
-
-			if (!did_joins)
-			{
-				did_joins = true;
-
-				for (auto iter : config_server().joins_list())
-				{
-					send_raw_msg("JOIN ", iter);
-				}
-			}
-		}
-		else
-		{
-			const auto exclam_index = first_substr.find("!");
-			const auto space_index = first_substr.find(" ");
-
-			std::string user_nick;
-
-			// Detect if the server was the one sending the message
-			if (exclam_index > space_index)
-			{
-				//printout("exclam_index > space_index\n");
-				continue;
-			}
-
-			// Messages start with ":"
-			user_nick = first_substr.substr(1, (exclam_index - 1));
-
-			next_non_blank_substr(line(), i, second_substr, i);
-
-			if (second_substr != "PRIVMSG")
-			{
-				//printout("! PRIVMSG\n");
-				continue;
-			}
-
-			next_non_blank_substr(line(), i, third_substr, i);
-
-			// Ignore PMs directly to the bot for now
-			if (third_substr == config_server().bot_name())
-			{
-				//printout("Ignoring PM to the bot\n");
-				continue;
-			}
-			
-			const std::string& some_channel = third_substr;
-
-			bot().parse_command(*this, some_channel, user_nick, 
-				line().substr(i));
-		}
-	}
-
+	did_joins = false;
 	
 }
 
+void IRCCommunicator::iterate(fd_set* readfds)
+{
+	//do_select_and_also_full_read();
+	do_full_read_if_fd_isset(readfds);
+	update_line();
+
+	if (line().size() == 0)
+	{
+		//printout("Debug:  AAAA\n");
+		return;
+	}
+
+	//printout("Here is line():  ", line(), "\n");
+
+	std::string first_substr, second_substr, third_substr,
+		other_substr;
+	size_t i, temp_i;
+	next_non_blank_substr(line(), 0, first_substr, i);
+
+	//printout("substr Debug:  ", line(), "\t\t", first_substr, " ", 
+	//	first_substr.size(), "\n");
+
+	// Handle PING
+	if (first_substr == "PING")
+	{
+		next_non_blank_substr(line(), i, second_substr, i);
+		//printout("PING Debug:  ", second_substr, "\n");
+		send_raw_msg("PONG ", second_substr);
+
+		if (!did_joins)
+		{
+			did_joins = true;
+
+			for (auto iter : config_server().joins_list())
+			{
+				send_raw_msg("JOIN ", iter);
+			}
+		}
+	}
+	else
+	{
+		const auto exclam_index = first_substr.find("!");
+		const auto space_index = first_substr.find(" ");
+
+		std::string user_nick;
+
+		// Detect if the server was the one sending the message
+		if (exclam_index > space_index)
+		{
+			//printout("exclam_index > space_index\n");
+			return;
+		}
+
+		// Messages start with ":"
+		user_nick = first_substr.substr(1, (exclam_index - 1));
+
+		next_non_blank_substr(line(), i, second_substr, i);
+
+		if (second_substr != "PRIVMSG")
+		{
+			//printout("! PRIVMSG\n");
+			return;
+		}
+
+		next_non_blank_substr(line(), i, third_substr, i);
+
+		// Ignore PMs directly to the bot for now
+		if (third_substr == config_server().bot_name())
+		{
+			//printout("Ignoring PM to the bot\n");
+			return;
+		}
+		
+		const std::string& some_channel = third_substr;
+
+		bot().parse_command(*this, some_channel, user_nick, 
+			line().substr(i));
+	}
+}
 
 void IRCCommunicator::do_full_read()
 {
@@ -230,6 +229,61 @@ void IRCCommunicator::do_full_read()
 		buf_str += iter;
 	}
 
+}
+
+bool IRCCommunicator::do_select_and_also_full_read()
+{
+	fd_set temp_readfds;
+	do_select_for_read(*this, &temp_readfds);
+
+	return do_full_read_if_fd_isset(&temp_readfds);
+}
+
+bool IRCCommunicator::do_full_read_if_fd_isset(fd_set* readfds)
+{
+	if (check_select_result(*this, readfds))
+	{
+		//printout("FD_ISSET():  ");
+		//err("Something wrong with the connection?");
+		do_full_read();
+		return true;
+	}
+	//printout("!FD_ISSET():  ");
+
+	__line = "";
+
+	return false;
+}
+
+
+void IRCCommunicator::update_line()
+{
+	const auto suffix_index = buf_str.find(msg_suffix);
+	
+	//printout(suffix_index, "\t");
+
+	if (suffix_index != std::string::npos)
+	{
+		__line = buf_str.substr(0, suffix_index);
+		printout(line(), "\n");
+		
+		if ((suffix_index + msg_suffix.size()) > buf_str.size())
+		{
+			buf_str.clear();
+		}
+		else
+		{
+			buf_str = buf_str.substr(suffix_index + msg_suffix.size());
+		}
+		
+
+		//printout("buf_str Debug:  ", line(), "\n", buf_str, "\n\n\n");
+	}
+	else
+	{
+		//printout("EGGS\n");
+		__line = "";
+	}
 }
 
 
@@ -275,55 +329,6 @@ void IRCCommunicator::do_socket_and_connect()
 	}
 }
 
-bool IRCCommunicator::do_select_and_also_full_read()
-{
-	fd_set temp_readfds;
-	do_select_for_read(*this, &temp_readfds);
-
-	if (check_select_result(*this, &temp_readfds))
-	{
-		//printout("FD_ISSET():  ");
-		//err("Something wrong with the connection?");
-		do_full_read();
-		return true;
-	}
-	//printout("!FD_ISSET():  ");
-
-	__line = "";
-
-	return false;
-
-}
-
-void IRCCommunicator::update_line()
-{
-	const auto suffix_index = buf_str.find(msg_suffix);
-	
-	//printout(suffix_index, "\t");
-
-	if (suffix_index != std::string::npos)
-	{
-		__line = buf_str.substr(0, suffix_index);
-		printout(line(), "\n");
-		
-		if ((suffix_index + msg_suffix.size()) > buf_str.size())
-		{
-			buf_str.clear();
-		}
-		else
-		{
-			buf_str = buf_str.substr(suffix_index + msg_suffix.size());
-		}
-		
-
-		//printout("buf_str Debug:  ", line(), "\n", buf_str, "\n\n\n");
-	}
-	else
-	{
-		//printout("EGGS\n");
-		__line = "";
-	}
-}
 
 void IRCCommunicator::inner_send_regular_msg(std::string&& full_msg)
 {

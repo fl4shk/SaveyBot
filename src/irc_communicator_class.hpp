@@ -186,6 +186,8 @@ private:		// variables
 	// The array of characters read() sends its data to
 	std::array<char, raw_buf_size> raw_buf;
 
+	bool did_joins = false;
+
 	std::string __line = "", buf_str = "";
 
 	//size_t last_index = 0;
@@ -227,7 +229,9 @@ public:		// functions
 
 	gen_getter_by_con_ref(line);
 
-	void do_full_read();
+
+	void iterate(fd_set* readfds);
+
 
 
 protected:		// functions
@@ -249,7 +253,9 @@ private:		// functions
 	}
 
 
+	void do_full_read();
 	bool do_select_and_also_full_read();
+	bool do_full_read_if_fd_isset(fd_set* readfds);
 	void update_line();
 
 	void inner_send_raw_msg(std::string&& full_msg) const;
