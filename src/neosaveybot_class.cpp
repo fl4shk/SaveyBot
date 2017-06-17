@@ -1,24 +1,24 @@
-// This file is part of NeoSaveyBot.
+// This file is part of SaveyBot.
 // 
 // Copyright 2017 Andrew Clark (FL4SHK).
 // 
-// NeoSaveyBot is free software: you can redistribute it and/or
+// SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or (at
 // your option) any later version.
 // 
-// NeoSaveyBot is distributed in the hope that it will be useful,
+// SaveyBot is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License along
-// with NeoSaveyBot.  If not, see <http://www.gnu.org/licenses/>.
+// with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "neosaveybot_class.hpp"
+#include "saveybot_class.hpp"
 
-namespace neosaveybot
+namespace saveybot
 {
 
 
@@ -156,21 +156,21 @@ void Database::update_lowest_available_slot()
 		lowest_available_slot(), "\n\n");
 }
 
-const std::string NeoSaveyBot::database_file_name("neosaveybot.json");
+const std::string SaveyBot::database_file_name("saveybot.json");
 
 
 
 
-NeoSaveyBot::NeoSaveyBot() : __database(database_file_name)
+SaveyBot::SaveyBot() : __database(database_file_name)
 {
 }
 
-NeoSaveyBot::~NeoSaveyBot()
+SaveyBot::~SaveyBot()
 {
 }
 
 
-void NeoSaveyBot::parse_command(Communicator& comm, 
+void SaveyBot::parse_command(Communicator& comm, 
 	const std::string& channel, const std::string& name,
 	const std::string& whole_cmd_str)
 {
@@ -573,7 +573,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 
 	else if (cmd == ".low")
 	{
-		comm.send_regular_msg("~ NeoSaveyBot's lowest free slot is #",
+		comm.send_regular_msg("~ SaveyBot's lowest free slot is #",
 			database().lowest_available_slot(), "! wow !!! :D/");
 	}
 

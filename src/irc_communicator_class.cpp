@@ -1,26 +1,26 @@
-// This file is part of NeoSaveyBot.
+// This file is part of SaveyBot.
 // 
 // Copyright 2017 Andrew Clark (FL4SHK).
 // 
-// NeoSaveyBot is free software: you can redistribute it and/or
+// SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or (at
 // your option) any later version.
 // 
-// NeoSaveyBot is distributed in the hope that it will be useful,
+// SaveyBot is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License along
-// with NeoSaveyBot.  If not, see <http://www.gnu.org/licenses/>.
+// with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "irc_communicator_class.hpp"
-#include "neosaveybot_class.hpp"
+#include "saveybot_class.hpp"
 #include "select_stuff.hpp"
 
-namespace neosaveybot
+namespace saveybot
 {
 
 IRCConfiguration::IRCConfiguration()
@@ -103,7 +103,7 @@ const std::string IRCCommunicator::config_file_name("config.json"),
 //	const std::string& some_port_str, const std::string& nick_command,
 //	const std::string& user_command, 
 //	const std::vector<std::string>& joins_list)
-IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr, 
+IRCCommunicator::IRCCommunicator(SaveyBot* s_bot_ptr, 
 	const IRCConfiguration::Server* s_config_server_ptr)
 	: __bot_ptr(s_bot_ptr), __config_server_ptr(s_config_server_ptr)
 {

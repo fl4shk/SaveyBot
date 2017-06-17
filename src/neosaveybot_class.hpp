@@ -1,23 +1,23 @@
-// This file is part of NeoSaveyBot.
+// This file is part of SaveyBot.
 // 
 // Copyright 2017 Andrew Clark (FL4SHK).
 // 
-// NeoSaveyBot is free software: you can redistribute it and/or
+// SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or (at
 // your option) any later version.
 // 
-// NeoSaveyBot is distributed in the hope that it will be useful,
+// SaveyBot is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License along
-// with NeoSaveyBot.  If not, see <http://www.gnu.org/licenses/>.
+// with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef neosaveybot_class_hpp
-#define neosaveybot_class_hpp
+#ifndef saveybot_class_hpp
+#define saveybot_class_hpp
 
 #include "json_stuff.hpp"
 //#include "irc_communicator_class.hpp"
@@ -25,7 +25,7 @@
 #include "gmp_stuff.hpp"
 #include "string_stuff.hpp"
 
-namespace neosaveybot
+namespace saveybot
 {
 
 class Database
@@ -209,7 +209,7 @@ private:		// functions
 	
 };
 
-class NeoSaveyBot
+class SaveyBot
 {
 
 private:		// variables
@@ -220,8 +220,8 @@ public:		// static variables
 	static const std::string database_file_name;
 	
 public:		// functions
-	NeoSaveyBot();
-	~NeoSaveyBot();
+	SaveyBot();
+	~SaveyBot();
 
 	//void parse_command_basic(const std::vector<std::string>& args_vec);
 	void parse_command(Communicator& comm, const std::string& channel, 
@@ -270,4 +270,4 @@ private:		// functions
 
 }
 
-#endif // neosaveybot_class_hpp
+#endif // saveybot_class_hpp

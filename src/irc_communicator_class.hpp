@@ -1,19 +1,19 @@
-// This file is part of NeoSaveyBot.
+// This file is part of SaveyBot.
 // 
 // Copyright 2017 Andrew Clark (FL4SHK).
 // 
-// NeoSaveyBot is free software: you can redistribute it and/or
+// SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or (at
 // your option) any later version.
 // 
-// NeoSaveyBot is distributed in the hope that it will be useful,
+// SaveyBot is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License along
-// with NeoSaveyBot.  If not, see <http://www.gnu.org/licenses/>.
+// with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #ifndef irc_communicator_class_hpp
@@ -25,10 +25,10 @@
 
 //#include "select_stuff.hpp"
 
-namespace neosaveybot
+namespace saveybot
 {
 
-class NeoSaveyBot;
+class SaveyBot;
 
 // This should be moved to some IRC-related thing
 class IRCConfiguration
@@ -178,7 +178,7 @@ private:		// variables
 
 
 	
-	NeoSaveyBot* __bot_ptr;
+	SaveyBot* __bot_ptr;
 	
 	// This is a pointer to a constant IRCConfiguration::Server.
 	const IRCConfiguration::Server* __config_server_ptr;
@@ -198,7 +198,7 @@ public:		// functions
 	//	const std::string& some_port_str, const std::string& nick_command,
 	//	const std::string& user_command, 
 	//	const std::vector<std::string>& joins_list);
-	IRCCommunicator(NeoSaveyBot* s_bot_ptr, 
+	IRCCommunicator(SaveyBot* s_bot_ptr, 
 		const IRCConfiguration::Server* s_config_server_ptr);
 	
 	IRCCommunicator(const IRCCommunicator& to_copy) = default;
@@ -247,7 +247,7 @@ private:		// functions
 	gen_setter_by_val(did_alloc_res);
 	gen_setter_by_val(did_open_sock_fd);
 
-	inline NeoSaveyBot& bot() const
+	inline SaveyBot& bot() const
 	{
 		return *__bot_ptr;
 	}
