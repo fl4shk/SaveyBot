@@ -25,19 +25,22 @@ namespace saveybot
 
 IRCConfiguration::IRCConfiguration()
 {
-	Json::Value config_root;
+	Json::Value config_root, servers;
 	std::string errs;
 
 	parse_json(IRCCommunicator::config_file_name, &config_root, &errs);
 
-	const auto& member_names = config_root.getMemberNames();
+	servers = config_root["servers"];
+
+
+	const auto& member_names = servers.getMemberNames();
 
 	for (const auto& name_iter : member_names)
 	{
 		Server to_push;
 
 		to_push.set_name(name_iter);
-		const auto& iter = config_root[name_iter];
+		const auto& iter = servers[name_iter];
 		to_push.set_bot_name(iter["bot_name"].asString());
 		to_push.set_address(iter["address"].asString());
 		to_push.set_port_str(iter["port"].asString());

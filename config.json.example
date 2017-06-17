@@ -1,11 +1,39 @@
 {
-	"database" : "saveybot.json",
 	"servers" :
 	{
 		"ExampleIRC" :
 		{
 			"bot_name" : "SaveyBot",
 			"server_name" : "irc.example.net",
+			"port" : 6667,
+			"password" : "",
+			"autojoins" :
+			[
+				"#example",
+				"#example2",
+				"#example3"
+			],
+			"startup" :
+			[
+				[
+					"NICK",
+					" SaveyBot"
+				],
+				[
+					"USER",
+					" saveybot",
+					" SaveyBot",
+					" SaveyBot",
+					" SaveyBot",
+					" SaveyBot",
+					" saveybot"
+				]
+			]
+		}
+		"ExampleIRC2" :
+		{
+			"bot_name" : "SaveyBot",
+			"server_name" : "irc.example2.net",
 			"port" : 6667,
 			"password" : "",
 			"autojoins" :
