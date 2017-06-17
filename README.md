@@ -9,14 +9,14 @@ This is my attempt to clone (and enhance!) SaveyBot.
 Some Commands
 -------------
 
-###.load
+### .load
 * .load &lt;username>
   * This command tells you how many savestates &lt;username> owns!
 * .load &lt;slot\_number>
   * This command shows savestate #&lt;slot\_number>\!
 
 
-###.save
+### .save
 * .save &lt;message>
   * This commands saves &lt;message> to the lowest (positive) available
   slot!
@@ -26,25 +26,25 @@ Some Commands
   savestate!
 
 
-###.road
+### .road
 * .road
   * This command loads a random savestate!
 * .road &lt;username>
   * This command loads a random savestate owned by &lt;username>\!
 
 
-###.remove
+### .remove
 * .remove &lt;slot\_number>
   * If the user owns savestate #&lt;slot\_number>, then this command will
   delete that savestate!
 
 
-###.whois
+### .whois
 * .whois &lt;slot\_number>
   * This command tells you who owns savestate #&lt;slot\_number>\!
 
 
-###.date
+### .date
 * .date &lt;slot\_number>
   * This command tells you when savestate #&lt;slot\_number> was saved, if
   it is known.  Savestates made using original SaveyBot do not have a known

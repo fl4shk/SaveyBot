@@ -195,7 +195,8 @@ void SaveyBot::parse_command(Communicator& comm,
 
 	//printout("Here's the prefix:  ", cmd, "\n");
 
-	static const std::string happy_suffix("!!! :D/"), sad_suffix(" )));");
+	static const std::string wow_suffix("! wow !!! :D/"), 
+		happy_suffix("!!! :D/"), sad_suffix(" )));");
 	
 	auto print_found_command = [&]() -> void
 	{
@@ -203,8 +204,8 @@ void SaveyBot::parse_command(Communicator& comm,
 	};
 	auto say_invalid_num_params = [&]() -> void
 	{
-		comm.send_regular_msg("Invalid number of parameters for \"", 
-			cmd, "\".");
+		comm.send_saveybot_msg("Wrong parameters for \"", 
+			cmd, "\"", sad_suffix, "!");
 	};
 
 	auto inner_next_non_blank_substr = [&]() -> bool
@@ -214,7 +215,7 @@ void SaveyBot::parse_command(Communicator& comm,
 
 	auto show_msg = [&](const Database::Value& to_show) -> void
 	{
-		comm.send_regular_msg("~ ", to_show.name(), "[", to_show.slot(), 
+		comm.send_saveybot_msg(to_show.name(), "[", to_show.slot(), 
 			"]:  ", to_show.message());
 	};
 
@@ -222,12 +223,12 @@ void SaveyBot::parse_command(Communicator& comm,
 	{
 		if (to_show.datetime() == "classic")
 		{
-			comm.send_regular_msg("~ That savestate was sav'd using "
+			comm.send_saveybot_msg("That savestate was sav'd using ",
 				"original SaveyBot, so datetime unknown", happy_suffix);
 		}
 		else
 		{
-			comm.send_regular_msg("~ That savestate was sav'd on ",
+			comm.send_saveybot_msg("That savestate was sav'd on ",
 				to_show.datetime(), happy_suffix);
 		}
 	};
@@ -235,52 +236,52 @@ void SaveyBot::parse_command(Communicator& comm,
 	auto say_cant_find_owned_by = [&](const std::string& some_name) 
 		-> void
 	{
-		comm.send_regular_msg("~ Can't find any savestates owned by ", 
-			some_name, "!");
+		comm.send_saveybot_msg("Can't find any savestates owned ",
+			"by ", some_name, "!");
 	};
 	
 	auto say_slot_doesnt_exist = [&]() -> void
 	{
-		//comm.send_regular_msg("That slot doesn't exist!");
-		comm.send_regular_msg("~ no one owns that savestate!!! (u should",
+		//comm.send_saveybot_msg("That slot doesn't exist!");
+		comm.send_saveybot_msg("no one owns that savestate!!! (u should",
 			" change that!)");
 	};
 
 	auto say_message_saved = [&]() -> void
 	{
-		comm.send_regular_msg("Your savestate was sav'd to slot number ", 
+		comm.send_saveybot_msg("Your savestate was sav'd to slot number ", 
 			slot, "!");
 	};
 
 	auto say_owned_by = [&]() -> void
 	{
-		comm.send_regular_msg("That slot is owned by ", 
+		comm.send_saveybot_msg("That slot is owned by ", 
 			database().at(slot_bignum).name(), "!");
 	};
 
 	auto say_rip = [&]() -> void
 	{
-		comm.send_regular_msg("~ rip ur msg", sad_suffix);
+		comm.send_saveybot_msg("rip ur msg", sad_suffix);
 	};
 
 	auto say_database_empty = [&]() -> void
 	{
-		comm.send_regular_msg("~ The database is empty!", sad_suffix);
+		comm.send_saveybot_msg("The database is empty!", sad_suffix);
 	};
 	auto say_need_slot_number = [&]() -> void
 	{
-		comm.send_regular_msg("~ Need a slot number for that!");
+		comm.send_saveybot_msg("Need a slot number for that!");
 	};
 	auto say_need_slot_number_or_username = [&]() -> void
 	{
-		comm.send_regular_msg("~ Need a slot number (or username) for ",
+		comm.send_saveybot_msg("Need a slot number (or username) for ",
 			"that!");
 	};
 
 	auto say_number_of_slots_owned_by = [&]
 		(const std::string& some_name, const size_t amount) -> void
 	{
-		comm.send_regular_msg("~ ", some_name, " owns ", amount, 
+		comm.send_saveybot_msg(some_name, " owns ", amount, 
 			" savestates", happy_suffix);
 	};
 
@@ -407,7 +408,17 @@ void SaveyBot::parse_command(Communicator& comm,
 	};
 
 
-	if (cmd == ".save")
+	if (cmd == ".help")
+	{
+		//comm.send_regular_msg("~ lol u n00b (^: ",
+		//	"http://savestate.info/upload/IRCHelp.png");
+		//comm.send_regular_msg("~ lol u n00b (^: ",
+		//	"http://overcocked.penis.systems/commands.html");
+		comm.send_saveybot_msg("lol u n00b (^: ",
+			"https://github.com/fl4shk/SaveyBot/blob/master/README.md");
+	}
+
+	else if (cmd == ".save")
 	{
 		exec_save_like_command([&]() -> void
 			{
@@ -573,13 +584,13 @@ void SaveyBot::parse_command(Communicator& comm,
 
 	else if (cmd == ".low")
 	{
-		comm.send_regular_msg("~ SaveyBot's lowest free slot is #",
-			database().lowest_available_slot(), "! wow !!! :D/");
+		comm.send_saveybot_msg("SaveyBot's lowest free slot is #",
+			database().lowest_available_slot(), wow_suffix);
 	}
 
 	//else
 	//{
-	//	//comm.send_regular_msg("Unknown command.");
+	//	//comm.send_saveybot_msg("Unknown command.");
 	//}
 }
 

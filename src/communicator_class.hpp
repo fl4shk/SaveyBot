@@ -46,6 +46,13 @@ public:		// functions
 		inner_send_regular_msg(std::move(sconcat(first_val, rem_args...)));
 	}
 
+	template<typename FirstType, typename... RemArgTypes>
+	inline void send_saveybot_msg(const FirstType& first_val,
+		const RemArgTypes&... rem_args)
+	{
+		send_regular_msg("~ ", first_val, rem_args...);
+	}
+
 	gen_setter_by_con_ref(channel);
 	gen_setter_by_rval_ref(channel);
 	gen_getter_by_con_ref(channel);
