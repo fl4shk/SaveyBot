@@ -243,7 +243,7 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	{
 		//comm.send_regular_msg("That slot doesn't exist!");
 		comm.send_regular_msg("~ no one owns that savestate!!! (u should",
-			"change that!)");
+			" change that!)");
 	};
 
 	auto say_message_saved = [&]() -> void
