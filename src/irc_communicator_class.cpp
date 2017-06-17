@@ -159,6 +159,8 @@ void IRCCommunicator::iterate(fd_set* readfds)
 
 		if (!did_joins)
 		{
+			//sleep(1);
+
 			did_joins = true;
 
 			for (auto iter : config_server().joins_list())
