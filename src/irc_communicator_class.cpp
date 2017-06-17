@@ -159,7 +159,7 @@ void IRCCommunicator::iterate(fd_set* readfds)
 
 		if (!did_joins)
 		{
-			//sleep(1);
+			sleep(1);
 
 			did_joins = true;
 
