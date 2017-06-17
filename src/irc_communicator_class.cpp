@@ -122,6 +122,8 @@ IRCCommunicator::IRCCommunicator(NeoSaveyBot* s_bot_ptr,
 
 	do_select_and_also_full_read();
 
+	sleep(1);
+
 	bool did_joins = false;
 
 	for (;;)
