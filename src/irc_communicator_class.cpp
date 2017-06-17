@@ -153,13 +153,8 @@ void IRCCommunicator::iterate(fd_set* readfds)
 	//printout("substr Debug:  ", line(), "\t\t", first_substr, " ", 
 	//	first_substr.size(), "\n");
 
-	// Handle PING
-	if (first_substr == "PING")
+	auto attempt_do_joins = [&]() -> void
 	{
-		next_non_blank_substr(line(), i, second_substr, i);
-		//printout("PING Debug:  ", second_substr, "\n");
-		send_raw_msg("PONG ", second_substr);
-
 		if (!did_joins)
 		{
 			sleep(1);
@@ -171,6 +166,16 @@ void IRCCommunicator::iterate(fd_set* readfds)
 				send_raw_msg("JOIN ", iter);
 			}
 		}
+	};
+
+	// Handle PING
+	if (first_substr == "PING")
+	{
+		next_non_blank_substr(line(), i, second_substr, i);
+		//printout("PING Debug:  ", second_substr, "\n");
+		send_raw_msg("PONG ", second_substr);
+
+		attempt_do_joins();
 	}
 	else
 	{
@@ -191,6 +196,7 @@ void IRCCommunicator::iterate(fd_set* readfds)
 
 		next_non_blank_substr(line(), i, second_substr, i);
 
+		
 		if (second_substr != "PRIVMSG")
 		{
 			//printout("! PRIVMSG\n");
@@ -199,10 +205,22 @@ void IRCCommunicator::iterate(fd_set* readfds)
 
 		next_non_blank_substr(line(), i, third_substr, i);
 
-		// Ignore PMs directly to the bot for now
+		// Ignore PMs directly to the bot for now (besides CTCP VERSION)
 		if (third_substr == config_server().bot_name())
 		{
-			//printout("Ignoring PM to the bot\n");
+			const std::string ctcp_version_str(":\001VERSION\001");
+			
+			next_non_blank_substr(line(), i, other_substr, i);
+
+			// Respond to CTCP VERSION
+			if (other_substr == ctcp_version_str)
+			{
+				send_raw_msg("NOTICE ", user_nick, "\001VERSION SaveyBot",
+					"Version 3 (by FL4SHK)\001");
+			}
+
+			attempt_do_joins();
+
 			return;
 		}
 		

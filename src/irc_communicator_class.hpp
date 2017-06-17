@@ -264,7 +264,7 @@ private:		// functions
 	inline void send_raw_msg(const FirstType& first_val, 
 		RemArgTypes&&...  rem_args)
 	{
-		std::string temp = std::move(sconcat(first_val, rem_args...));
+		std::string temp = sconcat(first_val, rem_args...);
 		printerr("Sending to server \"", config_server().name(), "\":  ",
 			temp, "\n");
 
