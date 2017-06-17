@@ -415,7 +415,7 @@ void SaveyBot::parse_command(Communicator& comm,
 		//comm.send_regular_msg("~ lol u n00b (^: ",
 		//	"http://overcocked.penis.systems/commands.html");
 		comm.send_saveybot_msg("lol u n00b (^: ",
-			"https://github.com/fl4shk/SaveyBot/blob/master/README.md");
+			"https://github.com/fl4sh%6B/SaveyBot/blob/master/README.md");
 	}
 
 	else if (cmd == ".save")
