@@ -235,13 +235,15 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 	auto say_cant_find_owned_by = [&](const std::string& some_name) 
 		-> void
 	{
-		comm.send_regular_msg("Can't find any savestates owned by ", 
+		comm.send_regular_msg("~ Can't find any savestates owned by ", 
 			some_name, "!");
 	};
 	
 	auto say_slot_doesnt_exist = [&]() -> void
 	{
-		comm.send_regular_msg("That slot doesn't exist!");
+		//comm.send_regular_msg("That slot doesn't exist!");
+		comm.send_regular_msg("~ no one owns that savestate!!! (u should",
+			"change that!)");
 	};
 
 	auto say_message_saved = [&]() -> void
@@ -567,6 +569,12 @@ void NeoSaveyBot::parse_command(Communicator& comm,
 					say_owned_by();
 				}
 			});
+	}
+
+	else if (cmd == ".low")
+	{
+		comm.send_regular_msg("~ NeoSaveyBot's lowest free slot is #",
+			database().lowest_available_slot(), "! wow !!! :D/");
 	}
 
 	//else
