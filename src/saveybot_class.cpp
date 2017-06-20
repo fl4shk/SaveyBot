@@ -44,7 +44,7 @@ void Database::Value::add_to_json(Json::Value& output_root) const
 {
 	output_root[slot()][Database::key_datetime] = datetime();
 
-	s64 classic_index;
+	Json::Value::Int64 classic_index;
 	std::stringstream sstm(classic_index_str());
 	sstm >> classic_index;
 	output_root[slot()][Database::key_classic_index] = classic_index;
