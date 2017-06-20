@@ -343,7 +343,13 @@ void IRCCommunicator::do_socket_and_connect()
 	// for the requested socket type (SOCK_STREAM).
 	set_sock_fd(socket(res()->ai_family, specific_socktype(), 0));
 
-	if (connect(sock_fd(), res()->ai_addr, res()->ai_addrlen) != 0)
+
+	const auto connect_result = connect(sock_fd(), res()->ai_addr, 
+		res()->ai_addrlen);
+	
+	printout("connect_result:  ", connect_result, "\n");
+
+	if (connect_result != 0)
 	{
 		printerr("There was an error connecting to the server.\n");
 		set_did_open_sock_fd(false);
