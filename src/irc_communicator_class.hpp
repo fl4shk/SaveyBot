@@ -20,7 +20,8 @@
 #define irc_communicator_class_hpp
 
 
-#include "json_stuff.hpp"
+//#include "json_stuff.hpp"
+#include "misc_includes.hpp"
 #include "communicator_class.hpp"
 
 //#include "select_stuff.hpp"
