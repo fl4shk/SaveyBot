@@ -19,7 +19,7 @@
 #ifndef saveybot_class_hpp
 #define saveybot_class_hpp
 
-#include "json_stuff.hpp"
+//#include "json_stuff.hpp"
 //#include "irc_communicator_class.hpp"
 #include "communicator_class.hpp"
 #include "gmp_stuff.hpp"
