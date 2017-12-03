@@ -4,6 +4,7 @@
 #include "misc_defines.hpp"
 #include "misc_types.hpp"
 #include "misc_includes.hpp"
+#include "gen_getter_setter_defines.hpp"
 
 #include <iomanip>
 
@@ -18,53 +19,48 @@ class Prng
 {
 public:		// typedefs
 	typedef decltype(std::chrono::high_resolution_clock::now()
-		.time_since_epoch().count()) seed_type;
-	
-	//typedef std::minstd_rand instance_type;
-	//typedef std::mt19937 instance_type;
-	typedef std::mt19937_64 instance_type;
-	
+		.time_since_epoch().count()) SeedType;
+
+	//typedef std::minstd_rand InstanceType;
+	//typedef std::mt19937 InstanceType;
+	typedef std::mt19937_64 InstanceType;
+
 protected:		// variables
-	int param_0, param_1;
-	
-	instance_type instance;
-	
-	
+	int __param_0, __param_1;
+
+	InstanceType __instance;
+
+
 protected:		// functions
-	inline seed_type get_initial_seed()
+	inline SeedType get_initial_seed()
 	{
 		// I have no idea how good this is, but it seems to work?
 		return (std::chrono::high_resolution_clock::now()
-			.time_since_epoch().count() * (get_param_0() + 1))
-			+ get_param_1();
+			.time_since_epoch().count() * (param_0() + 1)) + param_1();
 	}
-	
+
 public:		// functions
 	inline Prng(int s_param_0=0, int s_param_1=0) 
-		: param_0(s_param_0), param_1(s_param_1),
-		instance(get_initial_seed())
+		: __param_0(s_param_0), __param_1(s_param_1),
+		__instance(get_initial_seed())
 	{
 	}
-	
-	inline int get_param_0() const
-	{
-		return param_0;
-	}
-	inline int get_param_1() const
-	{
-		return param_1;
-	}
-	
+
+	gen_getter_by_val(param_0);
+	gen_getter_by_val(param_1);
+	gen_getter_by_con_ref(instance);
+
+
 	inline auto operator () ()
 	{
-		return instance();
+		return __instance();
 	}
-	
+
 	inline auto operator () (integer_types::u64 max_val, 
 		const bool use_cap=false)
 	{
 		auto ret = (*this)();
-		
+
 		if (!use_cap)
 		{
 			ret %= max_val;
@@ -76,10 +72,10 @@ public:		// functions
 				ret = max_val;
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 } __attribute__((_align4));
 
 
@@ -87,7 +83,7 @@ class Profiler
 {
 protected:		// variables
 	std::chrono::high_resolution_clock::time_point start_tp, end_tp;
-	
+
 public:		// functions
 	static inline auto get_hrc_now()
 	{
@@ -98,23 +94,23 @@ public:		// functions
 		return std::chrono::high_resolution_clock::to_time_t
 			(get_hrc_now());
 	}
-	
+
 public:		// functions
 	inline void start()
 	{
 		start_tp = get_hrc_now();
 	}
-	
+
 	inline auto stop()
 	{
 		end_tp = get_hrc_now();
-		
+
 		std::chrono::duration<double> diff_dtn = end_tp - start_tp;
-		
+
 		return diff_dtn.count();
 	}
-	
-	
+
+
 } __attribute__((_align4));
 
 inline std::time_t now_as_time_t()

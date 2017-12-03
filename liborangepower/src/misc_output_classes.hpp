@@ -12,7 +12,7 @@ namespace printout_etc
 
 
 template<typename... ArgTypes>
-void osprintout(std::ostream& os, ArgTypes&&... args);
+std::ostream& osprintout(std::ostream& os, ArgTypes&&... args);
 
 class AnyPrintoutBackend
 {
@@ -27,34 +27,36 @@ private:		// functions
 		os << first_val;
 		func(os, rem_args...);
 	}
-	
+
 	template<typename... ArgTypes>
-	friend void osprintout(std::ostream& os, ArgTypes&&... args);
+	friend std::ostream& osprintout(std::ostream& os, 
+		ArgTypes&&... args);
 };
 
 template<typename... ArgTypes>
-inline void osprintout(std::ostream& os, ArgTypes&&... args)
+inline std::ostream& osprintout(std::ostream& os, ArgTypes&&... args)
 {
 	AnyPrintoutBackend::func(os, args...);
+	return os;
 }
 
 template<typename... ArgTypes>
-inline void printout(ArgTypes&&... args)
+inline std::ostream& printout(ArgTypes&&... args)
 {
-	osprintout(cout, args...);
+	return osprintout(cout, args...);
 }
 
 template<typename... ArgTypes>
-inline void printerr(ArgTypes&&... args)
+inline std::ostream& printerr(ArgTypes&&... args)
 {
-	osprintout(cerr, args...);
+	return osprintout(cerr, args...);
 }
 
 // Alternate name for osprintout
 template<typename... ArgTypes>
-inline void fprintout(std::ostream& out_file, ArgTypes&&... args)
+inline std::ostream& fprintout(std::ostream& out_file, ArgTypes&&... args)
 {
-	osprintout(out_file, args...);
+	return osprintout(out_file, args...);
 }
 
 
@@ -82,6 +84,51 @@ std::string sconcat(const FirstType& first_val,
 }
 
 
+template<typename ArrType>
+std::ostream& osprint_arr(std::ostream& os, ArrType* to_print, size_t size)
+{
+	for (size_t i=0; i<size; ++i)
+	{
+		osprintout(os, to_print[i]);
+		if ((i + 1) < size)
+		{
+			osprintout(os, ", ");
+		}
+	}
+
+	return os;
+}
+
+
+inline std::string strappcom()
+{
+	return std::string();
+}
+template<typename Type>
+inline std::string strappcom(const Type& to_concat)
+{
+	return sconcat(to_concat, ", ");
+}
+
+template<typename FirstType, typename... RemArgTypes>
+inline std::string strappcom(const FirstType& first_val,
+	RemArgTypes&&... rem_args)
+{
+	std::string ret = std::move(strappcom(first_val));
+	ret += std::move(strappcom(rem_args...));
+	return ret;
+}
+
+template<typename FirstType, typename... RemArgTypes>
+inline std::string strappcom2(const FirstType& first_val,
+	RemArgTypes&&... rem_args)
+{
+	std::string ret = std::move(strappcom(first_val, rem_args...));
+
+	ret = std::move(ret.substr(0, ret.size() - std::string(", ").size()));
+
+	return ret;
+}
 
 }
 
