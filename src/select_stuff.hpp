@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017 Andrew Clark (FL4SHK).
+// Copyright 2017-2018 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -24,42 +24,38 @@
 namespace saveybot
 {
 
-void do_select_for_read(const std::vector<IRCCommunicator>& comm_vec, 
-	fd_set* readfds);
+void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec, 
+	fd_set* readfds, bool was_called_for_just_one=false);
 
 // Wrapper
 inline void do_select_for_read
-	(const std::vector<IRCCommunicator>& comm_vec, fd_set& readfds)
+	(const std::vector<IrcCommunicator*>& comm_vec, fd_set& readfds)
 {
 	do_select_for_read(comm_vec, &readfds);
 }
 
-inline void do_select_for_read(const IRCCommunicator& comm, 
-	fd_set* readfds)
+inline void do_select_for_read(IrcCommunicator* comm, fd_set* readfds)
 {
-	std::vector<IRCCommunicator> temp_vec;
+	std::vector<IrcCommunicator*> temp_vec;
 	temp_vec.push_back(comm);
 
-	do_select_for_read(temp_vec, readfds);
+	do_select_for_read(temp_vec, readfds, true);
 }
 
 // Wrapper
-inline void do_select_for_read(const IRCCommunicator& comm, 
-	fd_set& readfds)
+inline void do_select_for_read(IrcCommunicator* comm, fd_set& readfds)
 {
 	do_select_for_read(comm, &readfds);
 }
 
 
-inline auto check_select_result(const IRCCommunicator& comm,
-	fd_set* readfds)
+inline auto check_select_result(IrcCommunicator* comm, fd_set* readfds)
 {
-	return FD_ISSET(comm.sock_fd(), readfds);
+	return FD_ISSET(comm->sock_fd(), readfds);
 }
 
 // Wrapper
-inline auto check_select_result(const IRCCommunicator& comm,
-	fd_set& readfds)
+inline auto check_select_result(IrcCommunicator* comm, fd_set& readfds)
 {
 	return check_select_result(comm, &readfds);
 }

@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017 Andrew Clark (FL4SHK).
+// Copyright 2017-2018 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -29,10 +29,11 @@
 namespace saveybot
 {
 
+class RealMain;
 class SaveyBot;
 
 // This should be moved to some IRC-related thing
-class IRCConfiguration
+class IrcConfiguration
 {
 public:		// classes
 	class Server
@@ -58,31 +59,22 @@ public:		// classes
 		inline ~Server()
 		{
 		}
-		
+
 		Server& operator = (const Server& to_copy) = default;
 		Server& operator = (Server&& to_move) = default;
-		
-		
-		gen_getter_by_con_ref(name);
-		gen_getter_by_con_ref(bot_name);
-		gen_getter_by_con_ref(address);
-		gen_getter_by_con_ref(port_str);
-		gen_getter_by_con_ref(password);
-		gen_getter_by_con_ref(joins_list);
-		gen_getter_by_con_ref(startup_commands);
+
+
+		gen_getter_and_setter_by_con_ref(name);
+		gen_getter_and_setter_by_con_ref(bot_name);
+		gen_getter_and_setter_by_con_ref(address);
+		gen_getter_and_setter_by_con_ref(port_str);
+		gen_getter_and_setter_by_con_ref(password);
+		gen_getter_and_setter_by_con_ref(joins_list);
+		gen_getter_and_setter_by_con_ref(startup_commands);
 
 		gen_getter_by_ref(joins_list);
 		gen_getter_by_ref(startup_commands);
-		
 
-		gen_setter_by_con_ref(name);
-		gen_setter_by_con_ref(bot_name);
-		gen_setter_by_con_ref(address);
-		gen_setter_by_con_ref(port_str);
-		gen_setter_by_con_ref(password);
-		gen_setter_by_con_ref(joins_list);
-		gen_setter_by_con_ref(startup_commands);
-		
 		gen_setter_by_rval_ref(name);
 		gen_setter_by_rval_ref(bot_name);
 		gen_setter_by_rval_ref(address);
@@ -90,24 +82,24 @@ public:		// classes
 		gen_setter_by_rval_ref(password);
 		gen_setter_by_rval_ref(joins_list);
 		gen_setter_by_rval_ref(startup_commands);
-		
-		
+
+
 	};
-	
+
 
 private:		// variables
 	std::vector<Server> __server_vec;
 
 public:		// functions
-	IRCConfiguration();
+	IrcConfiguration();
 
-	IRCConfiguration(const IRCConfiguration& to_copy) = default;
-	IRCConfiguration(IRCConfiguration&& to_move) = default;
+	IrcConfiguration(const IrcConfiguration& to_copy) = default;
+	IrcConfiguration(IrcConfiguration&& to_move) = default;
 
 
-	IRCConfiguration& operator = (const IRCConfiguration& to_copy) 
+	IrcConfiguration& operator = (const IrcConfiguration& to_copy) 
 		= default;
-	IRCConfiguration& operator = (IRCConfiguration&& to_move) = default;
+	IrcConfiguration& operator = (IrcConfiguration&& to_move) = default;
 
 	gen_getter_by_con_ref(server_vec);
 	
@@ -115,7 +107,7 @@ public:		// functions
 
 
 std::ostream& operator << (std::ostream& os, 
-	const IRCConfiguration::Server& to_print);
+	const IrcConfiguration::Server& to_print);
 
 
 //// Here is the addrinfo struct.
@@ -152,11 +144,16 @@ std::ostream& operator << (std::ostream& os,
 //};
 
 
-class IRCCommunicator : public Communicator
+class IrcCommunicator : public Communicator
 {
+friend class RealMain;
+friend void do_select_for_read
+	(const std::vector<IrcCommunicator*>& comm_vec, fd_set* readfds,
+	bool was_called_for_just_one);
+
 public:		// static variables
 	static const std::string config_file_name,
-		msg_suffix;
+		msg_suffix, ping_suffix;
 
 private:		// variables
 	// Allow IPv4 or IPv6
@@ -181,13 +178,17 @@ private:		// variables
 	
 	SaveyBot* __bot_ptr;
 	
-	// This is a pointer to a constant IRCConfiguration::Server.
-	const IRCConfiguration::Server* __config_server_ptr;
+	// This is a pointer to a constant IrcConfiguration::Server.
+	const IrcConfiguration::Server* __config_server_ptr;
 
 	// The array of characters read() sends its data to
 	std::array<char, raw_buf_size> raw_buf;
 
-	bool did_joins = false;
+	struct
+	{
+		bool did_joins = false;
+		bool did_ping = false;
+	} __state;
 
 	std::string __line = "", buf_str = "";
 
@@ -195,23 +196,25 @@ private:		// variables
 
 
 public:		// functions
-	//IRCCommunicator(const std::string& some_server_name, 
+	//IrcCommunicator(const std::string& some_server_name, 
 	//	const std::string& some_port_str, const std::string& nick_command,
 	//	const std::string& user_command, 
 	//	const std::vector<std::string>& joins_list);
-	IRCCommunicator(SaveyBot* s_bot_ptr, 
-		const IRCConfiguration::Server* s_config_server_ptr);
-	
-	IRCCommunicator(const IRCCommunicator& to_copy) = default;
-	IRCCommunicator(IRCCommunicator&& to_move) = default;
-	
-	inline ~IRCCommunicator()
+	IrcCommunicator(SaveyBot* s_bot_ptr, 
+		const IrcConfiguration::Server* s_config_server_ptr);
+
+	IrcCommunicator(const IrcCommunicator& to_copy) = default;
+	IrcCommunicator(IrcCommunicator&& to_move) = default;
+
+	virtual inline ~IrcCommunicator()
 	{
 		clean_up();
 	}
 
-	IRCCommunicator& operator = (const IRCCommunicator& to_copy) = default;
-	IRCCommunicator& operator = (IRCCommunicator&& to_move) = default;
+
+	IrcCommunicator& operator = (const IrcCommunicator& to_copy) = default;
+	IrcCommunicator& operator = (IrcCommunicator&& to_move) = default;
+
 
 	gen_getter_by_val(specific_family);
 	gen_getter_by_val(specific_socktype);
@@ -223,7 +226,7 @@ public:		// functions
 	gen_getter_by_val(did_alloc_res);
 	gen_getter_by_val(did_open_sock_fd);
 
-	inline const IRCConfiguration::Server& config_server() const
+	inline const IrcConfiguration::Server& config_server() const
 	{
 		return *__config_server_ptr;
 	}
@@ -237,6 +240,13 @@ public:		// functions
 
 protected:		// functions
 	virtual void inner_send_regular_msg(std::string&& full_msg);
+
+	void __reinit();
+	inline void clean_up_then_reinit()
+	{
+		clean_up();
+		__reinit();
+	}
 	
 
 
@@ -296,6 +306,8 @@ private:		// functions
 			close(sock_fd());
 		}
 	}
+
+	void check_timeout_with_ping();
 };
 
 

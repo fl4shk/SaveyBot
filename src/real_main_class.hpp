@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017 Andrew Clark (FL4SHK).
+// Copyright 2017-2018 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -31,12 +31,13 @@ private:		// variables
 	std::vector<std::string> __args_vec;
 	SaveyBot __bot;
 
-	std::vector<IRCCommunicator> __irc_comm_vec;
-	IRCConfiguration __irc_config;
+	//std::vector<IrcCommunicator> __irc_comm_vec;
+	std::vector<IrcCommunicator*> __irc_comm_vec;
+	IrcConfiguration __irc_config;
 
 public:		// functions
 	RealMain(int argc, char** argv);
-	~RealMain();
+	virtual ~RealMain();
 
 	int operator () ();
 

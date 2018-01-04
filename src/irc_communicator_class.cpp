@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017 Andrew Clark (FL4SHK).
+// Copyright 2017-2018 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -19,16 +19,17 @@
 #include "irc_communicator_class.hpp"
 #include "saveybot_class.hpp"
 #include "select_stuff.hpp"
+#include <errno.h>
 
 namespace saveybot
 {
 
-IRCConfiguration::IRCConfiguration()
+IrcConfiguration::IrcConfiguration()
 {
 	Json::Value config_root, servers;
 	std::string errs;
 
-	parse_json(IRCCommunicator::config_file_name, &config_root, &errs);
+	parse_json(IrcCommunicator::config_file_name, &config_root, &errs);
 
 	servers = config_root["servers"];
 
@@ -75,7 +76,7 @@ IRCConfiguration::IRCConfiguration()
 }
 
 std::ostream& operator << (std::ostream& os, 
-	const IRCConfiguration::Server& to_print)
+	const IrcConfiguration::Server& to_print)
 {
 	osprintout(os, "name:  ", to_print.name(), "\n");
 	osprintout(os, "\tbot_name:  ", to_print.bot_name(), "\n");
@@ -98,40 +99,23 @@ std::ostream& operator << (std::ostream& os,
 	return os;
 }
 
-const std::string IRCCommunicator::config_file_name("config.json"),
-	IRCCommunicator::msg_suffix("\r\n");
+const std::string IrcCommunicator::config_file_name("config.json"),
+	IrcCommunicator::msg_suffix("\r\n"),
+	IrcCommunicator::ping_suffix("FL4SHK_IS_A_WALRUS");
 
 
-//IRCCommunicator::IRCCommunicator(const std::string& some_server_name, 
+//IrcCommunicator::IrcCommunicator(const std::string& some_server_name, 
 //	const std::string& some_port_str, const std::string& nick_command,
 //	const std::string& user_command, 
 //	const std::vector<std::string>& joins_list)
-IRCCommunicator::IRCCommunicator(SaveyBot* s_bot_ptr, 
-	const IRCConfiguration::Server* s_config_server_ptr)
+IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr, 
+	const IrcConfiguration::Server* s_config_server_ptr)
 	: __bot_ptr(s_bot_ptr), __config_server_ptr(s_config_server_ptr)
 {
-	do_getaddrinfo(config_server().address(), config_server().port_str());
-	do_socket_and_connect();
-
-	// Go ahead and do this now 
-	free_res();
-
-	sleep(1);
-
-	for (auto iter : config_server().startup_commands())
-	{
-		send_raw_msg(iter);
-	}
-
-	do_select_and_also_full_read();
-
-	sleep(1);
-
-	did_joins = false;
-	
+	__reinit();
 }
 
-void IRCCommunicator::iterate(fd_set* readfds)
+void IrcCommunicator::iterate(fd_set* readfds)
 {
 	//do_select_and_also_full_read();
 	do_full_read_if_fd_isset(readfds);
@@ -155,11 +139,11 @@ void IRCCommunicator::iterate(fd_set* readfds)
 
 	auto attempt_do_joins = [&]() -> void
 	{
-		if (!did_joins)
+		if (!__state.did_joins)
 		{
 			sleep(1);
 
-			did_joins = true;
+			__state.did_joins = true;
 
 			for (auto iter : config_server().joins_list())
 			{
@@ -176,6 +160,25 @@ void IRCCommunicator::iterate(fd_set* readfds)
 		send_raw_msg("PONG ", second_substr);
 
 		attempt_do_joins();
+	}
+	else if (first_substr == "PONG")
+	{
+		if (__state.did_ping)
+		{
+			next_non_blank_substr(line(), i, second_substr, i);
+			if (second_substr.find(ping_suffix) == 0)
+			{
+				__state.did_ping = false;
+			}
+			else
+			{
+				err("PING PONG Eek 0!");
+			}
+		}
+		else
+		{
+			err("PING PONG Eek 1!");
+		}
 	}
 	else
 	{
@@ -231,12 +234,58 @@ void IRCCommunicator::iterate(fd_set* readfds)
 	}
 }
 
-void IRCCommunicator::do_full_read()
+void IrcCommunicator::__reinit()
 {
-	// Null terminate
-	raw_buf.fill('\0');
-	const auto num_read = read(sock_fd(), raw_buf.data(), 
-		(raw_buf.size() - 2));
+	printout("__reinit()\n");
+	do_getaddrinfo(config_server().address(), config_server().port_str());
+	do_socket_and_connect();
+
+	// Go ahead and do this now 
+	free_res();
+
+	sleep(1);
+
+	for (auto iter : config_server().startup_commands())
+	{
+		send_raw_msg(iter);
+	}
+
+	do_select_and_also_full_read();
+
+	sleep(1);
+
+	__state.did_joins = false;
+	__state.did_ping = false;
+}
+
+void IrcCommunicator::do_full_read()
+{
+	while (1)
+	{
+		// Null terminate
+		raw_buf.fill('\0');
+		const auto num_read = read(sock_fd(), raw_buf.data(), 
+			(raw_buf.size() - 2));
+
+		//if (num_read <= 0)
+		//{
+		//	clean_up_then_reinit();
+		//}
+
+		if (num_read == 0)
+		{
+			clean_up_then_reinit();
+			continue;
+		}
+		if ((num_read == -1) 
+			&& (!((errno == EAGAIN) || (errno == EWOULDBLOCK))))
+		{
+			clean_up_then_reinit();
+			continue;
+		}
+
+		break;
+	}
 
 	std::string packet;
 
@@ -254,17 +303,17 @@ void IRCCommunicator::do_full_read()
 
 }
 
-bool IRCCommunicator::do_select_and_also_full_read()
+bool IrcCommunicator::do_select_and_also_full_read()
 {
 	fd_set temp_readfds;
-	do_select_for_read(*this, &temp_readfds);
+	do_select_for_read(this, &temp_readfds);
 
 	return do_full_read_if_fd_isset(&temp_readfds);
 }
 
-bool IRCCommunicator::do_full_read_if_fd_isset(fd_set* readfds)
+bool IrcCommunicator::do_full_read_if_fd_isset(fd_set* readfds)
 {
-	if (check_select_result(*this, readfds))
+	if (check_select_result(this, readfds))
 	{
 		//printout("FD_ISSET():  ");
 		//err("Something wrong with the connection?");
@@ -279,7 +328,7 @@ bool IRCCommunicator::do_full_read_if_fd_isset(fd_set* readfds)
 }
 
 
-void IRCCommunicator::update_line()
+void IrcCommunicator::update_line()
 {
 	const auto suffix_index = buf_str.find(msg_suffix);
 	
@@ -310,7 +359,7 @@ void IRCCommunicator::update_line()
 }
 
 
-void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
+void IrcCommunicator::do_getaddrinfo(const std::string& some_address,
 	const std::string& some_port_str)
 {
 	printout(some_address, " ", some_port_str, "\n");
@@ -336,7 +385,7 @@ void IRCCommunicator::do_getaddrinfo(const std::string& some_address,
 	set_did_alloc_res(true);
 }
 
-void IRCCommunicator::do_socket_and_connect()
+void IrcCommunicator::do_socket_and_connect()
 {
 	// The last parameter of socket() is set to zero because doing so
 	// causes socket() to use an unspecified default protocol appropriate
@@ -359,12 +408,12 @@ void IRCCommunicator::do_socket_and_connect()
 }
 
 
-void IRCCommunicator::inner_send_regular_msg(std::string&& full_msg)
+void IrcCommunicator::inner_send_regular_msg(std::string&& full_msg)
 {
 	send_raw_msg("PRIVMSG ", channel(), " :", full_msg);
 }
 
-void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
+void IrcCommunicator::inner_send_raw_msg(std::string&& full_msg) const
 {
 	std::string temp = std::move(full_msg);
 
@@ -375,11 +424,22 @@ void IRCCommunicator::inner_send_raw_msg(std::string&& full_msg) const
 }
 
 
-void IRCCommunicator::clean_up()
+void IrcCommunicator::clean_up()
 {
 	free_res();
 	close_sock_fd();
 }
 
+void IrcCommunicator::check_timeout_with_ping()
+{
+	if (__state.did_ping)
+	{
+		clean_up_then_reinit();
+	}
+	else // if (!__state.did_ping)
+	{
+		send_raw_msg("PING ", ping_suffix);
+	}
+}
 
 }

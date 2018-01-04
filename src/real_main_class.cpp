@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017 Andrew Clark (FL4SHK).
+// Copyright 2017-2018 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -46,14 +46,18 @@ RealMain::RealMain(int argc, char** argv)
 
 RealMain::~RealMain()
 {
+	for (size_t i=0; i<irc_comm_vec().size(); ++i)
+	{
+		delete irc_comm_vec()[i];
+	}
 }
 
 int RealMain::operator () ()
 {
 	for (auto& iter : irc_config().server_vec())
 	{
-		irc_comm_vec().push_back(std::move(IRCCommunicator(&__bot, 
-			&iter)));
+		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
+			&iter));
 	}
 
 	fd_set readfds;
@@ -61,9 +65,9 @@ int RealMain::operator () ()
 	for (;;)
 	{
 		do_select_for_read(irc_comm_vec(), readfds);
-		for (auto& iter : irc_comm_vec())
+		for (auto iter : irc_comm_vec())
 		{
-			iter.iterate(&readfds);
+			iter->iterate(&readfds);
 		}
 	}
 
