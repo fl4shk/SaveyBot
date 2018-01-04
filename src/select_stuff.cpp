@@ -42,7 +42,7 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	{
 		if (iter->__state.wants_select)
 		{
-			//printout("wants_select\n");
+			printout("wants_select\n");
 			FD_SET(iter->sock_fd(), readfds);
 			if (nfds < iter->sock_fd())
 			{
@@ -53,7 +53,7 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 		}
 		else
 		{
-			//printout("!wants_select\n");
+			printout("!wants_select\n");
 		}
 	}
 
@@ -66,8 +66,8 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	{
 		rv = select(nfds, readfds, NULL, NULL, &tv);
 
-		printout("rv, comm_vec.size():  ", strappcom2(rv, comm_vec.size()),
-			"\n");
+		//printout("rv, comm_vec.size():  ", strappcom2(rv, comm_vec.size()),
+		//	"\n");
 		if (rv < comm_vec.size())
 		{
 			// Timeout was reached, so send pings.
