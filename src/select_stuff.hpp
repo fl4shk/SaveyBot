@@ -25,7 +25,7 @@ namespace saveybot
 {
 
 void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec, 
-	fd_set* readfds, bool was_called_for_just_one=false);
+	fd_set* readfds);
 
 // Wrapper
 inline void do_select_for_read
@@ -39,7 +39,7 @@ inline void do_select_for_read(IrcCommunicator* comm, fd_set* readfds)
 	std::vector<IrcCommunicator*> temp_vec;
 	temp_vec.push_back(comm);
 
-	do_select_for_read(temp_vec, readfds, true);
+	do_select_for_read(temp_vec, readfds);
 }
 
 // Wrapper

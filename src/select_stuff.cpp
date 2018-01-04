@@ -23,26 +23,16 @@ namespace saveybot
 {
 
 void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec, 
-	fd_set* readfds, bool was_called_for_just_one)
+	fd_set* readfds)
 {
 	int nfds = 0;
 
 	int rv;
 	
 	timeval tv;
-	//tv.tv_sec = 0;
-	//tv.tv_sec = 90;
 
-	if (was_called_for_just_one)
-	{
-		tv.tv_sec = 5;
-		tv.tv_usec = 0;
-	}
-	else // if (!was_called_for_just_one)
-	{
-		tv.tv_sec = 0;
-		tv.tv_usec = 20'000;
-	}
+	tv.tv_sec = 90;
+	tv.tv_usec = 0;
 
 	// Clear the set ahead of time
 	FD_ZERO(readfds);
@@ -50,42 +40,57 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	// Find highest
 	for (auto iter : comm_vec)
 	{
-		FD_SET(iter->sock_fd(), readfds);
-		if (nfds < iter->sock_fd())
+		if (iter->__state.wants_select)
 		{
-			nfds = iter->sock_fd();
-			//printout("sock_fd():  ", nfds, "\n");
+			//printout("wants_select\n");
+			FD_SET(iter->sock_fd(), readfds);
+			if (nfds < iter->sock_fd())
+			{
+				nfds = iter->sock_fd();
+				//printout("sock_fd():  ", nfds, "\n");
+			}
+			//++nfds;
+		}
+		else
+		{
+			//printout("!wants_select\n");
 		}
 	}
 
 	// We need nfds to be one more than highest socket number
 	++nfds;
 
-	rv = select(nfds, readfds, NULL, NULL, &tv);
+	//printout("do_select_for_read():  ", nfds, "\n");
 
-	if (was_called_for_just_one)
+	if (nfds != 1)
 	{
-		if (comm_vec.size() != 1)
+		rv = select(nfds, readfds, NULL, NULL, &tv);
+
+		printout("rv, comm_vec.size():  ", strappcom2(rv, comm_vec.size()),
+			"\n");
+		if (rv < comm_vec.size())
 		{
-			err("do_select_for_read():  was_called_for_just_one Eek!");
+			// Timeout was reached, so send pings.
+			for (auto iter : comm_vec)
+			{
+				if (iter->__state.did_joins)
+				{
+					iter->check_timeout_with_ping();
+				}
+			}
+		}
+		// 
+
+		if (rv == -1)
+		{
+			err("do_select_for_read():  There was an error in select()!");
 		}
 
-		// Timeout was reached, so send a ping.
-		if (rv == 0)
-		{
-			comm_vec.front()->check_timeout_with_ping();
-		}
+		//for (auto& iter : comm_vec)
+		//{
+		//	printout(iter->sock_fd(), "\n");
+		//}
 	}
-
-	if (rv == -1)
-	{
-		err("do_select_for_read():  There was an error in select()!");
-	}
-
-	//for (auto& iter : comm_vec)
-	//{
-	//	printout(iter->sock_fd(), "\n");
-	//}
 }
 
 }

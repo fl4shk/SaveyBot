@@ -148,8 +148,7 @@ class IrcCommunicator : public Communicator
 {
 friend class RealMain;
 friend void do_select_for_read
-	(const std::vector<IrcCommunicator*>& comm_vec, fd_set* readfds,
-	bool was_called_for_just_one);
+	(const std::vector<IrcCommunicator*>& comm_vec, fd_set* readfds);
 
 public:		// static variables
 	static const std::string config_file_name,
@@ -188,6 +187,7 @@ private:		// variables
 	{
 		bool did_joins = false;
 		bool did_ping = false;
+		bool wants_select = true;
 	} __state;
 
 	std::string __line = "", buf_str = "";

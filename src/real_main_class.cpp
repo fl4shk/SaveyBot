@@ -58,6 +58,7 @@ int RealMain::operator () ()
 	{
 		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
 			&iter));
+
 	}
 
 	fd_set readfds;

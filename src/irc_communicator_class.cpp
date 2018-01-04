@@ -101,7 +101,7 @@ std::ostream& operator << (std::ostream& os,
 
 const std::string IrcCommunicator::config_file_name("config.json"),
 	IrcCommunicator::msg_suffix("\r\n"),
-	IrcCommunicator::ping_suffix("FL4SHK_IS_A_WALRUS");
+	IrcCommunicator::ping_suffix(":FL4SHK_IS_A_WALRUS");
 
 
 //IrcCommunicator::IrcCommunicator(const std::string& some_server_name, 
@@ -236,7 +236,11 @@ void IrcCommunicator::iterate(fd_set* readfds)
 
 void IrcCommunicator::__reinit()
 {
-	printout("__reinit()\n");
+	__state.did_joins = false;
+	__state.did_ping = false;
+	__state.wants_select = true;
+
+	//printout("__reinit()\n");
 	do_getaddrinfo(config_server().address(), config_server().port_str());
 	do_socket_and_connect();
 
@@ -245,17 +249,22 @@ void IrcCommunicator::__reinit()
 
 	sleep(1);
 
+	do_select_and_also_full_read();
+	printout("test\n");
+
 	for (auto iter : config_server().startup_commands())
 	{
 		send_raw_msg(iter);
+		sleep(1);
+		//printout("__reinit():  ", do_select_and_also_full_read(), "\n");
+		//sleep(1);
 	}
 
-	do_select_and_also_full_read();
+	//do_select_and_also_full_read();
 
-	sleep(1);
+	//printout("__reinit():  ", do_select_and_also_full_read(), "\n");
+	//sleep(1);
 
-	__state.did_joins = false;
-	__state.did_ping = false;
 }
 
 void IrcCommunicator::do_full_read()
@@ -337,15 +346,26 @@ void IrcCommunicator::update_line()
 	if (suffix_index != std::string::npos)
 	{
 		__line = buf_str.substr(0, suffix_index);
+		//printout("update_line():  line():  ", line(), "\n");
 		printout(line(), "\n");
 		
 		if ((suffix_index + msg_suffix.size()) > buf_str.size())
 		{
+			__state.wants_select = true;
 			buf_str.clear();
 		}
 		else
 		{
 			buf_str = buf_str.substr(suffix_index + msg_suffix.size());
+
+			if (buf_str.find(msg_suffix) != std::string::npos)
+			{
+				__state.wants_select = false;
+			}
+			else
+			{
+				__state.wants_select = true;
+			}
 		}
 		
 
@@ -353,7 +373,8 @@ void IrcCommunicator::update_line()
 	}
 	else
 	{
-		//printout("EGGS\n");
+		printout("EGGS\n");
+		__state.wants_select = true;
 		__line = "";
 	}
 }
