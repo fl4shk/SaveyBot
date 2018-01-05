@@ -557,6 +557,8 @@ int IrcCommunicator::__handle_ctcp_version
 
 	next_non_blank_substr(line(), *j, third_substr, *j);
 
+	//printout("CTCP VERSION stuff:  third_substr, bot_name():  ", 
+	//	strappcom2(third_substr, config_server().bot_name()), "\n");
 	// Ignore PMs directly to the bot for now (besides CTCP VERSION)
 	if (third_substr == config_server().bot_name())
 	{
@@ -564,13 +566,15 @@ int IrcCommunicator::__handle_ctcp_version
 		const std::string ctcp_version_str(":\001VERSION\001");
 		
 		next_non_blank_substr(line(), *j, other_substr, *j);
+		//printout("CTCP VERSION stuff:  other_substr:  ", other_substr, 
+		//	"\n");
 
 
 		// Respond to CTCP VERSION
 		if (other_substr == ctcp_version_str)
 		{
-			send_raw_msg("NOTICE ", user_nick, "\001VERSION SaveyBot",
-				"Version 3 (by FL4SHK)\001");
+			send_raw_msg("NOTICE ", user_nick, 
+				" \001VERSION SaveyBot Version 3 (by FL4SHK)\001");
 		}
 
 		//if (__attempt_do_joins())
