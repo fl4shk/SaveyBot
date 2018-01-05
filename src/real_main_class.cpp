@@ -69,25 +69,42 @@ int RealMain::operator () ()
 		do_select_for_read(irc_comm_vec(), readfds);
 		for (auto iter : irc_comm_vec())
 		{
-			////if (iter->__state.wants_select)
-			//{
-			//	do_select_for_read(iter, readfds);
-			//}
 			printout("RealMain:  Server:  ", iter->config_server().name(), 
 				"\n");
-			//do_select_for_read(iter, readfds);
+
+			//iter->update_buf_str(&readfds);
+			//iter->iterate();
 
 			if (iter->update_buf_str(&readfds))
 			{
-				//while (iter->can_iterate(&readfds))
-				//{
-				//	iter->iterate(&readfds);
-				//}
+				//printout("egg\n");
 				while (iter->can_iterate())
 				{
 					iter->iterate();
 				}
+				//printout("bert\n");
 			}
+
+			//if (iter->__state.did_joins)
+			//{
+			//	if (iter->update_buf_str(&readfds))
+			//	{
+			//		printout("egg\n");
+			//		//while (iter->can_iterate(&readfds))
+			//		//{
+			//		//	iter->iterate(&readfds);
+			//		//}
+			//		while (iter->can_iterate())
+			//		{
+			//			iter->iterate();
+			//		}
+			//	}
+			//}
+			//else // if (!iter->__state.did_joins)
+			//{
+			//	iter->update_buf_str(&readfds);
+			//	iter->iterate();
+			//}
 		}
 	}
 

@@ -122,6 +122,7 @@ bool IrcCommunicator::update_buf_str(fd_set* readfds)
 bool IrcCommunicator::can_iterate() const
 {
 	return (buf_str.find(msg_suffix) != std::string::npos);
+	//return !__state.wants_select;
 }
 
 //void IrcCommunicator::iterate(fd_set* readfds)
@@ -136,6 +137,9 @@ void IrcCommunicator::iterate()
 
 	////do_select_and_also_full_read();
 	//do_full_read_if_fd_isset(readfds);
+
+	//__attempt_do_joins();
+
 
 	update_line();
 
@@ -234,9 +238,15 @@ void IrcCommunicator::__reinit()
 	//sleep(1);
 
 
+	//do_select_and_also_full_read();
+	//sleep(1);
 
 	__initial_ignoring();
 	sleep(1);
+
+	//printout("__reinit():  __attempt_do_joins()\n");
+	__attempt_do_joins();
+
 
 	//__attempt_do_joins();
 	//printout("Sent JOIN stuff.\n");
