@@ -248,7 +248,7 @@ void IrcCommunicator::__reinit()
 	//sleep(1);
 
 	//printout("__reinit():  __attempt_do_joins()\n");
-	//__attempt_do_joins();
+	__attempt_do_joins();
 
 
 	//__attempt_do_joins();
