@@ -184,11 +184,29 @@ private:		// variables
 	// The array of characters read() sends its data to
 	std::array<char, raw_buf_size> raw_buf;
 
-	struct
+	class State
 	{
-		bool did_joins = false;
-		bool did_ping = false;
-		bool wants_select = true;
+	public:		// variables
+		bool did_joins, 
+			did_ping, 
+			wants_select, 
+			seen_server_response_to_join,
+			ignored_last_line;
+	
+	public:		// functions
+		inline State()
+		{
+			init();
+		}
+
+		inline void init()
+		{
+			did_joins = false;
+			did_ping = false;
+			wants_select = true;
+			seen_server_response_to_join = false;
+			ignored_last_line = false;
+		}
 	} __state;
 
 	std::string __line = "", buf_str = "";
@@ -377,70 +395,7 @@ private:		// functions
 		return (substr == sconcat(":", config_server().address()));
 	}
 
-	inline bool __can_ignore(const std::string& first_substr, 
-		size_t& i)
-	{
-		std::string second_substr;
-
-		if (first_substr == "NOTICE")
-		{
-			next_non_blank_substr(line(), i, second_substr, i);
-
-			if (second_substr == "AUTH")
-			{
-				return true;
-			}
-		}
-
-
-		if (__substr_is_config_server_address(first_substr))
-		{
-			//printout("__can_ignore():  ", line(), "\n");
-			next_non_blank_substr(line(), i, second_substr, i);
-			bool only_found_digits = true;
-			for (auto c : second_substr)
-			{
-				if (!isdigit(c))
-				{
-					only_found_digits = false;
-					break;
-				}
-			}
-
-			if (only_found_digits)
-			{
-				//std::string substr_a, substr_b, substr_c, substr_d;
-				return true;
-			}
-
-			//printout("second_substr:  ", second_substr, "\n");
-
-			if (second_substr == "NOTICE")
-			{
-				std::string third_substr;
-				next_non_blank_substr(line(), i, third_substr, i);
-
-				//printout("third_substr:  ", third_substr, "\n");
-
-				if (third_substr == "AUTH")
-				{
-					//printout("returning true.\n");
-					return true;
-				}
-			}
-		}
-
-		//{
-		//next_non_blank_substr(line(), i, second_substr, i);
-
-		//if (second_substr == "JOIN")
-		//{
-		//	return true;
-		//}
-		//}
-
-		return false;
-	}
+	bool __can_ignore(const std::string& first_substr, size_t& i);
 
 	int __handle_ctcp_version(const std::string& first_substr, 
 		std::string& second_substr, std::string& third_substr, 
@@ -450,6 +405,7 @@ private:		// functions
 	void __initial_ignoring();
 
 	void check_timeout_with_ping();
+
 
 };
 

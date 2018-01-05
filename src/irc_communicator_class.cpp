@@ -117,6 +117,7 @@ IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr,
 
 void IrcCommunicator::iterate(fd_set* readfds)
 {
+	printout("iterate()\n");
 	if (__attempt_do_joins())
 	{
 		printout("Sent JOIN stuff.\n");
@@ -144,6 +145,7 @@ void IrcCommunicator::iterate(fd_set* readfds)
 	//	first_substr.size(), "\n");
 
 
+	__state.ignored_last_line = false;
 
 
 	// Handle PING
@@ -162,6 +164,7 @@ void IrcCommunicator::iterate(fd_set* readfds)
 	else if (__can_ignore(first_substr, i))
 	{
 		//printout("iterate():  __can_ignore()\n");
+		__state.ignored_last_line = true;
 		return;
 	}
 	else
@@ -183,8 +186,8 @@ void IrcCommunicator::iterate(fd_set* readfds)
 
 		printout("parse_command()\n");
 
-		printout(strappcom2(first_substr, second_substr, third_substr, 
-			other_substr), "\n");
+		//printout(strappcom2(first_substr, second_substr, third_substr, 
+		//	other_substr), "\n");
 		bot().parse_command(*this, some_channel, user_nick, 
 			line().substr(i));
 	}
@@ -193,11 +196,8 @@ void IrcCommunicator::iterate(fd_set* readfds)
 void IrcCommunicator::__reinit()
 {
 	printout("__reinit()\n");
-	__state.did_joins = false;
-	__state.did_ping = false;
-	__state.wants_select = true;
+	__state.init();
 
-	//printout("__reinit()\n");
 	do_getaddrinfo(config_server().address(), config_server().port_str());
 	do_socket_and_connect();
 
@@ -224,18 +224,14 @@ void IrcCommunicator::__reinit()
 
 
 
-	//// Ignore numeric lines
-	//do_select_and_also_full_read();
-
-	//__state.wants_select = false;
-
 	__initial_ignoring();
 	sleep(1);
 
 	//__attempt_do_joins();
+	//printout("Sent JOIN stuff.\n");
 	//sleep(1);
 
-	//__iterate();
+	//__initial_ignoring();
 	//sleep(1);
 
 
@@ -438,6 +434,86 @@ void IrcCommunicator::clean_up()
 	close_sock_fd();
 }
 
+bool IrcCommunicator::__can_ignore(const std::string& first_substr, 
+	size_t& i)
+{
+	std::string second_substr;
+	const size_t orig_i = i;
+
+	if (first_substr == "NOTICE")
+	{
+		next_non_blank_substr(line(), i, second_substr, i);
+
+		if (second_substr == "AUTH")
+		{
+			return true;
+		}
+	}
+
+	i = orig_i;
+
+
+	if (__substr_is_config_server_address(first_substr))
+	{
+		//printout("__can_ignore():  ", line(), "\n");
+		next_non_blank_substr(line(), i, second_substr, i);
+		bool only_found_digits = true;
+		for (auto c : second_substr)
+		{
+			if (!isdigit(c))
+			{
+				only_found_digits = false;
+				break;
+			}
+		}
+
+		if (only_found_digits)
+		{
+			//std::string substr_a, substr_b, substr_c, substr_d;
+			return true;
+		}
+
+		//printout("second_substr:  ", second_substr, "\n");
+
+		if (second_substr == "NOTICE")
+		{
+			std::string third_substr;
+			next_non_blank_substr(line(), i, third_substr, i);
+
+			//printout("third_substr:  ", third_substr, "\n");
+
+			if (third_substr == "AUTH")
+			{
+				//printout("returning true.\n");
+				return true;
+			}
+		}
+	}
+	i = orig_i;
+
+
+	//if (__state.did_joins && !__state.seen_server_response_to_join)
+	//{
+	//	next_non_blank_substr(line(), i, second_substr, i);
+
+	//	if (second_substr == "JOIN")
+	//	{
+	//		__state.seen_server_response_to_join = true;
+	//		return true;
+	//	}
+	//}
+	i = orig_i;
+
+
+	//if (__state.seen_server_response_to_join)
+	//{
+	//	next_non_blank_substr(line(), i, second_substr, i);
+	//}
+	i = orig_i;
+
+	//printout("__can_ignore():  Returning false.\n");
+	return false;
+}
 
 int IrcCommunicator::__handle_ctcp_version
 	(const std::string& first_substr, std::string& second_substr,
@@ -451,9 +527,11 @@ int IrcCommunicator::__handle_ctcp_version
 	{
 		j = i;
 	}
-	else
+	else // if (i == nullptr)
 	{
 		j = &z;
+		std::string temp;
+		next_non_blank_substr(line(), *j, temp, *j);
 	}
 	exclam_index = first_substr.find("!");
 	space_index = first_substr.find(" ");
@@ -461,7 +539,7 @@ int IrcCommunicator::__handle_ctcp_version
 	// Detect if the server was the one sending the message
 	if (exclam_index > space_index)
 	{
-		printout("exclam_index > space_index\n");
+		//printout("exclam_index > space_index\n");
 		return 0;
 	}
 
@@ -482,9 +560,11 @@ int IrcCommunicator::__handle_ctcp_version
 	// Ignore PMs directly to the bot for now (besides CTCP VERSION)
 	if (third_substr == config_server().bot_name())
 	{
+		//printout("check for CTCP VERSION\n");
 		const std::string ctcp_version_str(":\001VERSION\001");
 		
 		next_non_blank_substr(line(), *j, other_substr, *j);
+
 
 		// Respond to CTCP VERSION
 		if (other_substr == ctcp_version_str)
@@ -493,10 +573,10 @@ int IrcCommunicator::__handle_ctcp_version
 				"Version 3 (by FL4SHK)\001");
 		}
 
-		if (__attempt_do_joins())
-		{
-			//__initial_ignoring();
-		}
+		//if (__attempt_do_joins())
+		//{
+		//	//__initial_ignoring();
+		//}
 
 		return 2;
 	}
@@ -539,8 +619,9 @@ void IrcCommunicator::__initial_ignoring()
 			third_substr, other_substr, nullptr, exclam_index, space_index, 
 			user_nick) == 2)
 		{
-			//printout("CTCP VERSION\n");
-			++j;
+			printout("__initial_ignoring():  CTCP VERSION\n");
+			//++j;
+			break;
 		}
 		else
 		{
@@ -553,6 +634,10 @@ void IrcCommunicator::__initial_ignoring()
 			++j;
 		}
 	}
+	if (j != 0)
+	{
+		__state.ignored_last_line = true;
+	}
 	printout("__initial_ignoring():  This many lines handled:  ", j, "\n");
 }
 
@@ -564,7 +649,7 @@ void IrcCommunicator::check_timeout_with_ping()
 	}
 	else // if (!__state.did_ping)
 	{
-		printout("check_timeout_with_ping()\n");
+		//printout("check_timeout_with_ping()\n");
 		__state.wants_select = true;
 		__state.did_ping = true;
 		send_raw_msg("PING ", ping_suffix);
