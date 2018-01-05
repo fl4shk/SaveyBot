@@ -244,8 +244,11 @@ void IrcCommunicator::__reinit()
 	__initial_ignoring();
 	sleep(1);
 
+	//do_select_and_also_full_read();
+	//sleep(1);
+
 	//printout("__reinit():  __attempt_do_joins()\n");
-	__attempt_do_joins();
+	//__attempt_do_joins();
 
 
 	//__attempt_do_joins();
@@ -634,6 +637,8 @@ void IrcCommunicator::__initial_ignoring()
 			__handle_ping(i);
 			//printout("PING\n");
 			++j;
+
+			__attempt_do_joins();
 		}
 		else if (__handle_pong(i))
 		{
