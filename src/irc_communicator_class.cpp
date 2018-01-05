@@ -117,13 +117,19 @@ IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr,
 
 void IrcCommunicator::iterate(fd_set* readfds)
 {
+	if (__attempt_do_joins())
+	{
+		printout("Sent JOIN stuff.\n");
+		return;
+	}
+
 	//do_select_and_also_full_read();
 	do_full_read_if_fd_isset(readfds);
 	update_line();
 
 	if (line().size() == 0)
 	{
-		//printout("Debug:  AAAA\n");
+		printout("Debug:  AAAA\n");
 		return;
 	}
 
@@ -137,98 +143,48 @@ void IrcCommunicator::iterate(fd_set* readfds)
 	//printout("substr Debug:  ", line(), "\t\t", first_substr, " ", 
 	//	first_substr.size(), "\n");
 
-	auto attempt_do_joins = [&]() -> void
-	{
-		if (!__state.did_joins)
-		{
-			sleep(1);
 
-			__state.did_joins = true;
 
-			for (auto iter : config_server().joins_list())
-			{
-				send_raw_msg("JOIN ", iter);
-			}
-		}
-	};
 
 	// Handle PING
 	if (first_substr == "PING")
 	{
-		next_non_blank_substr(line(), i, second_substr, i);
-		//printout("PING Debug:  ", second_substr, "\n");
-		send_raw_msg("PONG ", second_substr);
-
-		attempt_do_joins();
+		__handle_ping(i);
+		//printout("iterate():  __handle_ping()\n");
+		return;
 	}
-	else if (first_substr == "PONG")
+	// Handle PONG
+	else if (__handle_pong(i))
 	{
-		if (__state.did_ping)
-		{
-			next_non_blank_substr(line(), i, second_substr, i);
-			if (second_substr.find(ping_suffix) == 0)
-			{
-				__state.did_ping = false;
-			}
-			else
-			{
-				err("PING PONG Eek 0!");
-			}
-		}
-		else
-		{
-			err("PING PONG Eek 1!");
-		}
+		//printout("iterate():  __handle_pong()\n");
+		return;
+	}
+	else if (__can_ignore(first_substr, i))
+	{
+		//printout("iterate():  __can_ignore()\n");
+		return;
 	}
 	else
 	{
-		const auto exclam_index = first_substr.find("!");
-		const auto space_index = first_substr.find(" ");
-
 		std::string user_nick;
-
-		// Detect if the server was the one sending the message
-		if (exclam_index > space_index)
 		{
-			//printout("exclam_index > space_index\n");
+		size_t exclam_index, space_index;
+
+		if (__handle_ctcp_version(first_substr, second_substr,
+			third_substr, other_substr, &i, exclam_index, space_index, 
+			user_nick) == 2)
+		{
+			//printout("iterate():  __handle_ctcp_version()\n");
 			return;
 		}
-
-		// Messages start with ":"
-		user_nick = first_substr.substr(1, (exclam_index - 1));
-
-		next_non_blank_substr(line(), i, second_substr, i);
-
-		
-		if (second_substr != "PRIVMSG")
-		{
-			//printout("! PRIVMSG\n");
-			return;
 		}
 
-		next_non_blank_substr(line(), i, third_substr, i);
-
-		// Ignore PMs directly to the bot for now (besides CTCP VERSION)
-		if (third_substr == config_server().bot_name())
-		{
-			const std::string ctcp_version_str(":\001VERSION\001");
-			
-			next_non_blank_substr(line(), i, other_substr, i);
-
-			// Respond to CTCP VERSION
-			if (other_substr == ctcp_version_str)
-			{
-				send_raw_msg("NOTICE ", user_nick, "\001VERSION SaveyBot",
-					"Version 3 (by FL4SHK)\001");
-			}
-
-			attempt_do_joins();
-
-			return;
-		}
-		
 		const std::string& some_channel = third_substr;
 
+		printout("parse_command()\n");
+
+		printout(strappcom2(first_substr, second_substr, third_substr, 
+			other_substr), "\n");
 		bot().parse_command(*this, some_channel, user_nick, 
 			line().substr(i));
 	}
@@ -236,6 +192,7 @@ void IrcCommunicator::iterate(fd_set* readfds)
 
 void IrcCommunicator::__reinit()
 {
+	printout("__reinit()\n");
 	__state.did_joins = false;
 	__state.did_ping = false;
 	__state.wants_select = true;
@@ -250,7 +207,7 @@ void IrcCommunicator::__reinit()
 	sleep(1);
 
 	do_select_and_also_full_read();
-	printout("test\n");
+	//printout("test\n");
 
 	for (auto iter : config_server().startup_commands())
 	{
@@ -264,6 +221,23 @@ void IrcCommunicator::__reinit()
 
 	//printout("__reinit():  ", do_select_and_also_full_read(), "\n");
 	//sleep(1);
+
+
+
+	//// Ignore numeric lines
+	//do_select_and_also_full_read();
+
+	//__state.wants_select = false;
+
+	__initial_ignoring();
+	sleep(1);
+
+	//__attempt_do_joins();
+	//sleep(1);
+
+	//__iterate();
+	//sleep(1);
+
 
 }
 
@@ -345,35 +319,48 @@ void IrcCommunicator::update_line()
 
 	if (suffix_index != std::string::npos)
 	{
+		//printout("buf_str Debug:  ", line(), "\n", buf_str, "\n\n\n");
+		//printout("buf_str Debug:  ", buf_str, "\n\n\n");
+
 		__line = buf_str.substr(0, suffix_index);
 		//printout("update_line():  line():  ", line(), "\n");
-		printout(line(), "\n");
-		
+		printout("update_line():  line():  ", line(), "\n\n");
+
+
 		if ((suffix_index + msg_suffix.size()) > buf_str.size())
 		{
-			__state.wants_select = true;
+			err("IrcCommunicator::update_line():  Eek!");
 			buf_str.clear();
 		}
 		else
 		{
 			buf_str = buf_str.substr(suffix_index + msg_suffix.size());
 
-			if (buf_str.find(msg_suffix) != std::string::npos)
+			const auto temp = buf_str.find(msg_suffix);
+
+			if (temp != std::string::npos)
 			{
+				//printout("update_line():  found msg_suffix ",
+				//	"in buf_str\n");
 				__state.wants_select = false;
+				//__state.wants_select = true;
 			}
 			else
 			{
+				//printout("update_line():  didn't find msg_suffix ",
+				//	"in buf_str\n");
 				__state.wants_select = true;
+				//__state.wants_select = false;
 			}
 		}
+		//__state.wants_select = false;
 		
 
-		//printout("buf_str Debug:  ", line(), "\n", buf_str, "\n\n\n");
 	}
 	else
 	{
-		printout("EGGS\n");
+		//printout("EGGS\n");
+		printout("Incomplete line!\n");
 		__state.wants_select = true;
 		__line = "";
 	}
@@ -451,6 +438,124 @@ void IrcCommunicator::clean_up()
 	close_sock_fd();
 }
 
+
+int IrcCommunicator::__handle_ctcp_version
+	(const std::string& first_substr, std::string& second_substr,
+	std::string& third_substr, std::string& other_substr, size_t* i, 
+	size_t& exclam_index, size_t& space_index, std::string& user_nick)
+{
+	size_t z = 0;
+	size_t* j;
+
+	if (i != nullptr)
+	{
+		j = i;
+	}
+	else
+	{
+		j = &z;
+	}
+	exclam_index = first_substr.find("!");
+	space_index = first_substr.find(" ");
+
+	// Detect if the server was the one sending the message
+	if (exclam_index > space_index)
+	{
+		printout("exclam_index > space_index\n");
+		return 0;
+	}
+
+	// Messages start with ":"
+	user_nick = first_substr.substr(1, (exclam_index - 1));
+
+	next_non_blank_substr(line(), *j, second_substr, *j);
+
+	
+	if (second_substr != "PRIVMSG")
+	{
+		//printout("! PRIVMSG\n");
+		return 1;
+	}
+
+	next_non_blank_substr(line(), *j, third_substr, *j);
+
+	// Ignore PMs directly to the bot for now (besides CTCP VERSION)
+	if (third_substr == config_server().bot_name())
+	{
+		const std::string ctcp_version_str(":\001VERSION\001");
+		
+		next_non_blank_substr(line(), *j, other_substr, *j);
+
+		// Respond to CTCP VERSION
+		if (other_substr == ctcp_version_str)
+		{
+			send_raw_msg("NOTICE ", user_nick, "\001VERSION SaveyBot",
+				"Version 3 (by FL4SHK)\001");
+		}
+
+		if (__attempt_do_joins())
+		{
+			//__initial_ignoring();
+		}
+
+		return 2;
+	}
+	return 3;
+}
+void IrcCommunicator::__initial_ignoring()
+{
+	size_t j = 0;
+	for (;;)
+	{
+		//printout("in __initial_ignoring():  ", j, "\n");
+		//if (do_full_read_if_fd_isset())
+		//if (!__state.wants_select)
+		do_select_and_also_full_read();
+		update_line();
+
+		if (line().size() == 0)
+		{
+			continue;
+		}
+
+		std::string first_substr, second_substr, third_substr,
+			other_substr, user_nick;
+		size_t i, exclam_index, space_index;
+		next_non_blank_substr(line(), 0, first_substr, i);
+
+
+		if (first_substr == "PING")
+		{
+			__handle_ping(i);
+			//printout("PING\n");
+			++j;
+		}
+		else if (__handle_pong(i))
+		{
+			//printout("PONG\n");
+			++j;
+		}
+		else if (__handle_ctcp_version(first_substr, second_substr,
+			third_substr, other_substr, nullptr, exclam_index, space_index, 
+			user_nick) == 2)
+		{
+			//printout("CTCP VERSION\n");
+			++j;
+		}
+		else
+		{
+			//printout("__initial_ignoring():  \n");
+			if (!__can_ignore(first_substr, i))
+			{
+				printout("__initial_ignoring():  !__can_ignore()\n");
+				break;
+			}
+			++j;
+		}
+	}
+	printout("__initial_ignoring():  This many lines handled:  ", j, "\n");
+}
+
 void IrcCommunicator::check_timeout_with_ping()
 {
 	if (__state.did_ping)
@@ -459,6 +564,9 @@ void IrcCommunicator::check_timeout_with_ping()
 	}
 	else // if (!__state.did_ping)
 	{
+		printout("check_timeout_with_ping()\n");
+		__state.wants_select = true;
+		__state.did_ping = true;
 		send_raw_msg("PING ", ping_suffix);
 	}
 }

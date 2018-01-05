@@ -59,6 +59,7 @@ int RealMain::operator () ()
 		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
 			&iter));
 
+
 	}
 
 	fd_set readfds;
@@ -68,6 +69,13 @@ int RealMain::operator () ()
 		do_select_for_read(irc_comm_vec(), readfds);
 		for (auto iter : irc_comm_vec())
 		{
+			////if (iter->__state.wants_select)
+			//{
+			//	do_select_for_read(iter, readfds);
+			//}
+			printout("RealMain:  Server:  ", iter->config_server().name(), 
+				"\n");
+			//do_select_for_read(iter, readfds);
 			iter->iterate(&readfds);
 		}
 	}

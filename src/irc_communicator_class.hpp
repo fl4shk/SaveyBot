@@ -23,6 +23,7 @@
 //#include "json_stuff.hpp"
 #include "misc_includes.hpp"
 #include "communicator_class.hpp"
+#include "string_stuff.hpp"
 
 //#include "select_stuff.hpp"
 
@@ -307,7 +308,149 @@ private:		// functions
 		}
 	}
 
+	inline bool __attempt_do_joins()
+	{
+		if (!__state.did_joins)
+		{
+			sleep(1);
+
+			__state.did_joins = true;
+
+			for (auto iter : config_server().joins_list())
+			{
+				send_raw_msg("JOIN ", iter);
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	//inline void __handle_ping(size_t& i, bool do_attempt_joins=true)
+	inline void __handle_ping(size_t& i)
+	{
+		std::string second_substr;
+		next_non_blank_substr(line(), i, second_substr, i);
+		//printout("PING Debug:  ", second_substr, "\n");
+		send_raw_msg("PONG ", second_substr);
+
+		//if (do_attempt_joins)
+		//{
+		//	__attempt_do_joins();
+		//}
+	}
+
+	inline bool __handle_pong(size_t i)
+	{
+		std::string second_substr, third_substr, fourth_substr;
+		next_non_blank_substr(line(), i, second_substr, i);
+		//next_non_blank_substr(line(), i, third_substr, i);
+		//next_non_blank_substr(line(), i, fourth_substr, i);
+
+		if (second_substr == "PONG")
+		{
+			if (__state.did_ping)
+			{
+				next_non_blank_substr(line(), i, third_substr, i);
+				next_non_blank_substr(line(), i, fourth_substr, i);
+				if (fourth_substr.find(ping_suffix) == 0)
+				{
+					__state.did_ping = false;
+					return true;
+				}
+				else
+				{
+					err("PONG Eek 0!");
+				}
+			}
+			else
+			{
+				err("PONG Eek 1!");
+			}
+		}
+		return false;
+	}
+
+	inline bool __substr_is_config_server_address
+		(const std::string& substr) const
+	{
+		return (substr == sconcat(":", config_server().address()));
+	}
+
+	inline bool __can_ignore(const std::string& first_substr, 
+		size_t& i)
+	{
+		std::string second_substr;
+
+		if (first_substr == "NOTICE")
+		{
+			next_non_blank_substr(line(), i, second_substr, i);
+
+			if (second_substr == "AUTH")
+			{
+				return true;
+			}
+		}
+
+
+		if (__substr_is_config_server_address(first_substr))
+		{
+			//printout("__can_ignore():  ", line(), "\n");
+			next_non_blank_substr(line(), i, second_substr, i);
+			bool only_found_digits = true;
+			for (auto c : second_substr)
+			{
+				if (!isdigit(c))
+				{
+					only_found_digits = false;
+					break;
+				}
+			}
+
+			if (only_found_digits)
+			{
+				//std::string substr_a, substr_b, substr_c, substr_d;
+				return true;
+			}
+
+			//printout("second_substr:  ", second_substr, "\n");
+
+			if (second_substr == "NOTICE")
+			{
+				std::string third_substr;
+				next_non_blank_substr(line(), i, third_substr, i);
+
+				//printout("third_substr:  ", third_substr, "\n");
+
+				if (third_substr == "AUTH")
+				{
+					//printout("returning true.\n");
+					return true;
+				}
+			}
+		}
+
+		//{
+		//next_non_blank_substr(line(), i, second_substr, i);
+
+		//if (second_substr == "JOIN")
+		//{
+		//	return true;
+		//}
+		//}
+
+		return false;
+	}
+
+	int __handle_ctcp_version(const std::string& first_substr, 
+		std::string& second_substr, std::string& third_substr, 
+		std::string& other_substr, size_t* i, size_t& exclam_index, 
+		size_t& space_index, std::string& user_nick);
+
+	void __initial_ignoring();
+
 	void check_timeout_with_ping();
+
 };
 
 

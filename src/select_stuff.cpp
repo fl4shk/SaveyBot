@@ -31,21 +31,25 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	
 	timeval tv;
 
-	tv.tv_sec = 90;
+	//tv.tv_sec = 90;
+	tv.tv_sec = 5;
 	tv.tv_usec = 0;
 
 	// Clear the set ahead of time
 	FD_ZERO(readfds);
+
+	int amount_for_wants_select = 0;
 
 	// Find highest
 	for (auto iter : comm_vec)
 	{
 		if (iter->__state.wants_select)
 		{
-			printout("wants_select\n");
+			//printout("wants_select\n\n");
 			FD_SET(iter->sock_fd(), readfds);
 			if (nfds < iter->sock_fd())
 			{
+				++amount_for_wants_select;
 				nfds = iter->sock_fd();
 				//printout("sock_fd():  ", nfds, "\n");
 			}
@@ -53,7 +57,7 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 		}
 		else
 		{
-			printout("!wants_select\n");
+			//printout("!wants_select\n\n");
 		}
 	}
 
@@ -62,23 +66,29 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 
 	//printout("do_select_for_read():  ", nfds, "\n");
 
-	if (nfds != 1)
+	if (nfds > 1)
 	{
 		rv = select(nfds, readfds, NULL, NULL, &tv);
 
 		//printout("rv, comm_vec.size():  ", strappcom2(rv, comm_vec.size()),
 		//	"\n");
-		if (rv < comm_vec.size())
-		{
-			// Timeout was reached, so send pings.
-			for (auto iter : comm_vec)
-			{
-				if (iter->__state.did_joins)
-				{
-					iter->check_timeout_with_ping();
-				}
-			}
-		}
+
+		//if (rv < comm_vec.size())
+		//if (rv < amount_for_wants_select)
+
+		//if (rv != amount_for_wants_select)
+		//{
+		//	// Timeout was reached, so send pings.
+		//	for (auto iter : comm_vec)
+		//	{
+		//		//if (iter->__state.did_joins)
+		//		if (iter->__state.wants_select && iter->__state.did_joins)
+		//		{
+		//			iter->check_timeout_with_ping();
+		//		}
+		//		//iter->check_timeout_with_ping();
+		//	}
+		//}
 		// 
 
 		if (rv == -1)
