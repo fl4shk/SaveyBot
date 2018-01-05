@@ -31,9 +31,9 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	
 	timeval tv;
 
-	//tv.tv_sec = 90;
+	tv.tv_sec = 90;
 	//tv.tv_sec = 5;
-	tv.tv_sec = 2;
+	//tv.tv_sec = 2;
 	tv.tv_usec = 0;
 
 	//bool any_ignored_last_line = false;

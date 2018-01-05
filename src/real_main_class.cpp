@@ -76,7 +76,18 @@ int RealMain::operator () ()
 			printout("RealMain:  Server:  ", iter->config_server().name(), 
 				"\n");
 			//do_select_for_read(iter, readfds);
-			iter->iterate(&readfds);
+
+			if (iter->update_buf_str(&readfds))
+			{
+				//while (iter->can_iterate(&readfds))
+				//{
+				//	iter->iterate(&readfds);
+				//}
+				while (iter->can_iterate())
+				{
+					iter->iterate();
+				}
+			}
 		}
 	}
 

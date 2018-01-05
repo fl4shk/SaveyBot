@@ -253,7 +253,11 @@ public:		// functions
 	gen_getter_by_con_ref(line);
 
 
-	void iterate(fd_set* readfds);
+	bool update_buf_str(fd_set* readfds);
+	bool can_iterate() const;
+	//void iterate(fd_set* readfds);
+	void iterate();
+
 
 
 

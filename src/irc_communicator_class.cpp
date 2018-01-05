@@ -115,17 +115,28 @@ IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr,
 	__reinit();
 }
 
-void IrcCommunicator::iterate(fd_set* readfds)
+bool IrcCommunicator::update_buf_str(fd_set* readfds)
 {
-	//printout("iterate()\n");
-	if (__attempt_do_joins())
-	{
-		//printout("Sent JOIN stuff.\n");
-		return;
-	}
+	return do_full_read_if_fd_isset(readfds);
+}
+bool IrcCommunicator::can_iterate() const
+{
+	return (buf_str.find(msg_suffix) != std::string::npos);
+}
 
-	//do_select_and_also_full_read();
-	do_full_read_if_fd_isset(readfds);
+//void IrcCommunicator::iterate(fd_set* readfds)
+void IrcCommunicator::iterate()
+{
+	////printout("iterate()\n");
+	//if (__attempt_do_joins())
+	//{
+	//	//printout("Sent JOIN stuff.\n");
+	//	return;
+	//}
+
+	////do_select_and_also_full_read();
+	//do_full_read_if_fd_isset(readfds);
+
 	update_line();
 
 	if (line().size() == 0)
