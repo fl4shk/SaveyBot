@@ -444,7 +444,7 @@ bool IrcCommunicator::__can_ignore(const std::string& first_substr,
 	{
 		next_non_blank_substr(line(), i, second_substr, i);
 
-		if (second_substr == "AUTH")
+		//if (second_substr == "AUTH")
 		{
 			return true;
 		}
@@ -482,7 +482,7 @@ bool IrcCommunicator::__can_ignore(const std::string& first_substr,
 
 			//printout("third_substr:  ", third_substr, "\n");
 
-			if (third_substr == "AUTH")
+			//if (third_substr == "AUTH")
 			{
 				//printout("returning true.\n");
 				return true;
