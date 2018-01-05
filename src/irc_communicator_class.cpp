@@ -117,10 +117,10 @@ IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr,
 
 void IrcCommunicator::iterate(fd_set* readfds)
 {
-	printout("iterate()\n");
+	//printout("iterate()\n");
 	if (__attempt_do_joins())
 	{
-		printout("Sent JOIN stuff.\n");
+		//printout("Sent JOIN stuff.\n");
 		return;
 	}
 
@@ -130,7 +130,7 @@ void IrcCommunicator::iterate(fd_set* readfds)
 
 	if (line().size() == 0)
 	{
-		printout("Debug:  AAAA\n");
+		//printout("Debug:  AAAA\n");
 		return;
 	}
 
@@ -184,7 +184,7 @@ void IrcCommunicator::iterate(fd_set* readfds)
 
 		const std::string& some_channel = third_substr;
 
-		printout("parse_command()\n");
+		//printout("parse_command()\n");
 
 		//printout(strappcom2(first_substr, second_substr, third_substr, 
 		//	other_substr), "\n");
@@ -319,8 +319,8 @@ void IrcCommunicator::update_line()
 		//printout("buf_str Debug:  ", buf_str, "\n\n\n");
 
 		__line = buf_str.substr(0, suffix_index);
-		//printout("update_line():  line():  ", line(), "\n");
-		printout("update_line():  line():  ", line(), "\n\n");
+		printout("update_line():  line():  ", line(), "\n");
+		//printout("update_line():  line():  ", line(), "\n\n");
 
 
 		if ((suffix_index + msg_suffix.size()) > buf_str.size())
