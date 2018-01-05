@@ -221,7 +221,7 @@ void IrcCommunicator::__reinit()
 
 	sleep(1);
 
-	do_select_and_also_full_read();
+	//do_select_and_also_full_read();
 	//printout("test\n");
 
 	for (auto iter : config_server().startup_commands())
