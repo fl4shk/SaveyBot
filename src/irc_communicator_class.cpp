@@ -415,23 +415,31 @@ void IrcCommunicator::do_getaddrinfo(const std::string& some_address,
 
 void IrcCommunicator::do_socket_and_connect()
 {
-	// The last parameter of socket() is set to zero because doing so
-	// causes socket() to use an unspecified default protocol appropriate
-	// for the requested socket type (SOCK_STREAM).
-	set_sock_fd(socket(res()->ai_family, specific_socktype(), 0));
+	int connect_result;
 
-
-	const auto connect_result = connect(sock_fd(), res()->ai_addr, 
-		res()->ai_addrlen);
-	
-	printout("connect_result:  ", connect_result, "\n");
-
-	if (connect_result != 0)
+	for (;;)
 	{
-		printerr("There was an error connecting to the server.\n");
-		set_did_open_sock_fd(false);
-		clean_up();
-		exit(1);
+		// The last parameter of socket() is set to zero because doing so
+		// causes socket() to use an unspecified default protocol
+		// appropriate for the requested socket type (SOCK_STREAM).
+		set_sock_fd(socket(res()->ai_family, specific_socktype(), 0));
+
+
+		connect_result = connect(sock_fd(), res()->ai_addr,
+			res()->ai_addrlen);
+		
+		printout("connect_result:  ", connect_result, "\n");
+
+		if (connect_result != 0)
+		{
+			printerr("There was an error connecting to the server.\n");
+			set_did_open_sock_fd(false);
+			clean_up();
+			//exit(1);
+			continue;
+		}
+
+		break;
 	}
 }
 
