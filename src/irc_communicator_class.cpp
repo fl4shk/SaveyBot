@@ -417,7 +417,7 @@ void IrcCommunicator::do_socket_and_connect()
 {
 	int connect_result;
 
-	for (;;)
+	//for (;;)
 	{
 		// The last parameter of socket() is set to zero because doing so
 		// causes socket() to use an unspecified default protocol
@@ -435,11 +435,11 @@ void IrcCommunicator::do_socket_and_connect()
 			printerr("There was an error connecting to the server.\n");
 			set_did_open_sock_fd(false);
 			clean_up();
-			//exit(1);
-			continue;
+			exit(1);
+			//continue;
 		}
 
-		break;
+		//break;
 	}
 }
 
