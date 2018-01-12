@@ -646,7 +646,7 @@ void IrcCommunicator::__initial_ignoring()
 			//printout("PING\n");
 			++j;
 
-			__attempt_do_joins();
+			//__attempt_do_joins();
 		}
 		else if (__handle_pong(i))
 		{
