@@ -396,18 +396,32 @@ void IrcCommunicator::do_getaddrinfo(const std::string& some_address,
 	__hints.ai_family = specific_family();
 	__hints.ai_socktype = specific_socktype();
 
-	const int gai_result = getaddrinfo(some_address.c_str(), 
-		some_port_str.c_str(), &hints(), &res());
 
-	if (gai_result != 0)
+
+	auto attempt_getaddrinfo = [&]() -> bool
 	{
-		printerr(gai_result, ":  ");
-		printerr(gai_strerror(gai_result), ":  ");
+		const int gai_result = getaddrinfo(some_address.c_str(), 
+			some_port_str.c_str(), &hints(), &res());
 
-		printerr("There was an error getting address information.\n");
-		set_did_open_sock_fd(false);
-		clean_up();
-		exit(1);
+		if (gai_result != 0)
+		{
+			printerr(gai_result, ":  ");
+			printerr(gai_strerror(gai_result), ":  ");
+
+			printerr("There was an error getting address information.\n");
+			printerr("Retrying....\n");
+			//set_did_open_sock_fd(false);
+			//clean_up();
+			//exit(1);
+
+			return false;
+		}
+		return true;
+	};
+
+	while (!attempt_getaddrinfo())
+	{
+		sleep(10);
 	}
 
 	set_did_alloc_res(true);
