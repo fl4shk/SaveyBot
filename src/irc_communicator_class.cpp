@@ -214,6 +214,7 @@ void IrcCommunicator::__reinit()
 	__state.init();
 
 	do_getaddrinfo(config_server().address(), config_server().port_str());
+
 	if (!do_socket_and_connect())
 	{
 		__state.did_connect = false;
