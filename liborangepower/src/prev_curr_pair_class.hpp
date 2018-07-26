@@ -49,18 +49,18 @@ public:		// functions
 		return (prev != curr);
 	}
 
-	inline operator vec::Vec2<type>() const
+	inline operator Vec2<type>() const
 	{
-		return vec::Vec2<type>(prev, curr);
+		return Vec2<type>(prev, curr);
 	}
 
 
-} __attribute__((_align4));
+};
 
 
-}
+} // namespace containers
 
-}
+} // namespace liborangepower
 
 
 #endif		// liborangepower_prev_curr_pair_class_hpp

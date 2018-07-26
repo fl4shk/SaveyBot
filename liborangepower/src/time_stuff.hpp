@@ -32,7 +32,7 @@ protected:		// variables
 
 
 protected:		// functions
-	inline SeedType get_initial_seed()
+	inline SeedType initial_seed()
 	{
 		// I have no idea how good this is, but it seems to work?
 		return (std::chrono::high_resolution_clock::now()
@@ -42,7 +42,7 @@ protected:		// functions
 public:		// functions
 	inline Prng(int s_param_0=0, int s_param_1=0) 
 		: __param_0(s_param_0), __param_1(s_param_1),
-		__instance(get_initial_seed())
+		__instance(initial_seed())
 	{
 	}
 
@@ -56,16 +56,22 @@ public:		// functions
 		return __instance();
 	}
 
+	template<typename Type>
+	inline auto run()
+	{
+		return static_cast<Type>(__instance());
+	}
+
 	inline auto operator () (integer_types::u64 max_val, 
-		const bool use_cap=false)
+		const bool saturate=false)
 	{
 		auto ret = (*this)();
 
-		if (!use_cap)
+		if (!saturate)
 		{
 			ret %= max_val;
 		}
-		else // if (use_cap)
+		else // if (saturate)
 		{
 			if (ret > max_val)
 			{
@@ -76,7 +82,7 @@ public:		// functions
 		return ret;
 	}
 
-} __attribute__((_align4));
+};
 
 
 class Profiler
@@ -111,7 +117,7 @@ public:		// functions
 	}
 
 
-} __attribute__((_align4));
+};
 
 inline std::time_t now_as_time_t()
 {
@@ -149,9 +155,9 @@ inline auto put_now_as_gmtime()
 }
 
 
-}
+} // namespace time
 
-}
+} // namespace liborangepower
 
 
 
