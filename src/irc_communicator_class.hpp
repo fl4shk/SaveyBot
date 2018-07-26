@@ -191,7 +191,8 @@ private:		// variables
 			did_ping, 
 			wants_select, 
 			seen_server_response_to_join,
-			ignored_last_line;
+			ignored_last_line,
+			did_connect;
 	
 	public:		// functions
 		inline State()
@@ -206,6 +207,7 @@ private:		// variables
 			wants_select = true;
 			seen_server_response_to_join = false;
 			ignored_last_line = false;
+			did_connect = false;
 		}
 	} __state;
 
@@ -308,7 +310,7 @@ private:		// functions
 
 	void do_getaddrinfo(const std::string& some_server_name, 
 		const std::string& some_port_str);
-	void do_socket_and_connect();
+	bool do_socket_and_connect();
 
 
 	void clean_up();

@@ -47,6 +47,10 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	// Find highest
 	for (auto iter : comm_vec)
 	{
+		if (!iter->__state.did_connect)
+		{
+			continue;
+		}
 		if (iter->__state.wants_select)
 		{
 			//printout("wants_select\n\n");
@@ -85,7 +89,9 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 			for (auto iter : comm_vec)
 			{
 				//if (iter->__state.did_joins)
-				if (iter->__state.wants_select && iter->__state.did_joins)
+				//if (iter->__state.wants_select && iter->__state.did_joins)
+				if (iter->__state.did_connect && iter->__state.wants_select
+					&& iter->__state.did_joins)
 				{
 					iter->check_timeout_with_ping();
 				}

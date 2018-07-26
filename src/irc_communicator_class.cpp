@@ -214,7 +214,15 @@ void IrcCommunicator::__reinit()
 	__state.init();
 
 	do_getaddrinfo(config_server().address(), config_server().port_str());
-	do_socket_and_connect();
+	if (!do_socket_and_connect())
+	{
+		__state.did_connect = false;
+		return;
+	}
+	else
+	{
+		__state.did_connect = true;
+	}
 
 	// Go ahead and do this now 
 	free_res();
@@ -427,7 +435,7 @@ void IrcCommunicator::do_getaddrinfo(const std::string& some_address,
 	set_did_alloc_res(true);
 }
 
-void IrcCommunicator::do_socket_and_connect()
+bool IrcCommunicator::do_socket_and_connect()
 {
 	int connect_result;
 
@@ -449,12 +457,17 @@ void IrcCommunicator::do_socket_and_connect()
 			printerr("There was an error connecting to the server.\n");
 			set_did_open_sock_fd(false);
 			clean_up();
-			exit(1);
+
+			//exit(1);
+			return false;
+
 			//continue;
 		}
 
 		//break;
 	}
+
+	return true;
 }
 
 
