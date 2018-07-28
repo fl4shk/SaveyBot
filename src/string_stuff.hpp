@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef string_stuff_hpp
-#define string_stuff_hpp
+#ifndef src__slash__string_stuff_hpp
+#define src__slash__string_stuff_hpp
+
+// src/string_stuff.hpp
 
 #include "misc_includes.hpp"
 
@@ -60,7 +62,7 @@ inline std::string substr_trimmed(const std::string& some_str,
 }
 
 
-}
+} // namespace saveybot
 
 
-#endif		// string_stuff_hpp
+#endif		// src__slash__string_stuff_hpp

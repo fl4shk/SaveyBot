@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef gmp_stuff_hpp
-#define gmp_stuff_hpp
+#ifndef src__slash__gmp_stuff_hpp
+#define src__slash__gmp_stuff_hpp
+
+// src/gmp_stuff.hpp
 
 #include "misc_includes.hpp"
 
@@ -37,6 +39,7 @@ inline std::string convert_bignum_to_str(const BigNum& in_bignum)
 	return ret;
 }
 
-}
+} // namespace saveybot
 
-#endif		// gmp_stuff_hpp
+
+#endif		// src__slash__gmp_stuff_hpp

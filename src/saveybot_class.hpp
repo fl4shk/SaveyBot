@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef saveybot_class_hpp
-#define saveybot_class_hpp
+#ifndef src__slash__saveybot_class_hpp
+#define src__slash__saveybot_class_hpp
+
+// src/saveybot_class.hpp
 
 //#include "json_stuff.hpp"
 //#include "irc_communicator_class.hpp"
@@ -268,6 +270,7 @@ private:		// functions
 
 
 
-}
+} // namespace saveybot
 
-#endif // saveybot_class_hpp
+
+#endif		// src__slash__saveybot_class_hpp

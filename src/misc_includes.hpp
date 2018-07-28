@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef misc_includes_hpp
-#define misc_includes_hpp
+#ifndef src__slash__misc_includes_hpp
+#define src__slash__misc_includes_hpp
+
+// src/misc_includes.hpp
 
 #include <string>
 #include <sstream>
@@ -63,4 +65,4 @@ using namespace liborangepower::json;
 
 
 
-#endif		// misc_includes_hpp
+#endif		// src__slash__misc_includes_hpp

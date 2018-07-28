@@ -107,4 +107,5 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	}
 }
 
-}
+} // namespace saveybot
+

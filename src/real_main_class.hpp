@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef real_main_class_hpp
-#define real_main_class_hpp
+#ifndef src__slash__real_main_class_hpp
+#define src__slash__real_main_class_hpp
+
+// src/real_main_class.hpp
 
 #include "irc_communicator_class.hpp"
 #include "saveybot_class.hpp"
@@ -59,7 +61,7 @@ private:		// functions
 
 };
 
-}
+} // namespace saveybot
 
 
-#endif		// real_main_class_hpp
+#endif		// src__slash__real_main_class_hpp

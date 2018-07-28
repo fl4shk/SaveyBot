@@ -16,12 +16,13 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef misc_types_hpp
-#define misc_types_hpp
+#ifndef src__slash__misc_types_hpp
+#define src__slash__misc_types_hpp
+
+// src/misc_types.hpp
 
 #include "liborangepower_src/misc_types.hpp"
 
 using namespace liborangepower::integer_types;
 
-#endif		// misc_types_hpp
-
+#endif		// src__slash__misc_types_hpp

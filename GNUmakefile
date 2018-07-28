@@ -59,13 +59,29 @@ ifdef DEBUG
 	OPTIMIZATION_LEVEL:=$(DEBUG_OPTIMIZATION_LEVEL)
 else
 	OPTIMIZATION_LEVEL:=$(REGULAR_OPTIMIZATION_LEVEL)
-endif
+endif		# DEBUG
 
 
 
 
 FINAL_BASE_FLAGS:=$(OPTIMIZATION_LEVEL) \
 	$(EXTRA_BASE_FLAGS) $(EXTRA_DEBUG_FLAGS)
+
+
+DISCORD:=yeah do discord
+
+
+ifdef DISCORD
+	SLEEPY_DISCORD:=libraries/sleepy-discord
+	CXX_FLAGS:=$(CXX_FLAGS) \
+		-I $(SLEEPY_DISCORD)/include \
+		-I $(SLEEPY_DISCORD)/deps \
+		-I $(SLEEPY_DISCORD)/deps/include \
+		-I $(SLEEPY_DISCORD)/include/sleepy_discord/IncludeNonexistent 
+	LD_FLAGS:=$(LD_FLAGS) \
+		-L $(SLEEPY_DISCORD)/buildtools -L libraries \
+		-lsleepy_discord -lcurl -lssl -lcrypto -lpthread -lcpr
+endif		# DISCORD
 
 # Final compiler and linker flags
 CXX_FLAGS:=$(CXX_FLAGS) $(FINAL_BASE_FLAGS)

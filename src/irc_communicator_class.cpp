@@ -31,7 +31,7 @@ IrcConfiguration::IrcConfiguration()
 
 	parse_json(IrcCommunicator::config_file_name, &config_root, &errs);
 
-	servers = config_root["servers"];
+	servers = config_root["irc"];
 
 
 	const auto& member_names = servers.getMemberNames();
@@ -64,7 +64,7 @@ IrcConfiguration::IrcConfiguration()
 			to_push.startup_commands().push_back(std::move(full_command));
 		}
 
-		__server_vec.push_back(to_push);
+		__server_vec.push_back(std::move(to_push));
 	}
 
 	//for (const auto& iter : __server_vec)
@@ -99,8 +99,7 @@ std::ostream& operator << (std::ostream& os,
 	return os;
 }
 
-const std::string IrcCommunicator::config_file_name("config.json"),
-	IrcCommunicator::msg_suffix("\r\n"),
+const std::string IrcCommunicator::msg_suffix("\r\n"),
 	IrcCommunicator::ping_suffix(":FL4SHK_IS_A_WALRUS");
 
 
@@ -722,4 +721,5 @@ void IrcCommunicator::check_timeout_with_ping()
 	}
 }
 
-}
+} // namespace saveybot
+

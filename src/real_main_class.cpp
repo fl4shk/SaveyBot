@@ -54,69 +54,54 @@ RealMain::~RealMain()
 
 int RealMain::operator () ()
 {
-	for (auto& iter : irc_config().server_vec())
-	{
-		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
-			&iter));
-	}
-
-	fd_set readfds;
-
-	for (;;)
-	{
-		do_select_for_read(irc_comm_vec(), readfds);
-		for (auto iter : irc_comm_vec())
-		{
-			printout("RealMain:  Server:  ", iter->config_server().name(), 
-				"\n");
-
-			//iter->update_buf_str(&readfds);
-			//iter->iterate();
-
-			if (!iter->__state.did_connect)
-			{
-				iter->__reinit();
-				continue;
-			}
-
-
-			if (iter->update_buf_str(&readfds))
-			{
-				//printout("egg\n");
-				while (iter->can_iterate())
-				{
-					iter->iterate();
-				}
-				//printout("bert\n");
-			}
-
-			//if (iter->__state.did_joins)
-			//{
-			//	if (iter->update_buf_str(&readfds))
-			//	{
-			//		printout("egg\n");
-			//		//while (iter->can_iterate(&readfds))
-			//		//{
-			//		//	iter->iterate(&readfds);
-			//		//}
-			//		while (iter->can_iterate())
-			//		{
-			//			iter->iterate();
-			//		}
-			//	}
-			//}
-			//else // if (!iter->__state.did_joins)
-			//{
-			//	iter->update_buf_str(&readfds);
-			//	iter->iterate();
-			//}
-		}
-	}
-
-	
-
 	return 0;
 }
+
+// temporary
+//int RealMain::operator () ()
+//{
+//	for (auto& iter : irc_config().server_vec())
+//	{
+//		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
+//			&iter));
+//	}
+//
+//	fd_set readfds;
+//
+//	for (;;)
+//	{
+//		do_select_for_read(irc_comm_vec(), readfds);
+//		for (auto iter : irc_comm_vec())
+//		{
+//			printout("RealMain:  Server:  ", iter->config_server().name(), 
+//				"\n");
+//
+//			//iter->update_buf_str(&readfds);
+//			//iter->iterate();
+//
+//			if (!iter->__state.did_connect)
+//			{
+//				iter->__reinit();
+//				continue;
+//			}
+//
+//
+//			if (iter->update_buf_str(&readfds))
+//			{
+//				//printout("egg\n");
+//				while (iter->can_iterate())
+//				{
+//					iter->iterate();
+//				}
+//				//printout("bert\n");
+//			}
+//		}
+//	}
+//
+//	
+//
+//	return 0;
+//}
 
 
 void RealMain::gen_args_vec(int argc, char** argv)
@@ -176,4 +161,5 @@ void RealMain::gen_args_vec(int argc, char** argv)
 //	write_json(temp_out_file, &output_root);
 //}
 
-}
+} // namespace saveybot // namespace saveybot
+

@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef misc_helper_funcs_hpp
-#define misc_helper_funcs_hpp
+#ifndef src__slash__misc_helper_funcs_hpp
+#define src__slash__misc_helper_funcs_hpp
+
+// src/misc_helper_funcs.hpp
 
 #include "misc_includes.hpp"
 
@@ -31,7 +33,8 @@ void err(arg_types&&... args)
 	exit(1);
 }
 
-}
+} // namespace saveybot
 
 
-#endif		// misc_helper_funcs_hpp
+
+#endif		// src__slash__misc_helper_funcs_hpp

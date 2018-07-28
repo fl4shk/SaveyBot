@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef select_stuff_hpp
-#define select_stuff_hpp
+#ifndef src__slash__select_stuff_hpp
+#define src__slash__select_stuff_hpp
+
+// src/select_stuff.hpp
 
 #include "irc_communicator_class.hpp"
 
@@ -60,8 +62,9 @@ inline auto check_select_result(IrcCommunicator* comm, fd_set& readfds)
 	return check_select_result(comm, &readfds);
 }
 
-}
+} // namespace saveybot
 
 
 
-#endif		// select_stuff_hpp
+
+#endif		// src__slash__select_stuff_hpp

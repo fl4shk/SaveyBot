@@ -62,4 +62,5 @@ bool str_is_integer_bignum(const std::string& str, BigNum& ret)
 	return false;
 }
 
-}
+} // namespace saveybot
+

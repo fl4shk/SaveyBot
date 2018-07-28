@@ -16,9 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef communicator_class_hpp
-#define communicator_class_hpp
+#ifndef src__slash__communicator_class_hpp
+#define src__slash__communicator_class_hpp
 
+// src/communicator_class.hpp
 
 
 //#include "json_stuff.hpp"
@@ -31,6 +32,9 @@ namespace saveybot
 // to the command line.
 class Communicator
 {
+public:		// static variables
+	static const std::string config_file_name;
+
 private:		// variables
 	// This is controlled by a SaveyBot instance
 	std::string __channel;
@@ -60,8 +64,9 @@ public:		// functions
 	
 };
 
-}
+} // namespace saveybot
 
 
 
-#endif		// communicator_class_hpp
+
+#endif		// src__slash__communicator_class_hpp

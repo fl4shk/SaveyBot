@@ -596,4 +596,5 @@ void SaveyBot::parse_command(Communicator& comm,
 
 
 
-}
+} // namespace saveybot
+

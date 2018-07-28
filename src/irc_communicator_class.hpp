@@ -16,8 +16,10 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef irc_communicator_class_hpp
-#define irc_communicator_class_hpp
+#ifndef src__slash__irc_communicator_class_hpp
+#define src__slash__irc_communicator_class_hpp
+
+// src/irc_communicator_class.hpp
 
 
 //#include "json_stuff.hpp"
@@ -152,8 +154,7 @@ friend void do_select_for_read
 	(const std::vector<IrcCommunicator*>& comm_vec, fd_set* readfds);
 
 public:		// static variables
-	static const std::string config_file_name,
-		msg_suffix, ping_suffix;
+	static const std::string msg_suffix, ping_suffix;
 
 private:		// variables
 	// Allow IPv4 or IPv6
@@ -417,7 +418,8 @@ private:		// functions
 
 
 
-}
+} // namespace saveybot
 
 
-#endif		// irc_communicator_class_hpp
+
+#endif		// src__slash__irc_communicator_class_hpp

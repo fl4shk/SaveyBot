@@ -112,4 +112,5 @@ std::string substr_trimmed(const std::string& some_str, const size_t i,
 
 }
 
-}
+} // namespace saveybot
+
