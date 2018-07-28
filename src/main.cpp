@@ -44,12 +44,14 @@ int main(int argc, char** argv)
 	Json::Value config_root, config;
 	std::string errs;
 
+	//printout(saveybot::Communicator::config_file_name, "\n");
 	parse_json(saveybot::Communicator::config_file_name, &config_root,
 		&errs);
 
 	config = config_root["discord"];
 
-	MyClient client(config_root["client_id"].asString(), 2);
+
+	MyClient client(config["token"].asString(), 2);
 	client.run();
 }
 
