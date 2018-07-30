@@ -84,7 +84,10 @@ public:		// functions
 				&& ((iter == '\"') || (iter == '\\')
 				|| (iter == '`')))
 			{
-				to_send += '\\';
+				if (iter == '`')
+				{
+					to_send += '\\';
+				}
 			}
 			to_send += iter;
 		}
