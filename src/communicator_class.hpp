@@ -81,7 +81,8 @@ public:		// functions
 		for (auto iter : orig_to_send)
 		{
 			if ((comm_type() == CommType::Discord)
-				&& ((iter == '\"') || (iter == '\\')))
+				&& ((iter == '\"') || (iter == '\\')
+				|| (iter == '`')))
 			{
 				to_send += '\\';
 			}
