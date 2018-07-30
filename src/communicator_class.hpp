@@ -69,9 +69,14 @@ public:		// functions
 	void send_regular_msg(const FirstType& first_val, 
 		const RemArgTypes&... rem_args)
 	{
-		const std::string& orig_to_send(sconcat(first_val, rem_args...));
+		std::string orig_to_send(sconcat(first_val, rem_args...));
 
 		std::string to_send;
+		if (comm_type() == CommType::Discord)
+		{
+			to_send = "```\n";
+		}
+
 
 		for (auto iter : orig_to_send)
 		{
@@ -81,6 +86,11 @@ public:		// functions
 				to_send += '\\';
 			}
 			to_send += iter;
+		}
+
+		if (comm_type() == CommType::Discord)
+		{
+			to_send += "\n```";
 		}
 
 
