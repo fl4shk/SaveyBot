@@ -22,12 +22,13 @@
 // src/real_main_class.hpp
 
 #include "irc_communicator_class.hpp"
+#include "discord_communicator_class.hpp"
 #include "saveybot_class.hpp"
 
 namespace saveybot
 {
 
-class RealMain
+class RealMain final
 {
 private:		// variables
 	std::vector<std::string> __args_vec;
@@ -36,6 +37,7 @@ private:		// variables
 	//std::vector<IrcCommunicator> __irc_comm_vec;
 	std::vector<IrcCommunicator*> __irc_comm_vec;
 	IrcConfiguration __irc_config;
+	std::unique_ptr<DiscordCommunicator> __discord_comm;
 
 public:		// functions
 	RealMain(int argc, char** argv);
@@ -58,6 +60,9 @@ private:		// functions
 	//static void __convert_original_database
 	//	(const std::string& input_file_name, 
 	//	const std::string& output_file_name);
+
+	void one_thread_func_irc();
+	void one_thread_func_discord();
 
 };
 

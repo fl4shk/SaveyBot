@@ -28,22 +28,36 @@
 namespace saveybot
 {
 
+class SaveyBot;
+
 // Here is the base class for the various protocols, including outputting
 // to the command line.
 class Communicator
 {
+
 public:		// static variables
 	static const std::string config_file_name;
 
 private:		// variables
-	// This is controlled by a SaveyBot instance
+	// This is controlled by a SaveyBot instance, but it isn't relevant for
+	// DiscordCommunicator.
 	std::string __channel;
+
+protected:		// variables
+	SaveyBot* __bot_ptr;
 
 protected:		// functions
 	// In IRC's case, send a PRIVMSG 
 	virtual void inner_send_regular_msg(std::string&& full_msg) = 0;
 
+	SaveyBot& bot() const;
+
 public:		// functions
+	Communicator(SaveyBot* s_bot_ptr);
+	virtual inline ~Communicator()
+	{
+	}
+
 	template<typename FirstType, typename... RemArgTypes>
 	void send_regular_msg(const FirstType& first_val, 
 		const RemArgTypes&... rem_args)
@@ -58,9 +72,8 @@ public:		// functions
 		send_regular_msg("~ ", first_val, rem_args...);
 	}
 
-	gen_setter_by_con_ref(channel);
 	gen_setter_by_rval_ref(channel);
-	gen_getter_by_con_ref(channel);
+	gen_getter_and_setter_by_con_ref(channel);
 	
 };
 

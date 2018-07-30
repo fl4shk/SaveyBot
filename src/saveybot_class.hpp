@@ -30,7 +30,7 @@
 namespace saveybot
 {
 
-class Database
+class Database final
 {
 public:		// constants
 	// Constant keys (all keys are constant, actually)
@@ -211,8 +211,10 @@ private:		// functions
 	
 };
 
-class SaveyBot
+class SaveyBot final
 {
+private:		// static variables
+	static std::mutex __database_barrier;
 
 private:		// variables
 	Database __database;
@@ -227,7 +229,8 @@ public:		// functions
 
 	//void parse_command_basic(const std::vector<std::string>& args_vec);
 	void parse_command(Communicator& comm, const std::string& channel, 
-		const std::string& name, const std::string& whole_cmd_str);
+		const std::string& name, const std::string& whole_cmd_str,
+		bool from_irc);
 
 private:		// functions
 	gen_getter_by_con_ref(database);

@@ -35,11 +35,11 @@ namespace saveybot
 class RealMain;
 class SaveyBot;
 
-// This should be moved to some IRC-related thing
-class IrcConfiguration
+// OLD COMMENT:  This should be moved to some IRC-related thing
+class IrcConfiguration final
 {
 public:		// classes
-	class Server
+	class Server final
 	{
 	private:		// variables
 		std::string __name,
@@ -147,7 +147,7 @@ std::ostream& operator << (std::ostream& os,
 //};
 
 
-class IrcCommunicator : public Communicator
+class IrcCommunicator final : public Communicator
 {
 friend class RealMain;
 friend void do_select_for_read
@@ -177,7 +177,6 @@ private:		// variables
 
 
 	
-	SaveyBot* __bot_ptr;
 	
 	// This is a pointer to a constant IrcConfiguration::Server.
 	const IrcConfiguration::Server* __config_server_ptr;
@@ -284,10 +283,6 @@ private:		// functions
 	gen_setter_by_val(did_alloc_res);
 	gen_setter_by_val(did_open_sock_fd);
 
-	inline SaveyBot& bot() const
-	{
-		return *__bot_ptr;
-	}
 
 
 	void do_full_read();

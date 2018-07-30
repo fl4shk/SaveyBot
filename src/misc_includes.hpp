@@ -30,6 +30,9 @@
 #include <cstring>
 #include <cctype>
 
+#include <thread>
+#include <mutex>
+
 
 // POSIX headers
 #include <sys/types.h>

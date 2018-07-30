@@ -109,7 +109,7 @@ const std::string IrcCommunicator::msg_suffix("\r\n"),
 //	const std::vector<std::string>& joins_list)
 IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr, 
 	const IrcConfiguration::Server* s_config_server_ptr)
-	: __bot_ptr(s_bot_ptr), __config_server_ptr(s_config_server_ptr)
+	: Communicator(s_bot_ptr), __config_server_ptr(s_config_server_ptr)
 {
 	__reinit();
 }
@@ -152,7 +152,7 @@ void IrcCommunicator::iterate()
 
 	std::string first_substr, second_substr, third_substr,
 		other_substr;
-	size_t i, temp_i;
+	size_t i;
 	next_non_blank_substr(line(), 0, first_substr, i);
 
 	//printout("substr Debug:  ", line(), "\t\t", first_substr, " ", 
@@ -203,7 +203,7 @@ void IrcCommunicator::iterate()
 		//printout(strappcom2(first_substr, second_substr, third_substr, 
 		//	other_substr), "\n");
 		bot().parse_command(*this, some_channel, user_nick, 
-			line().substr(i));
+			line().substr(i), true);
 	}
 }
 

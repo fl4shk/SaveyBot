@@ -54,54 +54,15 @@ RealMain::~RealMain()
 
 int RealMain::operator () ()
 {
+
+	std::thread irc_thread(&RealMain::one_thread_func_irc, this);
+	std::thread discord_thread(&RealMain::one_thread_func_discord, this);
+
+	irc_thread.join();
+	discord_thread.join();
+
 	return 0;
 }
-
-// temporary
-//int RealMain::operator () ()
-//{
-//	for (auto& iter : irc_config().server_vec())
-//	{
-//		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
-//			&iter));
-//	}
-//
-//	fd_set readfds;
-//
-//	for (;;)
-//	{
-//		do_select_for_read(irc_comm_vec(), readfds);
-//		for (auto iter : irc_comm_vec())
-//		{
-//			printout("RealMain:  Server:  ", iter->config_server().name(), 
-//				"\n");
-//
-//			//iter->update_buf_str(&readfds);
-//			//iter->iterate();
-//
-//			if (!iter->__state.did_connect)
-//			{
-//				iter->__reinit();
-//				continue;
-//			}
-//
-//
-//			if (iter->update_buf_str(&readfds))
-//			{
-//				//printout("egg\n");
-//				while (iter->can_iterate())
-//				{
-//					iter->iterate();
-//				}
-//				//printout("bert\n");
-//			}
-//		}
-//	}
-//
-//	
-//
-//	return 0;
-//}
 
 
 void RealMain::gen_args_vec(int argc, char** argv)
@@ -110,6 +71,51 @@ void RealMain::gen_args_vec(int argc, char** argv)
 	{
 		__args_vec.push_back(std::string(argv[i]));
 	}
+}
+void RealMain::one_thread_func_irc()
+{
+	for (auto& iter : irc_config().server_vec())
+	{
+		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
+			&iter));
+	}
+
+	fd_set readfds;
+
+	for (;;)
+	{
+		do_select_for_read(irc_comm_vec(), readfds);
+		for (auto iter : irc_comm_vec())
+		{
+			printout("RealMain:  Server:  ", iter->config_server().name(), 
+				"\n");
+
+			//iter->update_buf_str(&readfds);
+			//iter->iterate();
+
+			if (!iter->__state.did_connect)
+			{
+				iter->__reinit();
+				continue;
+			}
+
+
+			if (iter->update_buf_str(&readfds))
+			{
+				//printout("egg\n");
+				while (iter->can_iterate())
+				{
+					iter->iterate();
+				}
+				//printout("bert\n");
+			}
+		}
+	}
+}
+void RealMain::one_thread_func_discord()
+{
+	__discord_comm.reset(new DiscordCommunicator(&__bot));
+	__discord_comm->run();
 }
 
 //void RealMain::__parse_args_vec_old()

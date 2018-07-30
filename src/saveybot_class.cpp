@@ -156,6 +156,7 @@ void Database::update_lowest_available_slot()
 		lowest_available_slot(), "\n\n");
 }
 
+std::mutex SaveyBot::__database_barrier;
 const std::string SaveyBot::database_file_name("saveybot.json");
 
 
@@ -172,8 +173,14 @@ SaveyBot::~SaveyBot()
 
 void SaveyBot::parse_command(Communicator& comm, 
 	const std::string& channel, const std::string& name,
-	const std::string& whole_cmd_str)
+	const std::string& whole_cmd_str, bool from_irc)
 {
+	std::lock_guard<std::mutex> block_threads_until_finish_this_job
+		(__database_barrier);
+
+	printout("SaveyBot::parse_command():  ", strappcom2(channel, name,
+		whole_cmd_str), "\n");
+
 	typedef std::function<void()> CommandClauseFunc;
 
 
@@ -189,8 +196,12 @@ void SaveyBot::parse_command(Communicator& comm,
 	std::vector<std::string> temp_slot_vec;
 
 	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
-	// Strip leading ":"
-	cmd = cmd.substr(1);
+
+	if (from_irc)
+	{
+		// Strip leading ":"
+		cmd = cmd.substr(1);
+	}
 
 
 	//printout("Here's the prefix:  ", cmd, "\n");

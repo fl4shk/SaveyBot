@@ -18,41 +18,26 @@
 
 #include "real_main_class.hpp"
 
-#include "sleepy_discord/websocketpp_websocket.h"
 
-class MyClient : public SleepyDiscord::DiscordClient
-{
-public:		// extras
-	using SleepyDiscord::DiscordClient::DiscordClient;
-
-	void onMessage(SleepyDiscord::Message message)
-	{
-		if (message.startsWith("whcg hello"))
-		{
-			sendMessage(message.channelID, "Hello "
-				+ message.author.username);
-		}
-	}
-};
 
 
 int main(int argc, char** argv)
 {
-	//saveybot::RealMain real_main(argc, argv);
-	//return real_main();
+	saveybot::RealMain real_main(argc, argv);
+	return real_main();
 
-	Json::Value config_root, config;
-	std::string errs;
+	//Json::Value config_root, config;
+	//std::string errs;
 
-	//printout(saveybot::Communicator::config_file_name, "\n");
-	parse_json(saveybot::Communicator::config_file_name, &config_root,
-		&errs);
+	////printout(saveybot::Communicator::config_file_name, "\n");
+	//parse_json(saveybot::Communicator::config_file_name, &config_root,
+	//	&errs);
 
-	config = config_root["discord"];
+	//config = config_root["discord"];
 
-
-	MyClient client(config["token"].asString(), 2);
-	client.run();
+	////MyClient client(config["token"].asString(), 2);
+	//MyClient client(std::string(config["token"].asString()));
+	//client.run();
 }
 
 
