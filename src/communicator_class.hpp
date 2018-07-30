@@ -69,33 +69,44 @@ public:		// functions
 	void send_regular_msg(const FirstType& first_val, 
 		const RemArgTypes&... rem_args)
 	{
-		std::string orig_to_send(sconcat(first_val, rem_args...));
+		std::string orig_to_send, to_send;
 
-		std::string to_send;
 		if (comm_type() == CommType::Discord)
 		{
-			to_send = "```\n";
+			orig_to_send += "```";
+		}
+
+		orig_to_send += sconcat(first_val, rem_args...);
+
+
+		if (comm_type() == CommType::Discord)
+		{
+			orig_to_send += "```";
+
 		}
 
 
 		for (auto iter : orig_to_send)
 		{
+			//if ((comm_type() == CommType::Discord)
+			//	&& ((iter == '\"') || (iter == '\\')
+			//	|| (iter == '`')))
 			if ((comm_type() == CommType::Discord)
-				&& ((iter == '\"') || (iter == '\\')
-				|| (iter == '`')))
+				&& ((iter == '\"') || (iter == '\\')))
 			{
-				if (iter == '`')
-				{
-					to_send += '\\';
-				}
+				to_send += '\\';
+				//if (iter == '`')
+				//{
+				//	to_send += '\\';
+				//}
 			}
 			to_send += iter;
 		}
 
-		if (comm_type() == CommType::Discord)
-		{
-			to_send += "\n```";
-		}
+		//if (comm_type() == CommType::Discord)
+		//{
+		//	to_send += "\n\\`\\`\\`";
+		//}
 
 
 		printout("Communicator::send_regular_msg():  ", to_send, "\n");
