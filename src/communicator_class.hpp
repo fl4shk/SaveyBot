@@ -34,6 +34,12 @@ class SaveyBot;
 // to the command line.
 class Communicator
 {
+public:		// enums
+	enum class CommType
+	{
+		Irc,
+		Discord,
+	};
 
 public:		// static variables
 	static const std::string config_file_name;
@@ -52,6 +58,7 @@ protected:		// functions
 
 	SaveyBot& bot() const;
 
+
 public:		// functions
 	Communicator(SaveyBot* s_bot_ptr);
 	virtual inline ~Communicator()
@@ -62,7 +69,24 @@ public:		// functions
 	void send_regular_msg(const FirstType& first_val, 
 		const RemArgTypes&... rem_args)
 	{
-		inner_send_regular_msg(std::move(sconcat(first_val, rem_args...)));
+		const std::string& orig_to_send(sconcat(first_val, rem_args...));
+
+		std::string to_send;
+
+		for (auto iter : orig_to_send)
+		{
+			if ((comm_type() == CommType::Discord)
+				&& ((iter == '\"') || (iter == '\\')))
+			{
+				to_send += '\\';
+			}
+			to_send += iter;
+		}
+
+
+		printout("Communicator::send_regular_msg():  ", to_send, "\n");
+		inner_send_regular_msg(std::move(to_send));
+
 	}
 
 	template<typename FirstType, typename... RemArgTypes>
@@ -70,11 +94,13 @@ public:		// functions
 		const RemArgTypes&... rem_args)
 	{
 		send_regular_msg("~ ", first_val, rem_args...);
+		//send_regular_msg(first_val, rem_args...);
 	}
+
+	virtual CommType comm_type() const = 0;
 
 	gen_setter_by_rval_ref(channel);
 	gen_getter_and_setter_by_con_ref(channel);
-	
 };
 
 } // namespace saveybot

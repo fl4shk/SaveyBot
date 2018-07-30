@@ -202,8 +202,8 @@ void IrcCommunicator::iterate()
 
 		//printout(strappcom2(first_substr, second_substr, third_substr, 
 		//	other_substr), "\n");
-		bot().parse_command(*this, some_channel, user_nick, 
-			line().substr(i), true);
+		bot().parse_command(*this, some_channel, user_nick,
+			line().substr(i));
 	}
 }
 

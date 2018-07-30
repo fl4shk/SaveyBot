@@ -173,13 +173,13 @@ SaveyBot::~SaveyBot()
 
 void SaveyBot::parse_command(Communicator& comm, 
 	const std::string& channel, const std::string& name,
-	const std::string& whole_cmd_str, bool from_irc)
+	const std::string& whole_cmd_str)
 {
 	std::lock_guard<std::mutex> block_threads_until_finish_this_job
 		(__database_barrier);
 
-	printout("SaveyBot::parse_command():  ", strappcom2(channel, name,
-		whole_cmd_str), "\n");
+	//printout("SaveyBot::parse_command():  ", strappcom2(channel, name,
+	//	whole_cmd_str), "\n");
 
 	typedef std::function<void()> CommandClauseFunc;
 
@@ -197,7 +197,7 @@ void SaveyBot::parse_command(Communicator& comm,
 
 	next_non_blank_substr(whole_cmd_str, 0, cmd, i);
 
-	if (from_irc)
+	if (comm.comm_type() == Communicator::CommType::Irc)
 	{
 		// Strip leading ":"
 		cmd = cmd.substr(1);
@@ -212,11 +212,16 @@ void SaveyBot::parse_command(Communicator& comm,
 	auto print_found_command = [&]() -> void
 	{
 		printout("Found a \"", cmd, "\".\n");
+		//comm.send_saveybot_msg("Found a \"", cmd, "\".\n");
 	};
 	auto say_invalid_num_params = [&]() -> void
 	{
 		comm.send_saveybot_msg("Wrong parameters for \"", 
 			cmd, "\"", sad_suffix, "!");
+		//comm.send_saveybot_msg("Wrong parameters for \"", 
+		//	cmd, "\"", "!");
+		//comm.send_saveybot_msg("Wrong parameters for ",
+		//	cmd, "!");
 	};
 
 	auto inner_next_non_blank_substr = [&]() -> bool

@@ -54,6 +54,11 @@ public:		// functions
 
 	void onMessage(SleepyDiscord::Message message);
 
+	virtual CommType comm_type() const
+	{
+		return CommType::Discord;
+	}
+
 protected:		// functions
 	static const std::string get_token_from_config_file();
 	virtual void inner_send_regular_msg(std::string&& full_msg);

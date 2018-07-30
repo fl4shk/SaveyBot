@@ -45,7 +45,7 @@ void DiscordCommunicator::onMessage(SleepyDiscord::Message message)
 		__recv_msg->content, ":  ", __recv_msg->length(), "\n");
 
 	Communicator::bot().parse_command(*this, "", name,
-		__recv_msg->content, false);
+		__recv_msg->content);
 }
 const std::string DiscordCommunicator::get_token_from_config_file()
 {
@@ -59,11 +59,21 @@ const std::string DiscordCommunicator::get_token_from_config_file()
 }
 void DiscordCommunicator::inner_send_regular_msg(std::string&& full_msg)
 {
-	sendMessage(__recv_msg->channelID, full_msg);
+	//printout("DiscordCommunicator::inner_send_regular_msg():  ", full_msg,
+	//	"\n");
+	if (full_msg.size() != 0)
+	{
+		sendMessage(__recv_msg->channelID, std::string(full_msg.c_str()));
 
-	// "Slowdown" unique to Discord.
-	// Prevent bypassing the rate limiting stuff.
-	usleep(850000);
+		// "Slowdown" unique to Discord.
+		// Prevent bypassing the rate limiting stuff.
+		usleep(850000);
+	}
+	else // if (full_msg.size() == 0)
+	{
+		printerr("DiscordCommunicator::inner_send_regular_msg():  ",
+			"blank!\n");
+	}
 }
 
 } // namespace saveybot

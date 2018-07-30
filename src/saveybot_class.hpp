@@ -229,8 +229,7 @@ public:		// functions
 
 	//void parse_command_basic(const std::vector<std::string>& args_vec);
 	void parse_command(Communicator& comm, const std::string& channel, 
-		const std::string& name, const std::string& whole_cmd_str,
-		bool from_irc);
+		const std::string& name, const std::string& whole_cmd_str);
 
 private:		// functions
 	gen_getter_by_con_ref(database);

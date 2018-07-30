@@ -236,6 +236,11 @@ public:		// functions
 	IrcCommunicator& operator = (const IrcCommunicator& to_copy) = default;
 	IrcCommunicator& operator = (IrcCommunicator&& to_move) = default;
 
+	virtual CommType comm_type() const
+	{
+		return CommType::Irc;
+	}
+
 
 	gen_getter_by_val(specific_family);
 	gen_getter_by_val(specific_socktype);
