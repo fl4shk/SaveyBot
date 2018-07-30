@@ -81,7 +81,7 @@ public:		// functions
 
 		if (comm_type() == CommType::Discord)
 		{
-			orig_to_send += "```";
+			orig_to_send += " ```";
 
 		}
 
