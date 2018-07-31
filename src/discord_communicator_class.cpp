@@ -22,6 +22,8 @@
 namespace saveybot
 {
 
+Json::Value DiscordCommunicator::__json_config;
+
 DiscordCommunicator::DiscordCommunicator(SaveyBot* s_bot_ptr,
 	size_t s_num_threads)
 	: Communicator(s_bot_ptr),
@@ -47,16 +49,17 @@ void DiscordCommunicator::onMessage(SleepyDiscord::Message message)
 	Communicator::bot().parse_command(*this, "", name,
 		__recv_msg->content);
 }
-Json::Value&& DiscordCommunicator::get_config()
+
+Json::Value& DiscordCommunicator::get_config()
 {
-	Json::Value config_root, config;
+	Json::Value config_root;
 	std::string errs;
 
 	parse_json(saveybot::Communicator::config_file_name, &config_root,
 		&errs);
 
-	config = config_root["discord"];
-	return std::move(config);
+	__json_config = config_root["discord"];
+	return __json_config;
 }
 const std::string DiscordCommunicator::get_token_from_config_file()
 {

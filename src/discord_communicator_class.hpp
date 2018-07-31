@@ -35,6 +35,8 @@ class DiscordCommunicator final : virtual public Communicator,
 friend class RealMain;
 
 private:		// variables
+	static Json::Value __json_config;
+
 	// Received message
 	SleepyDiscord::Message* __recv_msg;
 
@@ -60,7 +62,7 @@ public:		// functions
 	}
 
 protected:		// functions
-	static Json::Value&& get_config();
+	static Json::Value& get_config();
 	static const std::string get_token_from_config_file();
 	static bool get_discord_enabled_from_config_file();
 
