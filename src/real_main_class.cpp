@@ -87,8 +87,8 @@ void RealMain::one_thread_func_irc()
 		do_select_for_read(irc_comm_vec(), readfds);
 		for (auto iter : irc_comm_vec())
 		{
-			printout("RealMain:  Server:  ", iter->config_server().name(), 
-				"\n");
+			//printout("RealMain:  Server:  ", iter->config_server().name(), 
+			//	"\n");
 
 			//iter->update_buf_str(&readfds);
 			//iter->iterate();

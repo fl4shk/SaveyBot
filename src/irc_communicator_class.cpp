@@ -255,8 +255,21 @@ void IrcCommunicator::__reinit()
 	//do_select_and_also_full_read();
 	//sleep(1);
 
+	//send_raw_msg("PRIVMSG NickServ identify ", config_server().password());
+	//sleep(1);
+
+	send_raw_msg("PRIVMSG NickServ identify ", config_server().password());
+	sleep(1);
+
+	__initial_ignoring();
+	sleep(1);
+
 	//printout("__reinit():  __attempt_do_joins()\n");
 	__attempt_do_joins();
+
+	sleep(1);
+
+
 
 
 	//__attempt_do_joins();
