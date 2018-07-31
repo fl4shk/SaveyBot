@@ -114,8 +114,11 @@ void RealMain::one_thread_func_irc()
 }
 void RealMain::one_thread_func_discord()
 {
-	__discord_comm.reset(new DiscordCommunicator(&__bot));
-	__discord_comm->run();
+	if (DiscordCommunicator::get_discord_enabled_from_config_file())
+	{
+		__discord_comm.reset(new DiscordCommunicator(&__bot));
+		__discord_comm->run();
+	}
 }
 
 //void RealMain::__parse_args_vec_old()

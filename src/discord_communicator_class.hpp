@@ -60,7 +60,10 @@ public:		// functions
 	}
 
 protected:		// functions
+	static Json::Value&& get_config();
 	static const std::string get_token_from_config_file();
+	static bool get_discord_enabled_from_config_file();
+
 	virtual void inner_send_regular_msg(std::string&& full_msg);
 	inline std::string full_name_of_recv_msg_sender()
 	{

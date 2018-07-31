@@ -47,15 +47,24 @@ void DiscordCommunicator::onMessage(SleepyDiscord::Message message)
 	Communicator::bot().parse_command(*this, "", name,
 		__recv_msg->content);
 }
-const std::string DiscordCommunicator::get_token_from_config_file()
+Json::Value&& DiscordCommunicator::get_config()
 {
 	Json::Value config_root, config;
 	std::string errs;
+
 	parse_json(saveybot::Communicator::config_file_name, &config_root,
 		&errs);
 
 	config = config_root["discord"];
-	return config["token"].asString();
+	return std::move(config);
+}
+const std::string DiscordCommunicator::get_token_from_config_file()
+{
+	return get_config()["token"].asString();
+}
+bool DiscordCommunicator::get_discord_enabled_from_config_file()
+{
+	return (get_config()["enabled"].asString() == std::string("true"));
 }
 void DiscordCommunicator::inner_send_regular_msg(std::string&& full_msg)
 {
