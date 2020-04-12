@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License along
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef src__slash__discord_communicator_class_hpp
-#define src__slash__discord_communicator_class_hpp
+#ifndef src_discord_communicator_class_hpp
+#define src_discord_communicator_class_hpp
 
 // src/discord_communicator_class.hpp
 
@@ -35,10 +35,10 @@ class DiscordCommunicator final : virtual public Communicator,
 friend class RealMain;
 
 private:		// variables
-	static Json::Value __json_config;
+	static Json::Value _json_config;
 
 	// Received message
-	SleepyDiscord::Message* __recv_msg;
+	SleepyDiscord::Message* _recv_msg;
 
 public:		// functions
 	//using SleepyDiscord::DiscordClient::DiscordClient;
@@ -69,13 +69,13 @@ protected:		// functions
 	virtual void inner_send_regular_msg(std::string&& full_msg);
 	inline std::string full_name_of_recv_msg_sender()
 	{
-		return (__recv_msg->author.username
-			+ "#" + __recv_msg->author.discriminator
-			+ "#" + ((const std::string)__recv_msg->author.ID));
+		return (_recv_msg->author.username
+			+ "#" + _recv_msg->author.discriminator
+			+ "#" + ((const std::string)_recv_msg->author.ID));
 	}
 };
 
 } // namespace saveybot
 
-#endif		// src__slash__discord_communicator_class_hpp
+#endif		// src_discord_communicator_class_hpp
 

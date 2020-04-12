@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -16,8 +16,8 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef src__slash__misc_includes_hpp
-#define src__slash__misc_includes_hpp
+#ifndef src_misc_includes_hpp
+#define src_misc_includes_hpp
 
 // src/misc_includes.hpp
 
@@ -52,20 +52,20 @@
 
 
 
-#include "liborangepower_src/misc_includes.hpp"
-#include "liborangepower_src/misc_output_classes.hpp"
-#include "liborangepower_src/misc_types.hpp"
-#include "liborangepower_src/gen_getter_setter_defines.hpp"
-#include "liborangepower_src/time_stuff.hpp"
-#include "liborangepower_src/memwhatever_wrappers.hpp"
-#include "liborangepower_src/json_stuff.hpp"
+#include "liborangepower_src/misc/misc_includes.hpp"
+#include "liborangepower_src/misc/misc_output_classes.hpp"
+#include "liborangepower_src/misc/misc_types.hpp"
+#include "liborangepower_src/gen_class_innards_defines.hpp"
+#include "liborangepower_src/time/time_stuff.hpp"
+#include "liborangepower_src/misc/memwhatever_wrappers.hpp"
+#include "liborangepower_src/json_stuff/json_stuff.hpp"
 
 
-using namespace liborangepower::printout_etc;
+using namespace liborangepower::misc_output;
 using namespace liborangepower::integer_types;
 using namespace liborangepower::misc_util;
 using namespace liborangepower::json;
 
 
 
-#endif		// src__slash__misc_includes_hpp
+#endif		// src_misc_includes_hpp

@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -139,7 +139,7 @@ void Database::update_lowest_available_slot()
 	printout("I started with this lowest_available_slot:  ",
 		lowest_available_slot(), "\n");
 
-	for ( ; ; ++__lowest_available_slot)
+	for ( ; ; ++_lowest_available_slot)
 	{
 		const std::string las_str 
 			= convert_bignum_to_str(lowest_available_slot());
@@ -156,13 +156,13 @@ void Database::update_lowest_available_slot()
 		lowest_available_slot(), "\n\n");
 }
 
-std::mutex SaveyBot::__database_barrier;
+std::mutex SaveyBot::_database_barrier;
 const std::string SaveyBot::database_file_name("saveybot.json");
 
 
 
 
-SaveyBot::SaveyBot() : __database(database_file_name)
+SaveyBot::SaveyBot() : _database(database_file_name)
 {
 }
 
@@ -176,7 +176,7 @@ void SaveyBot::parse_command(Communicator& comm,
 	const std::string& whole_cmd_str)
 {
 	std::lock_guard<std::mutex> block_threads_until_finish_this_job
-		(__database_barrier);
+		(_database_barrier);
 
 	//printout("SaveyBot::parse_command():  ", strappcom2(channel, name,
 	//	whole_cmd_str), "\n");
@@ -448,7 +448,7 @@ void SaveyBot::parse_command(Communicator& comm,
 				else
 				{
 					message = substr_trimmed(whole_cmd_str, i);
-					__database.save(message, name, slot);
+					_database.save(message, name, slot);
 					say_message_saved();
 				}
 			},
@@ -464,7 +464,7 @@ void SaveyBot::parse_command(Communicator& comm,
 				slot = convert_bignum_to_str(database()
 					.lowest_available_slot());
 				message = substr_trimmed(whole_cmd_str, i);
-				__database.save(message, name, slot);
+				_database.save(message, name, slot);
 				say_message_saved();
 			});
 	}
@@ -512,7 +512,7 @@ void SaveyBot::parse_command(Communicator& comm,
 				}
 				else
 				{
-					__database.remove(slot);
+					_database.remove(slot);
 					say_rip();
 				}
 			});

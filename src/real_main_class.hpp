@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -16,8 +16,8 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef src__slash__real_main_class_hpp
-#define src__slash__real_main_class_hpp
+#ifndef src_real_main_class_hpp
+#define src_real_main_class_hpp
 
 // src/real_main_class.hpp
 
@@ -31,13 +31,13 @@ namespace saveybot
 class RealMain final
 {
 private:		// variables
-	std::vector<std::string> __args_vec;
-	SaveyBot __bot;
+	std::vector<std::string> _args_vec;
+	SaveyBot _bot;
 
-	//std::vector<IrcCommunicator> __irc_comm_vec;
-	std::vector<IrcCommunicator*> __irc_comm_vec;
-	IrcConfiguration __irc_config;
-	std::unique_ptr<DiscordCommunicator> __discord_comm;
+	//std::vector<IrcCommunicator> _irc_comm_vec;
+	std::vector<IrcCommunicator*> _irc_comm_vec;
+	IrcConfiguration _irc_config;
+	std::unique_ptr<DiscordCommunicator> _discord_comm;
 
 public:		// functions
 	RealMain(int argc, char** argv);
@@ -45,19 +45,19 @@ public:		// functions
 
 	int operator () ();
 
-	gen_getter_by_con_ref(args_vec);
-	gen_getter_by_con_ref(irc_config);
+	GEN_GETTER_BY_CON_REF(args_vec);
+	GEN_GETTER_BY_CON_REF(irc_config);
 
 
 private:		// functions
-	gen_getter_by_ref(bot);
-	gen_getter_by_ref(irc_comm_vec);
+	GEN_GETTER_BY_REF(bot);
+	GEN_GETTER_BY_REF(irc_comm_vec);
 
 	void gen_args_vec(int argc, char** argv);
 
-	//void __parse_args_vec_old();
+	//void _parse_args_vec_old();
 
-	//static void __convert_original_database
+	//static void _convert_original_database
 	//	(const std::string& input_file_name, 
 	//	const std::string& output_file_name);
 
@@ -69,4 +69,4 @@ private:		// functions
 } // namespace saveybot
 
 
-#endif		// src__slash__real_main_class_hpp
+#endif		// src_real_main_class_hpp

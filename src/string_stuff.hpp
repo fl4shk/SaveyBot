@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -16,8 +16,8 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef src__slash__string_stuff_hpp
-#define src__slash__string_stuff_hpp
+#ifndef src_string_stuff_hpp
+#define src_string_stuff_hpp
 
 // src/string_stuff.hpp
 
@@ -65,4 +65,4 @@ inline std::string substr_trimmed(const std::string& some_str,
 } // namespace saveybot
 
 
-#endif		// src__slash__string_stuff_hpp
+#endif		// src_string_stuff_hpp

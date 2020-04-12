@@ -3,7 +3,7 @@
 # Separate each entry by spaces.
 
 
-SHARED_SRC_DIRS:=src src/liborangepower_src
+SHARED_SRC_DIRS:=src src/liborangepower_src/json_stuff
 
 CXX_DIRS:=$(SHARED_SRC_DIRS)
 C_DIRS:=$(SHARED_SRC_DIRS)

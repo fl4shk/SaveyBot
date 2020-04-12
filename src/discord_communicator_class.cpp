@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -22,7 +22,7 @@
 namespace saveybot
 {
 
-Json::Value DiscordCommunicator::__json_config;
+Json::Value DiscordCommunicator::_json_config;
 
 DiscordCommunicator::DiscordCommunicator(SaveyBot* s_bot_ptr,
 	size_t s_num_threads)
@@ -34,20 +34,20 @@ DiscordCommunicator::DiscordCommunicator(SaveyBot* s_bot_ptr,
 
 void DiscordCommunicator::onMessage(SleepyDiscord::Message message)
 {
-	__recv_msg = &message;
+	_recv_msg = &message;
 	const std::string& name = full_name_of_recv_msg_sender();
 	//const std::string& channel
-	//	= ((const std::string)__recv_msg->channelID);
+	//	= ((const std::string)_recv_msg->channelID);
 
 	// Don't really need to care about the channel with the
 	// DiscordCommunicator, but the SaveyBot class will still try to do
 	// this.
 
 	printout("DiscordCommunicator::onMessage():  ", name, ":  ",
-		__recv_msg->content, ":  ", __recv_msg->length(), "\n");
+		_recv_msg->content, ":  ", _recv_msg->length(), "\n");
 
 	Communicator::bot().parse_command(*this, "", name,
-		__recv_msg->content);
+		_recv_msg->content);
 }
 
 Json::Value& DiscordCommunicator::get_config()
@@ -58,8 +58,8 @@ Json::Value& DiscordCommunicator::get_config()
 	parse_json(saveybot::Communicator::config_file_name, &config_root,
 		&errs);
 
-	__json_config = config_root["discord"];
-	return __json_config;
+	_json_config = config_root["discord"];
+	return _json_config;
 }
 const std::string DiscordCommunicator::get_token_from_config_file()
 {
@@ -75,7 +75,7 @@ void DiscordCommunicator::inner_send_regular_msg(std::string&& full_msg)
 	//	"\n");
 	if (full_msg.size() != 0)
 	{
-		sendMessage(__recv_msg->channelID, std::string(full_msg.c_str()));
+		sendMessage(_recv_msg->channelID, std::string(full_msg.c_str()));
 
 		// "Slowdown" unique to Discord.
 		// Prevent bypassing the rate limiting stuff.

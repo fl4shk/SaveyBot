@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -16,8 +16,8 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef src__slash__communicator_class_hpp
-#define src__slash__communicator_class_hpp
+#ifndef src_communicator_class_hpp
+#define src_communicator_class_hpp
 
 // src/communicator_class.hpp
 
@@ -47,10 +47,10 @@ public:		// static variables
 private:		// variables
 	// This is controlled by a SaveyBot instance, but it isn't relevant for
 	// DiscordCommunicator.
-	std::string __channel;
+	std::string _channel;
 
 protected:		// variables
-	SaveyBot* __bot_ptr;
+	SaveyBot* _bot_ptr;
 
 protected:		// functions
 	// In IRC's case, send a PRIVMSG 
@@ -124,8 +124,8 @@ public:		// functions
 
 	virtual CommType comm_type() const = 0;
 
-	gen_setter_by_rval_ref(channel);
-	gen_getter_and_setter_by_con_ref(channel);
+	GEN_SETTER_BY_RVAL_REF(channel);
+	GEN_GETTER_AND_SETTER_BY_CON_REF(channel);
 };
 
 } // namespace saveybot
@@ -133,4 +133,4 @@ public:		// functions
 
 
 
-#endif		// src__slash__communicator_class_hpp
+#endif		// src_communicator_class_hpp

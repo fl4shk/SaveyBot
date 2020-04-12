@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -98,7 +98,7 @@ std::string substr_trimmed(const std::string& some_str, const size_t i,
 {
 	std::string temp = std::move(some_str.substr(i));
 
-	s64 last = temp.size() - 1;
+	i64 last = temp.size() - 1;
 
 	for (; last>=0; --last)
 	{

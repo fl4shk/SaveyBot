@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -64,10 +64,10 @@ IrcConfiguration::IrcConfiguration()
 			to_push.startup_commands().push_back(std::move(full_command));
 		}
 
-		__server_vec.push_back(std::move(to_push));
+		_server_vec.push_back(std::move(to_push));
 	}
 
-	//for (const auto& iter : __server_vec)
+	//for (const auto& iter : _server_vec)
 	//{
 	//	printout(iter);
 	//}
@@ -109,9 +109,9 @@ const std::string IrcCommunicator::msg_suffix("\r\n"),
 //	const std::vector<std::string>& joins_list)
 IrcCommunicator::IrcCommunicator(SaveyBot* s_bot_ptr, 
 	const IrcConfiguration::Server* s_config_server_ptr)
-	: Communicator(s_bot_ptr), __config_server_ptr(s_config_server_ptr)
+	: Communicator(s_bot_ptr), _config_server_ptr(s_config_server_ptr)
 {
-	__reinit();
+	_reinit();
 }
 
 bool IrcCommunicator::update_buf_str(fd_set* readfds)
@@ -121,14 +121,14 @@ bool IrcCommunicator::update_buf_str(fd_set* readfds)
 bool IrcCommunicator::can_iterate() const
 {
 	return (buf_str.find(msg_suffix) != std::string::npos);
-	//return !__state.wants_select;
+	//return !_state.wants_select;
 }
 
 //void IrcCommunicator::iterate(fd_set* readfds)
 void IrcCommunicator::iterate()
 {
 	////printout("iterate()\n");
-	//if (__attempt_do_joins())
+	//if (_attempt_do_joins())
 	//{
 	//	//printout("Sent JOIN stuff.\n");
 	//	return;
@@ -137,7 +137,7 @@ void IrcCommunicator::iterate()
 	////do_select_and_also_full_read();
 	//do_full_read_if_fd_isset(readfds);
 
-	//__attempt_do_joins();
+	//_attempt_do_joins();
 
 
 	update_line();
@@ -159,26 +159,26 @@ void IrcCommunicator::iterate()
 	//	first_substr.size(), "\n");
 
 
-	__state.ignored_last_line = false;
+	_state.ignored_last_line = false;
 
 
 	// Handle PING
 	if (first_substr == "PING")
 	{
-		__handle_ping(i);
-		//printout("iterate():  __handle_ping()\n");
+		_handle_ping(i);
+		//printout("iterate():  _handle_ping()\n");
 		return;
 	}
 	// Handle PONG
-	else if (__handle_pong(i))
+	else if (_handle_pong(i))
 	{
-		//printout("iterate():  __handle_pong()\n");
+		//printout("iterate():  _handle_pong()\n");
 		return;
 	}
-	else if (__can_ignore(first_substr, i))
+	else if (_can_ignore(first_substr, i))
 	{
-		//printout("iterate():  __can_ignore()\n");
-		__state.ignored_last_line = true;
+		//printout("iterate():  _can_ignore()\n");
+		_state.ignored_last_line = true;
 		return;
 	}
 	else
@@ -187,11 +187,11 @@ void IrcCommunicator::iterate()
 		{
 		size_t exclam_index, space_index;
 
-		if (__handle_ctcp_version(first_substr, second_substr,
+		if (_handle_ctcp_version(first_substr, second_substr,
 			third_substr, other_substr, &i, exclam_index, space_index, 
 			user_nick) == 2)
 		{
-			//printout("iterate():  __handle_ctcp_version()\n");
+			//printout("iterate():  _handle_ctcp_version()\n");
 			return;
 		}
 		}
@@ -207,21 +207,21 @@ void IrcCommunicator::iterate()
 	}
 }
 
-void IrcCommunicator::__reinit()
+void IrcCommunicator::_reinit()
 {
-	printout("__reinit()\n");
-	__state.init();
+	printout("_reinit()\n");
+	_state.init();
 
 	do_getaddrinfo(config_server().address(), config_server().port_str());
 
 	if (!do_socket_and_connect())
 	{
-		__state.did_connect = false;
+		_state.did_connect = false;
 		return;
 	}
 	else
 	{
-		__state.did_connect = true;
+		_state.did_connect = true;
 	}
 
 	// Go ahead and do this now 
@@ -236,20 +236,20 @@ void IrcCommunicator::__reinit()
 	{
 		send_raw_msg(iter);
 		sleep(1);
-		//printout("__reinit():  ", do_select_and_also_full_read(), "\n");
+		//printout("_reinit():  ", do_select_and_also_full_read(), "\n");
 		//sleep(1);
 	}
 
 	//do_select_and_also_full_read();
 
-	//printout("__reinit():  ", do_select_and_also_full_read(), "\n");
+	//printout("_reinit():  ", do_select_and_also_full_read(), "\n");
 	//sleep(1);
 
 
 	//do_select_and_also_full_read();
 	//sleep(1);
 
-	__initial_ignoring();
+	_initial_ignoring();
 	sleep(1);
 
 	//do_select_and_also_full_read();
@@ -265,23 +265,23 @@ void IrcCommunicator::__reinit()
 			config_server().password());
 		sleep(1);
 
-		__initial_ignoring();
+		_initial_ignoring();
 		sleep(1);
 	}
 
-	//printout("__reinit():  __attempt_do_joins()\n");
-	__attempt_do_joins();
+	//printout("_reinit():  _attempt_do_joins()\n");
+	_attempt_do_joins();
 
 	sleep(1);
 
 
 
 
-	//__attempt_do_joins();
+	//_attempt_do_joins();
 	//printout("Sent JOIN stuff.\n");
 	//sleep(1);
 
-	//__initial_ignoring();
+	//_initial_ignoring();
 	//sleep(1);
 
 
@@ -345,13 +345,14 @@ bool IrcCommunicator::do_full_read_if_fd_isset(fd_set* readfds)
 	if (check_select_result(this, readfds))
 	{
 		//printout("FD_ISSET():  ");
-		//err("Something wrong with the connection?");
+		//printerr("Something wrong with the connection?");
+		//exit(1);
 		do_full_read();
 		return true;
 	}
 	//printout("!FD_ISSET():  ");
 
-	__line = "";
+	_line = "";
 
 	return false;
 }
@@ -368,7 +369,7 @@ void IrcCommunicator::update_line()
 		//printout("buf_str Debug:  ", line(), "\n", buf_str, "\n\n\n");
 		//printout("buf_str Debug:  ", buf_str, "\n\n\n");
 
-		__line = buf_str.substr(0, suffix_index);
+		_line = buf_str.substr(0, suffix_index);
 		printout("update_line():  line():  ", line(), "\n");
 		//printout("update_line():  line():  ", line(), "\n\n");
 
@@ -388,18 +389,18 @@ void IrcCommunicator::update_line()
 			{
 				//printout("update_line():  found msg_suffix ",
 				//	"in buf_str\n");
-				__state.wants_select = false;
-				//__state.wants_select = true;
+				_state.wants_select = false;
+				//_state.wants_select = true;
 			}
 			else
 			{
 				//printout("update_line():  didn't find msg_suffix ",
 				//	"in buf_str\n");
-				__state.wants_select = true;
-				//__state.wants_select = false;
+				_state.wants_select = true;
+				//_state.wants_select = false;
 			}
 		}
-		//__state.wants_select = false;
+		//_state.wants_select = false;
 		
 
 	}
@@ -407,8 +408,8 @@ void IrcCommunicator::update_line()
 	{
 		//printout("EGGS\n");
 		printout("Incomplete line!\n");
-		__state.wants_select = true;
-		__line = "";
+		_state.wants_select = true;
+		_line = "";
 	}
 }
 
@@ -418,9 +419,9 @@ void IrcCommunicator::do_getaddrinfo(const std::string& some_address,
 {
 	printout(some_address, " ", some_port_str, "\n");
 	
-	memset(&__hints, 0, sizeof(__hints));
-	__hints.ai_family = specific_family();
-	__hints.ai_socktype = specific_socktype();
+	memset(&_hints, 0, sizeof(_hints));
+	_hints.ai_family = specific_family();
+	_hints.ai_socktype = specific_socktype();
 
 
 
@@ -511,7 +512,7 @@ void IrcCommunicator::clean_up()
 	close_sock_fd();
 }
 
-bool IrcCommunicator::__can_ignore(const std::string& first_substr, 
+bool IrcCommunicator::_can_ignore(const std::string& first_substr, 
 	size_t& i)
 {
 	std::string second_substr;
@@ -530,9 +531,9 @@ bool IrcCommunicator::__can_ignore(const std::string& first_substr,
 	i = orig_i;
 
 
-	if (__substr_is_config_server_address(first_substr))
+	if (_substr_is_config_server_address(first_substr))
 	{
-		//printout("__can_ignore():  ", line(), "\n");
+		//printout("_can_ignore():  ", line(), "\n");
 		next_non_blank_substr(line(), i, second_substr, i);
 		bool only_found_digits = true;
 		for (auto c : second_substr)
@@ -569,30 +570,30 @@ bool IrcCommunicator::__can_ignore(const std::string& first_substr,
 	i = orig_i;
 
 
-	//if (__state.did_joins && !__state.seen_server_response_to_join)
+	//if (_state.did_joins && !_state.seen_server_response_to_join)
 	//{
 	//	next_non_blank_substr(line(), i, second_substr, i);
 
 	//	if (second_substr == "JOIN")
 	//	{
-	//		__state.seen_server_response_to_join = true;
+	//		_state.seen_server_response_to_join = true;
 	//		return true;
 	//	}
 	//}
 	i = orig_i;
 
 
-	//if (__state.seen_server_response_to_join)
+	//if (_state.seen_server_response_to_join)
 	//{
 	//	next_non_blank_substr(line(), i, second_substr, i);
 	//}
 	i = orig_i;
 
-	//printout("__can_ignore():  Returning false.\n");
+	//printout("_can_ignore():  Returning false.\n");
 	return false;
 }
 
-int IrcCommunicator::__handle_ctcp_version
+int IrcCommunicator::_handle_ctcp_version
 	(const std::string& first_substr, std::string& second_substr,
 	std::string& third_substr, std::string& other_substr, size_t* i, 
 	size_t& exclam_index, size_t& space_index, std::string& user_nick)
@@ -654,23 +655,23 @@ int IrcCommunicator::__handle_ctcp_version
 				" \001VERSION SaveyBot Version 3 (by FL4SHK)\001");
 		}
 
-		//if (__attempt_do_joins())
+		//if (_attempt_do_joins())
 		//{
-		//	//__initial_ignoring();
+		//	//_initial_ignoring();
 		//}
 
 		return 2;
 	}
 	return 3;
 }
-void IrcCommunicator::__initial_ignoring()
+void IrcCommunicator::_initial_ignoring()
 {
 	size_t j = 0;
 	for (;;)
 	{
-		//printout("in __initial_ignoring():  ", j, "\n");
+		//printout("in _initial_ignoring():  ", j, "\n");
 		//if (do_full_read_if_fd_isset())
-		//if (!__state.wants_select)
+		//if (!_state.wants_select)
 		do_select_and_also_full_read();
 		update_line();
 
@@ -687,31 +688,31 @@ void IrcCommunicator::__initial_ignoring()
 
 		if (first_substr == "PING")
 		{
-			__handle_ping(i);
+			_handle_ping(i);
 			//printout("PING\n");
 			++j;
 
-			//__attempt_do_joins();
+			//_attempt_do_joins();
 		}
-		else if (__handle_pong(i))
+		else if (_handle_pong(i))
 		{
 			//printout("PONG\n");
 			++j;
 		}
-		else if (__handle_ctcp_version(first_substr, second_substr,
+		else if (_handle_ctcp_version(first_substr, second_substr,
 			third_substr, other_substr, nullptr, exclam_index, space_index, 
 			user_nick) == 2)
 		{
-			printout("__initial_ignoring():  CTCP VERSION\n");
+			printout("_initial_ignoring():  CTCP VERSION\n");
 			//++j;
 			break;
 		}
 		else
 		{
-			//printout("__initial_ignoring():  \n");
-			if (!__can_ignore(first_substr, i))
+			//printout("_initial_ignoring():  \n");
+			if (!_can_ignore(first_substr, i))
 			{
-				printout("__initial_ignoring():  !__can_ignore()\n");
+				printout("_initial_ignoring():  !_can_ignore()\n");
 				break;
 			}
 			++j;
@@ -719,22 +720,22 @@ void IrcCommunicator::__initial_ignoring()
 	}
 	if (j != 0)
 	{
-		__state.ignored_last_line = true;
+		_state.ignored_last_line = true;
 	}
-	printout("__initial_ignoring():  This many lines handled:  ", j, "\n");
+	printout("_initial_ignoring():  This many lines handled:  ", j, "\n");
 }
 
 void IrcCommunicator::check_timeout_with_ping()
 {
-	if (__state.did_ping)
+	if (_state.did_ping)
 	{
 		clean_up_then_reinit();
 	}
-	else // if (!__state.did_ping)
+	else // if (!_state.did_ping)
 	{
 		//printout("check_timeout_with_ping()\n");
-		__state.wants_select = true;
-		__state.did_ping = true;
+		_state.wants_select = true;
+		_state.did_ping = true;
 		send_raw_msg("PING ", ping_suffix);
 	}
 }

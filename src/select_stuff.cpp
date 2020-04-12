@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -47,11 +47,11 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 	// Find highest
 	for (auto iter : comm_vec)
 	{
-		if (!iter->__state.did_connect)
+		if (!iter->_state.did_connect)
 		{
 			continue;
 		}
-		if (iter->__state.wants_select)
+		if (iter->_state.wants_select)
 		{
 			//printout("wants_select\n\n");
 			FD_SET(iter->sock_fd(), readfds);
@@ -61,7 +61,7 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 				nfds = iter->sock_fd();
 			}
 
-			//if (iter->__state.ignored_last_line)
+			//if (iter->_state.ignored_last_line)
 			//{
 			//	any_ignored_last_line = true;
 			//	tv.tv_sec = 0;
@@ -88,10 +88,10 @@ void do_select_for_read(const std::vector<IrcCommunicator*>& comm_vec,
 			// Timeout was reached, so send pings.
 			for (auto iter : comm_vec)
 			{
-				//if (iter->__state.did_joins)
-				//if (iter->__state.wants_select && iter->__state.did_joins)
-				if (iter->__state.did_connect && iter->__state.wants_select
-					&& iter->__state.did_joins)
+				//if (iter->_state.did_joins)
+				//if (iter->_state.wants_select && iter->_state.did_joins)
+				if (iter->_state.did_connect && iter->_state.wants_select
+					&& iter->_state.did_joins)
 				{
 					iter->check_timeout_with_ping();
 				}

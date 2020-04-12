@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -16,8 +16,8 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef src__slash__saveybot_class_hpp
-#define src__slash__saveybot_class_hpp
+#ifndef src_saveybot_class_hpp
+#define src_saveybot_class_hpp
 
 // src/saveybot_class.hpp
 
@@ -53,11 +53,11 @@ public:		// classes
 	private:		// variables
 		// Might need to use an std::stringstream to get the value for
 		// datetime.
-		std::string __datetime, 
-			__classic_index_str, 
-			__message, 
-			__name, 
-			__slot;
+		std::string _datetime, 
+			_classic_index_str, 
+			_message, 
+			_name, 
+			_slot;
 
 	public:		// functions
 		inline Value()
@@ -68,11 +68,11 @@ public:		// classes
 			const std::string& s_message, 
 			const std::string& s_name, 
 			const std::string& s_slot)
-			: __datetime(s_datetime),
-			__classic_index_str(s_classic_index_str),
-			__message(s_message), 
-			__name(s_name), 
-			__slot(s_slot)
+			: _datetime(s_datetime),
+			_classic_index_str(s_classic_index_str),
+			_message(s_message), 
+			_name(s_name), 
+			_slot(s_slot)
 		{
 		}
 
@@ -90,28 +90,28 @@ public:		// classes
 		void extract_from_json(const Json::Value& to_copy);
 		void add_to_json(Json::Value& output_root) const;
 
-		gen_getter_by_ref(datetime);
-		gen_getter_by_ref(classic_index_str);
-		gen_getter_by_ref(message);
-		gen_getter_by_ref(name);
-		gen_getter_by_ref(slot);
+		GEN_GETTER_BY_REF(datetime);
+		GEN_GETTER_BY_REF(classic_index_str);
+		GEN_GETTER_BY_REF(message);
+		GEN_GETTER_BY_REF(name);
+		GEN_GETTER_BY_REF(slot);
 		
-		gen_getter_by_con_ref(datetime);
-		gen_getter_by_con_ref(classic_index_str);
-		gen_getter_by_con_ref(message);
-		gen_getter_by_con_ref(name);
-		gen_getter_by_con_ref(slot);
+		GEN_GETTER_BY_CON_REF(datetime);
+		GEN_GETTER_BY_CON_REF(classic_index_str);
+		GEN_GETTER_BY_CON_REF(message);
+		GEN_GETTER_BY_CON_REF(name);
+		GEN_GETTER_BY_CON_REF(slot);
 	};
 
 
 private:		// variables
-	//size_t __lowest_available_slot;
-	BigNum __lowest_available_slot;
-	std::string __database_file_name;
+	//size_t _lowest_available_slot;
+	BigNum _lowest_available_slot;
+	std::string _database_file_name;
 	
 	// Here is where the savestates are stored when in RAM.  They are
 	// indexed by slot number as an std::string.
-	std::map<std::string, Value> __savestates;
+	std::map<std::string, Value> _savestates;
 
 
 public:		// functions
@@ -157,25 +157,25 @@ public:		// functions
 
 	inline auto begin()
 	{
-		return __savestates.begin();
+		return _savestates.begin();
 	}
 	inline auto end()
 	{
-		return __savestates.end();
+		return _savestates.end();
 	}
 
 	inline auto cbegin() const
 	{
-		return __savestates.cbegin();
+		return _savestates.cbegin();
 	}
 	inline auto cend() const
 	{
-		return __savestates.cend();
+		return _savestates.cend();
 	}
 
 	inline auto size() const
 	{
-		return __savestates.size();
+		return _savestates.size();
 	}
 
 	
@@ -188,14 +188,14 @@ public:		// functions
 		return savestates()[slot];
 	}
 	
-	gen_getter_by_val(lowest_available_slot);
-	gen_getter_by_con_ref(database_file_name);
-	gen_getter_by_con_ref(savestates);
+	GEN_GETTER_BY_VAL(lowest_available_slot);
+	GEN_GETTER_BY_CON_REF(database_file_name);
+	GEN_GETTER_BY_CON_REF(savestates);
 
 private:		// functions
-	gen_setter_by_val(lowest_available_slot);
-	gen_setter_by_con_ref(database_file_name);
-	gen_getter_by_ref(savestates);
+	GEN_SETTER_BY_VAL(lowest_available_slot);
+	GEN_SETTER_BY_CON_REF(database_file_name);
+	GEN_GETTER_BY_REF(savestates);
 
 	void load_from_file();
 
@@ -214,11 +214,11 @@ private:		// functions
 class SaveyBot final
 {
 private:		// static variables
-	static std::mutex __database_barrier;
+	static std::mutex _database_barrier;
 
 private:		// variables
-	Database __database;
-	liborangepower::time::Prng __prng;
+	Database _database;
+	liborangepower::time::Prng _prng;
 
 public:		// static variables
 	static const std::string database_file_name;
@@ -232,9 +232,9 @@ public:		// functions
 		const std::string& name, const std::string& whole_cmd_str);
 
 private:		// functions
-	gen_getter_by_con_ref(database);
-	gen_getter_by_ref(database);
-	//gen_getter_by_ref(prng);
+	GEN_GETTER_BY_CON_REF(database);
+	GEN_GETTER_BY_REF(database);
+	//GEN_GETTER_BY_REF(prng);
 
 	//void save(const std::string& message, const std::string& name,
 	//	const std::string&);
@@ -243,13 +243,13 @@ private:		// functions
 	// This is NOT a getter
 	inline auto prng()
 	{
-		return __prng();
+		return _prng();
 	}
 
 	// This is NOT a getter
 	inline auto prng(u64 max_val)
 	{
-		return __prng(max_val);
+		return _prng(max_val);
 	}
 
 
@@ -275,4 +275,4 @@ private:		// functions
 } // namespace saveybot
 
 
-#endif		// src__slash__saveybot_class_hpp
+#endif		// src_saveybot_class_hpp

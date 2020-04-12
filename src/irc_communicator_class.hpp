@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -16,8 +16,8 @@
 // with SaveyBot.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef src__slash__irc_communicator_class_hpp
-#define src__slash__irc_communicator_class_hpp
+#ifndef src_irc_communicator_class_hpp
+#define src_irc_communicator_class_hpp
 
 // src/irc_communicator_class.hpp
 
@@ -26,6 +26,7 @@
 #include "misc_includes.hpp"
 #include "communicator_class.hpp"
 #include "string_stuff.hpp"
+#include "misc_helper_funcs.hpp"
 
 //#include "select_stuff.hpp"
 
@@ -42,14 +43,14 @@ public:		// classes
 	class Server final
 	{
 	private:		// variables
-		std::string __name,
-			__bot_name,
-			__address,
-			__port_str,
-			__password;
+		std::string _name,
+			_bot_name,
+			_address,
+			_port_str,
+			_password;
 
-		std::vector<std::string> __joins_list,
-			__startup_commands;
+		std::vector<std::string> _joins_list,
+			_startup_commands;
 
 	public:		// functions
 		inline Server()
@@ -67,31 +68,31 @@ public:		// classes
 		Server& operator = (Server&& to_move) = default;
 
 
-		gen_getter_and_setter_by_con_ref(name);
-		gen_getter_and_setter_by_con_ref(bot_name);
-		gen_getter_and_setter_by_con_ref(address);
-		gen_getter_and_setter_by_con_ref(port_str);
-		gen_getter_and_setter_by_con_ref(password);
-		gen_getter_and_setter_by_con_ref(joins_list);
-		gen_getter_and_setter_by_con_ref(startup_commands);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(name);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(bot_name);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(address);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(port_str);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(password);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(joins_list);
+		GEN_GETTER_AND_SETTER_BY_CON_REF(startup_commands);
 
-		gen_getter_by_ref(joins_list);
-		gen_getter_by_ref(startup_commands);
+		GEN_GETTER_BY_REF(joins_list);
+		GEN_GETTER_BY_REF(startup_commands);
 
-		gen_setter_by_rval_ref(name);
-		gen_setter_by_rval_ref(bot_name);
-		gen_setter_by_rval_ref(address);
-		gen_setter_by_rval_ref(port_str);
-		gen_setter_by_rval_ref(password);
-		gen_setter_by_rval_ref(joins_list);
-		gen_setter_by_rval_ref(startup_commands);
+		GEN_SETTER_BY_RVAL_REF(name);
+		GEN_SETTER_BY_RVAL_REF(bot_name);
+		GEN_SETTER_BY_RVAL_REF(address);
+		GEN_SETTER_BY_RVAL_REF(port_str);
+		GEN_SETTER_BY_RVAL_REF(password);
+		GEN_SETTER_BY_RVAL_REF(joins_list);
+		GEN_SETTER_BY_RVAL_REF(startup_commands);
 
 
 	};
 
 
 private:		// variables
-	std::vector<Server> __server_vec;
+	std::vector<Server> _server_vec;
 
 public:		// functions
 	IrcConfiguration();
@@ -104,7 +105,7 @@ public:		// functions
 		= default;
 	IrcConfiguration& operator = (IrcConfiguration&& to_move) = default;
 
-	gen_getter_by_con_ref(server_vec);
+	GEN_GETTER_BY_CON_REF(server_vec);
 	
 };
 
@@ -158,28 +159,28 @@ public:		// static variables
 
 private:		// variables
 	// Allow IPv4 or IPv6
-	static constexpr auto __specific_family = AF_UNSPEC;
+	static constexpr auto _specific_family = AF_UNSPEC;
 
 	// SOCK_STREAM - Provides sequenced, reliable, bidirectional,
 	// connection- mode byte streams, and may provide a transmission
-	static constexpr auto __specific_socktype = SOCK_STREAM;
+	static constexpr auto _specific_socktype = SOCK_STREAM;
 
 	static constexpr size_t raw_buf_size = 9001;
 
 	// "Whois" stuff (getaddrinfo())
-	addrinfo __hints, * __res = nullptr;
+	addrinfo _hints, * _res = nullptr;
 
 	// Socket file descriptor
-	int __sock_fd;
+	int _sock_fd;
 
 	// Stuff for clean_up()
-	bool __did_alloc_res = false, __did_open_sock_fd = false;
+	bool _did_alloc_res = false, _did_open_sock_fd = false;
 
 
 	
 	
 	// This is a pointer to a constant IrcConfiguration::Server.
-	const IrcConfiguration::Server* __config_server_ptr;
+	const IrcConfiguration::Server* _config_server_ptr;
 
 	// The array of characters read() sends its data to
 	std::array<char, raw_buf_size> raw_buf;
@@ -209,9 +210,9 @@ private:		// variables
 			ignored_last_line = false;
 			did_connect = false;
 		}
-	} __state;
+	} _state;
 
-	std::string __line = "", buf_str = "";
+	std::string _line = "", buf_str = "";
 
 	//size_t last_index = 0;
 
@@ -242,22 +243,22 @@ public:		// functions
 	}
 
 
-	gen_getter_by_val(specific_family);
-	gen_getter_by_val(specific_socktype);
+	GEN_GETTER_BY_VAL(specific_family);
+	GEN_GETTER_BY_VAL(specific_socktype);
 
-	gen_getter_by_con_ref(hints);
-	gen_getter_by_con_ref(res);
-	gen_getter_by_val(sock_fd);
+	GEN_GETTER_BY_CON_REF(hints);
+	GEN_GETTER_BY_CON_REF(res);
+	GEN_GETTER_BY_VAL(sock_fd);
 
-	gen_getter_by_val(did_alloc_res);
-	gen_getter_by_val(did_open_sock_fd);
+	GEN_GETTER_BY_VAL(did_alloc_res);
+	GEN_GETTER_BY_VAL(did_open_sock_fd);
 
 	inline const IrcConfiguration::Server& config_server() const
 	{
-		return *__config_server_ptr;
+		return *_config_server_ptr;
 	}
 
-	gen_getter_by_con_ref(line);
+	GEN_GETTER_BY_CON_REF(line);
 
 
 	bool update_buf_str(fd_set* readfds);
@@ -271,22 +272,22 @@ public:		// functions
 protected:		// functions
 	virtual void inner_send_regular_msg(std::string&& full_msg);
 
-	void __reinit();
+	void _reinit();
 	inline void clean_up_then_reinit()
 	{
 		clean_up();
-		__reinit();
+		_reinit();
 	}
 	
 
 
 private:		// functions
-	gen_getter_by_ref(hints);
-	gen_getter_by_ref(res);
-	gen_setter_by_val(sock_fd);
+	GEN_GETTER_BY_REF(hints);
+	GEN_GETTER_BY_REF(res);
+	GEN_SETTER_BY_VAL(sock_fd);
 	
-	gen_setter_by_val(did_alloc_res);
-	gen_setter_by_val(did_open_sock_fd);
+	GEN_SETTER_BY_VAL(did_alloc_res);
+	GEN_SETTER_BY_VAL(did_open_sock_fd);
 
 
 
@@ -333,13 +334,13 @@ private:		// functions
 		}
 	}
 
-	inline bool __attempt_do_joins()
+	inline bool _attempt_do_joins()
 	{
-		if (!__state.did_joins)
+		if (!_state.did_joins)
 		{
 			sleep(1);
 
-			__state.did_joins = true;
+			_state.did_joins = true;
 
 			for (auto iter : config_server().joins_list())
 			{
@@ -351,8 +352,8 @@ private:		// functions
 		return false;
 	}
 
-	//inline void __handle_ping(size_t& i, bool do_attempt_joins=true)
-	inline void __handle_ping(size_t& i)
+	//inline void _handle_ping(size_t& i, bool do_attempt_joins=true)
+	inline void _handle_ping(size_t& i)
 	{
 		std::string second_substr;
 		next_non_blank_substr(line(), i, second_substr, i);
@@ -361,11 +362,11 @@ private:		// functions
 
 		//if (do_attempt_joins)
 		//{
-		//	__attempt_do_joins();
+		//	_attempt_do_joins();
 		//}
 	}
 
-	inline bool __handle_pong(size_t i)
+	inline bool _handle_pong(size_t i)
 	{
 		std::string second_substr, third_substr, fourth_substr;
 		next_non_blank_substr(line(), i, second_substr, i);
@@ -374,13 +375,13 @@ private:		// functions
 
 		if (second_substr == "PONG")
 		{
-			if (__state.did_ping)
+			if (_state.did_ping)
 			{
 				next_non_blank_substr(line(), i, third_substr, i);
 				next_non_blank_substr(line(), i, fourth_substr, i);
 				if (fourth_substr.find(ping_suffix) == 0)
 				{
-					__state.did_ping = false;
+					_state.did_ping = false;
 					return true;
 				}
 				else
@@ -396,20 +397,20 @@ private:		// functions
 		return false;
 	}
 
-	inline bool __substr_is_config_server_address
+	inline bool _substr_is_config_server_address
 		(const std::string& substr) const
 	{
 		return (substr == sconcat(":", config_server().address()));
 	}
 
-	bool __can_ignore(const std::string& first_substr, size_t& i);
+	bool _can_ignore(const std::string& first_substr, size_t& i);
 
-	int __handle_ctcp_version(const std::string& first_substr, 
+	int _handle_ctcp_version(const std::string& first_substr, 
 		std::string& second_substr, std::string& third_substr, 
 		std::string& other_substr, size_t* i, size_t& exclam_index, 
 		size_t& space_index, std::string& user_nick);
 
-	void __initial_ignoring();
+	void _initial_ignoring();
 
 	void check_timeout_with_ping();
 
@@ -422,4 +423,4 @@ private:		// functions
 
 
 
-#endif		// src__slash__irc_communicator_class_hpp
+#endif		// src_irc_communicator_class_hpp

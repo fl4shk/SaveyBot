@@ -1,6 +1,6 @@
 // This file is part of SaveyBot.
 // 
-// Copyright 2017-2018 Andrew Clark (FL4SHK).
+// Copyright 2017-2020 Andrew Clark (FL4SHK).
 // 
 // SaveyBot is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -41,7 +41,7 @@ RealMain::RealMain(int argc, char** argv)
 	gen_args_vec(argc, argv);
 	//parse_args_vec();
 	
-	//__convert_original_database(args_vec().at(1), args_vec().at(2));
+	//_convert_original_database(args_vec().at(1), args_vec().at(2));
 }
 
 RealMain::~RealMain()
@@ -69,14 +69,14 @@ void RealMain::gen_args_vec(int argc, char** argv)
 {
 	for (int i=0; i<argc; ++i)
 	{
-		__args_vec.push_back(std::string(argv[i]));
+		_args_vec.push_back(std::string(argv[i]));
 	}
 }
 void RealMain::one_thread_func_irc()
 {
 	for (auto& iter : irc_config().server_vec())
 	{
-		irc_comm_vec().push_back(new IrcCommunicator(&__bot, 
+		irc_comm_vec().push_back(new IrcCommunicator(&_bot, 
 			&iter));
 	}
 
@@ -93,9 +93,9 @@ void RealMain::one_thread_func_irc()
 			//iter->update_buf_str(&readfds);
 			//iter->iterate();
 
-			if (!iter->__state.did_connect)
+			if (!iter->_state.did_connect)
 			{
-				iter->__reinit();
+				iter->_reinit();
 				continue;
 			}
 
@@ -116,12 +116,12 @@ void RealMain::one_thread_func_discord()
 {
 	if (DiscordCommunicator::get_discord_enabled_from_config_file())
 	{
-		__discord_comm.reset(new DiscordCommunicator(&__bot));
-		__discord_comm->run();
+		_discord_comm.reset(new DiscordCommunicator(&_bot));
+		_discord_comm->run();
 	}
 }
 
-//void RealMain::__parse_args_vec_old()
+//void RealMain::_parse_args_vec_old()
 //{
 //	//if (args_vec().size() == 1)
 //	//{
@@ -137,7 +137,7 @@ void RealMain::one_thread_func_discord()
 //	bot().parse_command(args_vec().at(1), args_vec().at(2));
 //}
 
-//void RealMain::__convert_original_database
+//void RealMain::_convert_original_database
 //	(const std::string& input_file_name, 
 //	const std::string& output_file_name)
 //{
